@@ -1,0 +1,293 @@
+<div class="dashboard-shell" [class.theme-light]="!isDark()" [class.theme-dark]="isDark()">
+  <div class="dashboard-bg"></div>
+
+  <main class="dashboard-page">
+    <header class="hero reveal" style="--delay: 0ms">
+      <section class="title-wrap">
+        <div class="brand-icon"><mat-icon>storefront</mat-icon></div>
+        <div>
+          <h1>Store Command Center</h1>
+          <p>Complete ecommerce insights &amp; performance analytics</p>
+        </div>
+      </section>
+
+      <section class="header-actions">
+        <button mat-stroked-button class="glass-btn"><mat-icon>calendar_today</mat-icon> May 12 - Jun 12, 2026 <mat-icon>arrow_drop_down</mat-icon></button>
+        <button mat-stroked-button class="glass-btn"><mat-icon>compare_arrows</mat-icon> Compare <mat-icon>arrow_drop_down</mat-icon></button>
+        <button mat-icon-button class="icon-btn"><mat-icon>filter_list</mat-icon></button>
+        <button mat-icon-button class="icon-btn"><mat-icon>download</mat-icon></button>
+        <button mat-icon-button class="icon-btn theme-btn" (click)="toggleTheme()" [attr.aria-label]="'Toggle ' + themeLabel() + ' theme'">
+          <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+      </section>
+    </header>
+
+    <section class="kpi-grid reveal" style="--delay: 50ms">
+      <mat-card class="kpi-card tone-{{ item.tone }}" *ngFor="let item of kpis">
+        <div class="kpi-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+        <div class="kpi-content">
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value }}</strong>
+          <small><mat-icon>trending_up</mat-icon> {{ item.delta }} <em>{{ item.helper }}</em></small>
+        </div>
+        <div class="spark">
+          <div echarts [options]="item.spark"></div>
+        </div>
+      </mat-card>
+    </section>
+
+    <section class="main-grid reveal" style="--delay: 100ms">
+      <mat-card class="panel chart-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Store Performance</h2>
+            <p>Total Revenue Analytics</p>
+          </div>
+          <button mat-stroked-button>This Month <mat-icon>arrow_drop_down</mat-icon></button>
+        </div>
+        <div class="stat-block">
+          <strong>$248,760.50</strong>
+          <small class="up"><mat-icon>arrow_upward</mat-icon>18.6% vs last month</small>
+        </div>
+        <div class="chart-container-lg relative-chart">
+          <div class="chart-absolute" echarts [options]="storePerformance"></div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel chart-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Orders Analytics</h2>
+            <p>Realtime sales performance</p>
+          </div>
+          <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+        </div>
+        <div class="stat-block">
+          <strong>8,756</strong>
+          <small class="up"><mat-icon>arrow_upward</mat-icon>14.2% vs last month</small>
+        </div>
+        <div class="chart-container-lg relative-chart">
+          <div class="chart-absolute" echarts [options]="ordersAnalytics"></div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel list-panel">
+        <div class="panel-header">
+          <div>
+            <h2>AI Insights</h2>
+            <p>Realtime recommendations</p>
+          </div>
+          <div>
+            <button mat-icon-button><mat-icon>refresh</mat-icon></button>
+          </div>
+        </div>
+        <div class="insight-list">
+          <div class="insight tone-{{ item.tone }}" *ngFor="let item of insights">
+            <div class="insight-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+            <div class="insight-text">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.text }}</p>
+            </div>
+            <mat-icon class="chevron">chevron_right</mat-icon>
+          </div>
+        </div>
+        <button mat-flat-button class="full-action-btn">View All Insights</button>
+      </mat-card>
+    </section>
+
+    <section class="secondary-grid reveal" style="--delay: 150ms">
+      <mat-card class="panel heatmap-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Inventory Heatmap</h2>
+            <p>Stock vs category velocity</p>
+          </div>
+          <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+        </div>
+        <div class="chart-container-md relative-chart">
+          <div class="chart-absolute" echarts [options]="heatmap"></div>
+        </div>
+        <div class="legend-pills">
+          <span class="pill low">Critical</span>
+          <span class="pill med">Low</span>
+          <span class="pill high">Healthy</span>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel donut-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Shopping Behavior</h2>
+            <p>Customer segmentation</p>
+          </div>
+          <button mat-stroked-button>This Month <mat-icon>arrow_drop_down</mat-icon></button>
+        </div>
+        <div class="donut-wrapper">
+          <div class="chart-container-md relative-chart">
+            <div class="chart-absolute" echarts [options]="shoppingBehavior"></div>
+          </div>
+          <div class="donut-center">
+            <strong>6,582</strong>
+            <span>Active users</span>
+          </div>
+          <div class="behavior-legend">
+            <span><i class="dot new"></i>New <b>32.5%</b></span>
+            <span><i class="dot returning"></i>Returning <b>27.8%</b></span>
+            <span><i class="dot engaged"></i>Engaged <b>21.4%</b></span>
+            <span><i class="dot loyal"></i>Loyal <b>12.6%</b></span>
+            <span><i class="dot inactive"></i>Inactive <b>5.7%</b></span>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel funnel-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Cart Conversion</h2>
+            <p>Purchasing drop-off</p>
+          </div>
+          <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+        </div>
+        <div class="funnel-container">
+          <div class="chart-container-md relative-chart funnel-chart-wrap">
+            <div class="chart-absolute" echarts [options]="cartConversion"></div>
+          </div>
+          <div class="funnel-stats">
+            <div class="f-stat">
+              <span>Conversion Rate</span>
+              <strong>23.1%</strong>
+              <small class="up"><mat-icon>arrow_upward</mat-icon>8.6%</small>
+            </div>
+            <div class="f-stat">
+              <span>Abandonment Rate</span>
+              <strong>76.9%</strong>
+              <small class="down"><mat-icon>arrow_downward</mat-icon>8.6%</small>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </section>
+
+    <section class="tertiary-grid reveal" style="--delay: 200ms">
+      <mat-card class="panel table-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Marketplace &amp; Vendors</h2>
+            <p>Platform distribution</p>
+          </div>
+          <button mat-stroked-button>View Report</button>
+        </div>
+        <div class="table-list">
+          <div class="table-row" *ngFor="let vendor of vendors">
+            <div class="row-main">
+              <div class="avatar"><mat-icon>store</mat-icon></div>
+              <div class="details">
+                <strong>{{ vendor.name }}</strong>
+                <span>Marketplace Partner</span>
+              </div>
+            </div>
+            <div class="row-val">
+              <strong>{{ vendor.revenue }}</strong>
+              <small class="up">{{ vendor.growth }}</small>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel revenue-track-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Revenue Tracking</h2>
+            <p>YTD accumulated revenue</p>
+          </div>
+          <button mat-stroked-button>YTD <mat-icon>arrow_drop_down</mat-icon></button>
+        </div>
+        <div class="stat-block inline-stat">
+          <div>
+            <strong>$2,450,890</strong>
+            <span>Total accumulated</span>
+          </div>
+          <small class="up"><mat-icon>arrow_upward</mat-icon>16.8% vs last year</small>
+        </div>
+        <div class="chart-container-md relative-chart">
+          <div class="chart-absolute" echarts [options]="revenueTracking"></div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel table-panel product-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Trending Products</h2>
+            <p>Top moving items</p>
+          </div>
+        </div>
+        <div class="table-list">
+          <div class="table-row" *ngFor="let prod of productTrends">
+            <div class="row-main">
+              <div class="avatar square"><mat-icon>{{ prod.icon }}</mat-icon></div>
+              <div class="details">
+                <strong>{{ prod.name }}</strong>
+                <span>Best seller</span>
+              </div>
+            </div>
+            <div class="row-val">
+              <strong>{{ prod.price }}</strong>
+              <small [class.up]="prod.trend==='up'" [class.down]="prod.trend==='down'">{{ prod.delta }}</small>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </section>
+
+    <section class="bottom-grid reveal" style="--delay: 250ms">
+      <mat-card class="panel journey-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Customer Journey Mapping</h2>
+            <p>Active path tracking</p>
+          </div>
+        </div>
+        <div class="journey-flow-wrapper">
+          <div class="journey-step" *ngFor="let step of journey; let last = last">
+            <div class="j-icon"><mat-icon>{{ step.icon }}</mat-icon></div>
+            <div class="j-content">
+              <h3>{{ step.stage }}</h3>
+              <span>{{ step.metric }}</span>
+              <strong>{{ step.value }}</strong>
+              <small class="up"><mat-icon>arrow_upward</mat-icon>{{ step.delta }}</small>
+            </div>
+            <div class="j-connector" *ngIf="!last"></div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="panel categories-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Top Categories</h2>
+            <p>Performance by sector</p>
+          </div>
+        </div>
+        <div class="data-table">
+          <div class="th-row">
+            <span>Category</span>
+            <span>Revenue</span>
+            <span class="hide-mobile">Orders</span>
+            <span class="hide-mobile">Growth</span>
+          </div>
+          <div class="td-row" *ngFor="let cat of categories">
+            <strong>{{ cat.name }}</strong>
+            <div class="bar-cell">
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="cat.width"></div>
+              </div>
+              <strong>{{ cat.revenue }}</strong>
+            </div>
+            <span class="hide-mobile">{{ cat.orders }}</span>
+            <small class="up hide-mobile"><mat-icon>arrow_upward</mat-icon>{{ cat.growth }}</small>
+          </div>
+        </div>
+      </mat-card>
+    </section>
+  </main>
+</div>

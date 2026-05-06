@@ -1,0 +1,267 @@
+@use '@angular/material' as mat;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@include mat.core();
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: 'Inter',
+    plain-family: 'Inter',
+  ),
+));
+
+html {
+  --primary: #2563EB;
+  --primary-glow: rgba(37, 99, 235, 0.2);
+  --bg-color: #F8FAFC;
+  --bg-gradient: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  --border-color: #E2E8F0;
+  --border-highlight: rgba(255, 255, 255, 0.8);
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --surface: #FFFFFF;
+  --surface-glass: rgba(255, 255, 255, 0.85);
+  --error: #E11D48;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-premium: inset 0 1px 0 rgba(255, 255, 255, 1), 0 10px 20px -8px rgba(0, 0, 0, 0.08);
+
+  @include mat.core-theme($theme);
+  @include mat.all-component-themes($theme);
+  @include mat.system-level-colors($theme);
+  @include mat.system-level-typography($theme);
+}
+
+.dark-theme {
+  $dark-theme: mat.define-theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+  ));
+
+  @include mat.all-component-colors($dark-theme);
+  @include mat.system-level-colors($dark-theme);
+  
+  --primary: #60A5FA;
+  --primary-glow: rgba(96, 165, 250, 0.15);
+  --bg-color: #030712;
+  --bg-gradient: linear-gradient(180deg, #030712 0%, #0F172A 100%);
+  --surface: #0B1120;
+  --surface-glass: rgba(11, 17, 32, 0.75);
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 255, 255, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+  --shadow-premium: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 20px -8px rgba(0, 0, 0, 0.5);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+body.dark-theme {
+  --bg-color: #030712;
+  --surface: #0B1120;
+  --text-main: #F8FAFC;
+}
+
+mat-sidenav-container, mat-sidenav, mat-sidenav-content {
+  background: transparent !important;
+  color: var(--text-main) !important;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: var(--bg-color);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Customizing Material Components for M3 consistency */
+.mat-mdc-card {
+  border-radius: 20px !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-premium) !important;
+  background: var(--surface) !important;
+  color: var(--text-main) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mat-mdc-button {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0px !important;
+}
+
+.mat-mdc-table {
+  background: transparent !important;
+  color: var(--text-main) !important;
+  border-spacing: 0 4px !important;
+  border-collapse: separate !important;
+}
+
+.mat-mdc-header-cell {
+  background: transparent !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  border-bottom: none !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px !important;
+}
+
+.mat-mdc-row {
+  background: var(--surface-glass) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  margin-bottom: 4px !important;
+  border: 1px solid var(--border-color) !important;
+  backdrop-filter: blur(8px);
+}
+
+.mat-mdc-row:hover {
+  background: var(--surface) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary) !important;
+}
+
+.mat-mdc-cell {
+  color: var(--text-main) !important;
+  border-bottom: none !important;
+  padding: 16px !important;
+}
+
+.mat-mdc-paginator {
+  background: transparent !important;
+  color: var(--text-main) !important;
+  --mat-paginator-container-text-color: var(--text-main);
+  border-top: 1px solid var(--border-color);
+  margin-top: 16px;
+}
+
+/* Datepicker Styling for M3 */
+.mat-calendar {
+  font-family: 'Inter', sans-serif !important;
+}
+
+.mat-calendar-header {
+  padding: 12px 16px 0 16px !important;
+}
+
+.mat-calendar-content {
+  padding: 0 16px 16px 16px !important;
+}
+
+.mat-calendar-body-selected {
+  background-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+.mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+  border-color: var(--primary) !important;
+}
+
+.mat-calendar-body-cell-content {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+.mat-datepicker-content {
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--border-color) !important;
+  background: var(--surface-glass) !important;
+  backdrop-filter: blur(16px);
+}
+
+.mat-calendar-table-header th {
+  font-weight: 700 !important;
+  color: var(--text-muted) !important;
+  font-size: 11px !important;
+}
+
+.cdk-overlay-pane {
+  margin-top: 8px !important;
+}
+
+.custom-modal-panel .mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 20px;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.cdk-overlay-backdrop {
+  backdrop-filter: blur(8px);
+  background: rgba(3, 7, 18, 0.6) !important;
+}
+
+/* Material Menu Global Dark Theme Overrides */
+.mat-mdc-menu-panel {
+  background-color: var(--surface-glass) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-premium) !important;
+}
+
+.mat-mdc-menu-item {
+  color: var(--text-main) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  margin: 4px 8px !important;
+  width: calc(100% - 16px) !important;
+  transition: all 0.2s;
+}
+
+.mat-mdc-menu-item:hover:not([disabled]) {
+  background-color: var(--bg-color) !important;
+}
+
+.mat-divider {
+  border-top-color: var(--border-color) !important;
+}
+
+.opacity-60 { opacity: 0.6; }
+.tracking-tight { letter-spacing: -0.025em; }

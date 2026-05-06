@@ -1,0 +1,46 @@
+{
+  "name": "dash-stack-angular",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --host 0.0.0.0 --port 3000 --disable-host-check",
+    "build": "ng build --configuration production",
+    "watch": "ng build --watch --configuration development",
+    "dev": "ng serve --host 0.0.0.0 --port 3000 --disable-host-check",
+    "lint": "ng lint"
+  },
+  "dependencies": {
+    "@angular/animations": "^19.0.0",
+    "@angular/cdk": "^19.2.19",
+    "@angular/common": "^19.0.0",
+    "@angular/compiler": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "@angular/forms": "^19.0.0",
+    "@angular/material": "^19.0.0",
+    "@angular/platform-browser": "^19.0.0",
+    "@angular/router": "^19.0.0",
+    "@google/genai": "^1.52.0",
+    "@google/generative-ai": "^0.21.0",
+    "chart.js": "^4.4.1",
+    "echarts": "^5.5.0",
+    "lucide-angular": "^0.474.0",
+    "motion": "^12.38.0",
+    "ng2-charts": "^6.0.1",
+    "ngx-echarts": "^19.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.6.2"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.0.0",
+    "@angular/cli": "^19.0.0",
+    "@angular/compiler-cli": "^19.0.0",
+    "@types/node": "^22.14.0",
+    "angular-eslint": "^21.3.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^10.3.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.1",
+    "typescript": "~5.6.2"
+  }
+}
