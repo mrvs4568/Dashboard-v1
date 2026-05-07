@@ -31,7 +31,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { LucideAngularModule, LayoutDashboard, Users, Settings, Bell, Search, Menu, LogOut, ChevronDown, ShoppingBag, Heart, Mail, ClipboardList, Globe, Box, CreditCard, LayoutGrid, Package, ShoppingCart, AlertTriangle, Info, User, Check, X, Image, Calendar, BarChart2, Store, CheckSquare, Banknote } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Users, Settings, Bell, Search, Menu, LogOut, ChevronDown, ShoppingBag, Heart, Mail, ClipboardList, Globe, Box, CreditCard, LayoutGrid, Package, ShoppingCart, AlertTriangle, Info, User, Check, X, Image, Calendar, BarChart2, Store, CheckSquare, Banknote, Brain } from 'lucide-angular';
 
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { NotificationService } from './core/services/notification.service';
@@ -94,6 +94,10 @@ import { UserService } from './core/services/user.service';
             <a routerLink="/financial" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Financial">
               <lucide-icon [name]="BanknoteIcon" size="22" class="nav-icon"></lucide-icon>
               <span *ngIf="isMobileScreen() || !isCollapsed()">Financial</span>
+            </a>
+            <a routerLink="/ai-dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="AI Dashboard">
+              <lucide-icon [name]="BrainIcon" size="22" class="nav-icon"></lucide-icon>
+              <span *ngIf="isMobileScreen() || !isCollapsed()">AI Dashboard</span>
             </a>
             <a routerLink="/ecommerce" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Ecommerce">
               <lucide-icon [name]="StoreIcon" size="22" class="nav-icon"></lucide-icon>
@@ -1058,6 +1062,7 @@ export class AppComponent {
   readonly DashboardIcon = LayoutDashboard;
   readonly BarChart2Icon = BarChart2;
   readonly BanknoteIcon = Banknote;
+  readonly BrainIcon = Brain;
   readonly StoreIcon = Store;
   readonly CheckSquareIcon = CheckSquare;
   readonly ProductIcon = ShoppingBag;

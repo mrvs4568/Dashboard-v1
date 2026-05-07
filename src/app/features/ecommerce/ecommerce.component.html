@@ -12,10 +12,18 @@
       </section>
 
       <section class="header-actions">
-        <button mat-stroked-button class="glass-btn"><mat-icon>calendar_today</mat-icon> May 12 - Jun 12, 2026 <mat-icon>arrow_drop_down</mat-icon></button>
-        <button mat-stroked-button class="glass-btn"><mat-icon>compare_arrows</mat-icon> Compare <mat-icon>arrow_drop_down</mat-icon></button>
-        <button mat-icon-button class="icon-btn"><mat-icon>filter_list</mat-icon></button>
-        <button mat-icon-button class="icon-btn"><mat-icon>download</mat-icon></button>
+        <button mat-stroked-button class="glass-btn" [matMenuTriggerFor]="timeMenu">
+          <mat-icon>calendar_today</mat-icon> 
+          <span>{{ selectedTimeRange() }}</span> 
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #timeMenu="matMenu" class="modern-menu">
+          <button mat-menu-item *ngFor="let range of timeRanges" (click)="setTimeRange(range)">{{ range }}</button>
+        </mat-menu>
+
+        <button mat-stroked-button class="glass-btn" (click)="openFilter()"><mat-icon>compare_arrows</mat-icon> Compare <mat-icon>arrow_drop_down</mat-icon></button>
+        <button mat-icon-button class="icon-btn" (click)="openFilter()"><mat-icon>filter_list</mat-icon></button>
+        <button mat-icon-button class="icon-btn" (click)="exportData()"><mat-icon>download</mat-icon></button>
         <button mat-icon-button class="icon-btn theme-btn" (click)="toggleTheme()" [attr.aria-label]="'Toggle ' + themeLabel() + ' theme'">
           <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
@@ -175,10 +183,16 @@
             <h2>Marketplace &amp; Vendors</h2>
             <p>Platform distribution</p>
           </div>
-          <button mat-stroked-button>View Report</button>
+          <div class="header-tools">
+            <div class="search-mini">
+              <mat-icon>search</mat-icon>
+              <input type="text" placeholder="Search vendors..." (input)="vendorsSearch.set($any($event.target).value)">
+            </div>
+            <button mat-stroked-button>View Report</button>
+          </div>
         </div>
         <div class="table-list">
-          <div class="table-row" *ngFor="let vendor of vendors">
+          <div class="table-row" *ngFor="let vendor of filteredVendors()">
             <div class="row-main">
               <div class="avatar"><mat-icon>store</mat-icon></div>
               <div class="details">
@@ -220,9 +234,15 @@
             <h2>Trending Products</h2>
             <p>Top moving items</p>
           </div>
+          <div class="header-tools">
+            <div class="search-mini">
+              <mat-icon>search</mat-icon>
+              <input type="text" placeholder="Search items..." (input)="productTrendsSearch.set($any($event.target).value)">
+            </div>
+          </div>
         </div>
         <div class="table-list">
-          <div class="table-row" *ngFor="let prod of productTrends">
+          <div class="table-row" *ngFor="let prod of filteredProducts()">
             <div class="row-main">
               <div class="avatar square"><mat-icon>{{ prod.icon }}</mat-icon></div>
               <div class="details">

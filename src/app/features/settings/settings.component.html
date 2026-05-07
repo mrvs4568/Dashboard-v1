@@ -1,0 +1,228 @@
+<div class="settings-page">
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Settings</h1>
+      <p>Manage your account settings and preferences.</p>
+    </div>
+  </div>
+
+  <div class="settings-container">
+    <aside class="settings-sidebar">
+      <nav class="settings-nav">
+        <button class="nav-item" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
+          <lucide-icon [name]="UserIcon" size="20"></lucide-icon>
+          <span>Profile</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab() === 'notifications'" (click)="setTab('notifications')">
+          <lucide-icon [name]="BellIcon" size="20"></lucide-icon>
+          <span>Notifications</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab() === 'appearance'" (click)="setTab('appearance')">
+          <lucide-icon [name]="PaletteIcon" size="20"></lucide-icon>
+          <span>Appearance</span>
+        </button>
+        <button class="nav-item" [class.active]="activeTab() === 'security'" (click)="setTab('security')">
+          <lucide-icon [name]="ShieldIcon" size="20"></lucide-icon>
+          <span>Security</span>
+        </button>
+      </nav>
+    </aside>
+
+    <main class="settings-content">
+      @if (savedMessage()) {
+        <div class="save-toast">
+          <lucide-icon [name]="CheckIcon" size="18"></lucide-icon>
+          <span>{{ savedMessage() }}</span>
+        </div>
+      }
+
+      @if (activeTab() === 'profile') {
+        <div class="content-section fade-in">
+          <h2>Public Profile</h2>
+          <p class="section-desc">This is how others will see you on the site.</p>
+          <mat-divider></mat-divider>
+
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="settings-form">
+            <div class="avatar-section">
+              <div class="avatar-preview">JD</div>
+              <div class="avatar-actions">
+                <button type="button" mat-stroked-button color="primary">Change avatar</button>
+                <button type="button" mat-button color="warn">Remove</button>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>First name</mat-label>
+                <input matInput formControlName="firstName">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Last name</mat-label>
+                <input matInput formControlName="lastName">
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Email address</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Job Title</mat-label>
+              <input matInput formControlName="title">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Bio</mat-label>
+              <textarea matInput formControlName="bio" rows="4" placeholder="Tell us about yourself"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Timezone</mat-label>
+              <mat-select formControlName="timezone">
+                <mat-option value="UTC">UTC (Coordinated Universal Time)</mat-option>
+                <mat-option value="EST">EST (Eastern Standard Time)</mat-option>
+                <mat-option value="PST">PST (Pacific Standard Time)</mat-option>
+                <mat-option value="CST">CST (Central Standard Time)</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-flat-button color="primary" type="submit">Update profile</button>
+            </div>
+          </form>
+        </div>
+      }
+
+      @if (activeTab() === 'notifications') {
+        <div class="content-section fade-in">
+          <h2>Notifications</h2>
+          <p class="section-desc">Choose what you want to be notified about.</p>
+          <mat-divider></mat-divider>
+
+          <form [formGroup]="notificationsForm" (ngSubmit)="saveNotifications()" class="settings-form">
+            <div class="toggle-group">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <h4>Email Alerts</h4>
+                  <p>Receive email notifications for important updates.</p>
+                </div>
+                <mat-slide-toggle formControlName="emailAlerts" color="primary"></mat-slide-toggle>
+              </div>
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <h4>Push Notifications</h4>
+                  <p>Receive push notifications when you're online.</p>
+                </div>
+                <mat-slide-toggle formControlName="pushNotifications" color="primary"></mat-slide-toggle>
+              </div>
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <h4>Marketing Emails</h4>
+                  <p>Receive emails about new products, features, and more.</p>
+                </div>
+                <mat-slide-toggle formControlName="marketingEmails" color="primary"></mat-slide-toggle>
+              </div>
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <h4>Weekly Report</h4>
+                  <p>Receive a weekly summary of your account activity.</p>
+                </div>
+                <mat-slide-toggle formControlName="weeklyReport" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button mat-flat-button color="primary" type="submit">Save preferences</button>
+            </div>
+          </form>
+        </div>
+      }
+
+      @if (activeTab() === 'appearance') {
+        <div class="content-section fade-in">
+          <h2>Appearance</h2>
+          <p class="section-desc">Customize how DashStack looks on your device.</p>
+          <mat-divider></mat-divider>
+
+          <div class="appearance-grid">
+            <div class="theme-card">
+              <div class="theme-preview light-theme">
+                <div class="preview-header"></div>
+                <div class="preview-body">
+                  <div class="preview-block"></div>
+                  <div class="preview-block short"></div>
+                </div>
+              </div>
+              <span>Light</span>
+            </div>
+            
+            <div class="theme-card active">
+              <div class="theme-preview dark-theme">
+                <div class="preview-header"></div>
+                <div class="preview-body">
+                  <div class="preview-block"></div>
+                  <div class="preview-block short"></div>
+                </div>
+              </div>
+              <span>Dark</span>
+            </div>
+
+            <div class="theme-card">
+              <div class="theme-preview system-theme">
+                <div class="preview-header"></div>
+                <div class="preview-body">
+                  <div class="preview-block"></div>
+                  <div class="preview-block short"></div>
+                </div>
+              </div>
+              <span>System</span>
+            </div>
+          </div>
+          <p class="note">Theme settings are applied instantly globally via the top bar toggle.</p>
+        </div>
+      }
+
+      @if (activeTab() === 'security') {
+        <div class="content-section fade-in">
+          <h2>Security</h2>
+          <p class="section-desc">Manage your password and account security.</p>
+          <mat-divider></mat-divider>
+
+          <form [formGroup]="securityForm" (ngSubmit)="saveSecurity()" class="settings-form">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Current password</mat-label>
+              <input matInput formControlName="currentPassword" type="password">
+            </mat-form-field>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>New password</mat-label>
+                <input matInput formControlName="newPassword" type="password">
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Confirm new password</mat-label>
+                <input matInput formControlName="confirmPassword" type="password">
+              </mat-form-field>
+            </div>
+
+            <div class="toggle-group mt-4">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <h4>Two-Factor Authentication</h4>
+                  <p>Add an extra layer of security to your account.</p>
+                </div>
+                <mat-slide-toggle formControlName="twoFactorAuth" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button mat-flat-button color="primary" type="submit">Update security settings</button>
+            </div>
+          </form>
+        </div>
+      }
+    </main>
+  </div>
+</div>

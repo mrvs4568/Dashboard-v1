@@ -58,8 +58,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/financial/financial.component').then(m => m.FinancialOverviewComponent)
   },
   {
+    path: 'analytics',
+    loadComponent: () => import('./features/analytics/analytics.component').then(m => m.AnalyticsComponent)
+  },
+  {
+    path: 'ai-dashboard',
+    loadComponent: () => import('./features/ai-dashboard/ai-dashboard.component').then(m => m.AiDashboardComponent)
+  },
+  {
     path: 'settings',
-    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent)
   },
   {
     path: '',

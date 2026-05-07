@@ -92,6 +92,23 @@ export class EcommerceComponent implements OnInit {
     { name: 'Beauty Palace', revenue: '$8,760', growth: '12.5%' },
   ];
 
+  readonly vendorsSearch = signal('');
+  readonly filteredVendors = computed(() => {
+    const search = this.vendorsSearch().toLowerCase();
+    if (!search) return this.vendors;
+    return this.vendors.filter(v => v.name.toLowerCase().includes(search));
+  });
+
+  readonly productTrendsSearch = signal('');
+  readonly filteredProducts = computed(() => {
+    const search = this.productTrendsSearch().toLowerCase();
+    if (!search) return this.productTrends;
+    return this.productTrends.filter(p => p.name.toLowerCase().includes(search));
+  });
+
+  readonly selectedTimeRange = signal('Last 30 Days');
+  readonly timeRanges = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'This Year'];
+
   readonly categories = [
     { name: 'Electronics', revenue: '$78,450', orders: '2,156', growth: '24.6%', width: 100 },
     { name: 'Fashion & Apparel', revenue: '$65,780', orders: '1,856', growth: '18.3%', width: 82 },
@@ -123,6 +140,20 @@ export class EcommerceComponent implements OnInit {
   toggleTheme(): void {
     this.isDark.update((v) => !v);
     this.initCharts();
+  }
+
+  setTimeRange(range: string) {
+    this.selectedTimeRange.set(range);
+    this.initCharts(); // Re-init to simulate data change
+  }
+
+  exportData() {
+    console.log('Exporting data...');
+    // Simulated export
+  }
+
+  openFilter() {
+    console.log('Opening filter menu...');
   }
 
   private initCharts() {
