@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import * as echarts from 'echarts';
+import { ThemeService } from '../../core/services/theme.service';
 
 type Period = 'day' | 'week' | 'month' | 'year';
 
@@ -20,8 +21,10 @@ type Period = 'day' | 'week' | 'month' | 'year';
   styleUrls: ['./crm-dashboard.component.css']
 })
 export class CrmDashboardComponent {
+  private themeService = inject(ThemeService);
+  
   readonly period = signal<Period>('month');
-  readonly darkMode = signal(true);
+  readonly darkMode = this.themeService.isDarkMode;
   readonly periods = [
     { label: 'Today', value: 'day' as Period },
     { label: 'This Week', value: 'week' as Period },
@@ -46,7 +49,7 @@ export class CrmDashboardComponent {
 
   private multiplier() { return this.period() === 'day' ? .08 : this.period() === 'week' ? .35 : this.period() === 'year' ? 12 : 1; }
   setPeriod(value: Period) { this.period.set(value); }
-  toggleTheme() { this.darkMode.update(v => !v); }
+  toggleTheme() { this.themeService.toggleTheme(); }
 
   readonly kpis = computed(() => {
     const m = this.multiplier();
@@ -94,12 +97,19 @@ export class CrmDashboardComponent {
   ]);
 
   sparkline(color: string, values: number[]): EChartsOption { return { animation:true, grid:{left:0,right:0,top:2,bottom:2}, xAxis:{type:'category',show:false}, yAxis:{type:'value',show:false,scale:true}, series:[{ type:'line', data:values, smooth:.45, symbol:'none', lineStyle:{color,width:2.5}, areaStyle:{ color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:`${color}66`},{offset:1,color:`${color}00`}]) } }], tooltip:{show:false} }; }
-  private lineArea(values: number[], color: string): EChartsOption { return { animation:true, tooltip:{trigger:'axis',backgroundColor:'rgba(15,23,42,.94)',borderColor:'rgba(255,255,255,.08)',textStyle:{color:'#fff'}}, grid:{top:16,right:10,bottom:26,left:4,containLabel:true}, xAxis:{type:'category',boundaryGap:false,data:this.labels(),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#94a3b8',fontSize:10}}, yAxis:{type:'value',axisLabel:{color:'#64748b',fontSize:10,formatter:'{value}%'},splitLine:{lineStyle:{color:'rgba(148,163,184,.08)'}}}, series:[{type:'line',data:values,smooth:true,symbolSize:6,itemStyle:{color},lineStyle:{color,width:3},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:`${color}55`},{offset:1,color:`${color}00`}])}}]}; }
+  private lineArea(values: number[], color: string): EChartsOption { 
+    return { animation:true, tooltip:{trigger:'axis',backgroundColor: this.darkMode() ? 'rgba(15,23,42,.94)' : 'rgba(255,255,255,.94)',borderColor: this.darkMode() ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)',textStyle:{color: this.darkMode() ? '#fff' : '#0f172a'}}, grid:{top:16,right:10,bottom:26,left:4,containLabel:true}, xAxis:{type:'category',boundaryGap:false,data:this.labels(),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#94a3b8',fontSize:10}}, yAxis:{type:'value',axisLabel:{color:'#64748b',fontSize:10,formatter:'{value}%'},splitLine:{lineStyle:{color: this.darkMode() ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}}}, series:[{type:'line',data:values,smooth:true,symbolSize:6,itemStyle:{color},lineStyle:{color,width:3},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:`${color}55`},{offset:1,color:`${color}00`}])}}]}; 
+  }
   clientEngagementOptions = computed(() => this.lineArea(this.data[this.period()].engagement, '#a855f7'));
   relationshipOptions = computed(() => this.lineArea(this.data[this.period()].relationship, '#ec4899'));
   retentionOptions = computed(() => this.lineArea(this.data[this.period()].retention, '#a855f7'));
-  supportMetricsOptions = computed<EChartsOption>(() => { const d = this.data[this.period()]; return { animation:true, tooltip:{trigger:'axis',backgroundColor:'rgba(15,23,42,.94)',borderColor:'rgba(255,255,255,.08)',textStyle:{color:'#fff'}}, legend:{top:0,right:0,icon:'circle',itemWidth:8,textStyle:{color:'#94a3b8',fontSize:11},data:['Tickets','Resolved','Backlog']}, grid:{top:34,bottom:20,left:10,right:10,containLabel:true}, xAxis:{type:'category',boundaryGap:false,data:this.labels(),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#94a3b8',fontSize:10}}, yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(148,163,184,.08)'}},axisLabel:{color:'#64748b',fontSize:10}}, series:[ {name:'Tickets',type:'line',smooth:true,data:d.tickets,itemStyle:{color:'#3b82f6'},lineStyle:{width:2.5}}, {name:'Resolved',type:'line',smooth:true,data:d.resolved,itemStyle:{color:'#10b981'},lineStyle:{width:2.5}}, {name:'Backlog',type:'line',smooth:true,data:d.tickets.map((v,i)=>Math.max(20,v-d.resolved[i])),itemStyle:{color:'#a855f7'},lineStyle:{width:2.5}} ]}; });
-  private donut(data: any[], colors: string[]): EChartsOption { return { animation:true, tooltip:{trigger:'item',backgroundColor:'rgba(15,23,42,.94)',borderColor:'rgba(255,255,255,.08)',textStyle:{color:'#fff'}}, color:colors, series:[{type:'pie',radius:['56%','82%'],center:['50%','50%'],avoidLabelOverlap:true,label:{show:false},itemStyle:{borderRadius:8,borderColor:'#071225',borderWidth:2},data}]}; }
+  supportMetricsOptions = computed<EChartsOption>(() => { 
+    const d = this.data[this.period()]; 
+    return { animation:true, tooltip:{trigger:'axis',backgroundColor: this.darkMode() ? 'rgba(15,23,42,.94)' : 'rgba(255,255,255,.94)',borderColor: this.darkMode() ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)',textStyle:{color: this.darkMode() ? '#fff' : '#0f172a'}}, legend:{top:0,right:0,icon:'circle',itemWidth:8,textStyle:{color:'#94a3b8',fontSize:11},data:['Tickets','Resolved','Backlog']}, grid:{top:34,bottom:20,left:10,right:10,containLabel:true}, xAxis:{type:'category',boundaryGap:false,data:this.labels(),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#94a3b8',fontSize:10}}, yAxis:{type:'value',splitLine:{lineStyle:{color: this.darkMode() ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.08)'}},axisLabel:{color:'#64748b',fontSize:10}}, series:[ {name:'Tickets',type:'line',smooth:true,data:d.tickets,itemStyle:{color:'#3b82f6'},lineStyle:{width:2.5}}, {name:'Resolved',type:'line',smooth:true,data:d.resolved,itemStyle:{color:'#10b981'},lineStyle:{width:2.5}}, {name:'Backlog',type:'line',smooth:true,data:d.tickets.map((v,i)=>Math.max(20,v-d.resolved[i])),itemStyle:{color:'#a855f7'},lineStyle:{width:2.5}} ]}; 
+  });
+  private donut(data: any[], colors: string[]): EChartsOption { 
+    return { animation:true, tooltip:{trigger:'item',backgroundColor: this.darkMode() ? 'rgba(15,23,42,.94)' : 'rgba(255,255,255,.94)',borderColor: this.darkMode() ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)',textStyle:{color: this.darkMode() ? '#fff' : '#0f172a'}}, color:colors, series:[{type:'pie',radius:['56%','82%'],center:['50%','50%'],avoidLabelOverlap:true,label:{show:false},itemStyle:{borderRadius:8,borderColor: this.darkMode() ? '#071225' : '#ffffff',borderWidth:2},data}]}; 
+  }
   customerInsightsOptions = computed(() => this.donut([{value:8736,name:'New Customers'},{value:6972,name:'Returning Customers'},{value:5108,name:'Loyal Customers'},{value:2505,name:'At Risk Customers'},{value:1247,name:'Churned Customers'}], ['#3b82f6','#a855f7','#f59e0b','#fb923c','#f43f5e']));
   segmentationOptions = computed(() => this.donut([{value:5523,name:'Enterprise'},{value:6946,name:'Mid Market'},{value:7533,name:'Small Business'},{value:3146,name:'Startup'},{value:1420,name:'Individual'}], ['#2563eb','#a855f7','#0ea5e9','#f59e0b','#f97316']));
   leadsOptions = computed(() => this.donut([{value:3158,name:'Website'},{value:2036,name:'Referral'},{value:1659,name:'Social Media'},{value:1107,name:'Email Campaign'},{value:605,name:'Events'},{value:347,name:'Others'}], ['#2563eb','#9333ea','#0ea5e9','#14b8a6','#f59e0b','#64748b']));

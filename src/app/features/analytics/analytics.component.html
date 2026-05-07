@@ -12,11 +12,17 @@
     </div>
     <div class="header-actions">
       <div class="action-buttons">
-        <button mat-stroked-button class="glass-btn">
+        <button mat-stroked-button class="glass-btn" [matMenuTriggerFor]="rangeMenu">
           <lucide-icon [name]="CalendarIcon" size="16"></lucide-icon>
           <span>{{ selectedRange() }}</span>
           <mat-icon iconPositionEnd>expand_more</mat-icon>
         </button>
+        <mat-menu #rangeMenu="matMenu">
+          <button mat-menu-item *ngFor="let r of ranges" (click)="setRange(r)">
+            <mat-icon>{{ selectedRange() === r ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{ r }}</span>
+          </button>
+        </mat-menu>
         <button mat-stroked-button class="glass-btn">
           <lucide-icon [name]="FilterIcon" size="16"></lucide-icon>
           <span>Filters</span>
@@ -62,14 +68,14 @@
               <h3>Revenue Analytics</h3>
               <p>Monthly performance</p>
             </div>
-            <button mat-button class="mini-btn">Monthly <mat-icon>expand_more</mat-icon></button>
+            <button mat-button class="mini-btn">{{ selectedRange() }} <mat-icon>expand_more</mat-icon></button>
           </div>
           <div class="panel-main">
             <div class="stat-group">
               <strong>$2,482,900</strong>
             </div>
             <div class="chart-container">
-              <div echarts [options]="revenueChartOptions" style="height: 240px;"></div>
+              <div echarts [options]="revenueChartOptions()" style="height: 240px;"></div>
             </div>
           </div>
         </mat-card>
@@ -81,14 +87,14 @@
               <h3>Sales Performance</h3>
               <p>Units sold vs target</p>
             </div>
-            <button mat-button class="mini-btn">This Month <mat-icon>expand_more</mat-icon></button>
+            <button mat-button class="mini-btn">{{ selectedRange() }} <mat-icon>expand_more</mat-icon></button>
           </div>
           <div class="panel-main">
             <div class="stat-group">
               <strong>12.5k Sales</strong>
             </div>
             <div class="chart-container">
-              <div echarts [options]="salesChartOptions" style="height: 240px;"></div>
+              <div echarts [options]="salesChartOptions()" style="height: 240px;"></div>
             </div>
           </div>
         </mat-card>
@@ -138,7 +144,7 @@
         <mat-card class="panel col-span-2 compact">
           <h3>Conversion Funnel</h3>
           <div class="funnel-wrap">
-            <div echarts [options]="funnelOptions" style="height: 180px;"></div>
+            <div echarts [options]="funnelOptions()" style="height: 180px;"></div>
           </div>
           <div class="funnel-label">Conversion: <strong>3.4%</strong></div>
         </mat-card>
@@ -156,7 +162,7 @@
         <mat-card class="panel col-span-2 compact">
           <h3>Traffic Sources</h3>
           <div class="donut-wrap">
-            <div echarts [options]="trafficOptions" style="height: 140px;"></div>
+            <div echarts [options]="trafficOptions()" style="height: 140px;"></div>
           </div>
         </mat-card>
 

@@ -1,4 +1,4 @@
-<div class="financial-shell theme-{{ theme() }}">
+<div class="financial-shell" [class.theme-dark]="isDark()" [class.theme-light]="!isDark()">
   <main class="dashboard-viewport">
     
     <header class="dashboard-header animate-in">
@@ -27,7 +27,7 @@
           <button mat-icon-button class="glass-icon-btn hide-on-mobile"><mat-icon>file_download</mat-icon></button>
           <div class="divider hide-on-mobile"></div>
           <button mat-icon-button class="glass-icon-btn notify-btn"><mat-icon>notifications_none</mat-icon><span class="badge"></span></button>
-          <button mat-icon-button class="glass-icon-btn" (click)="toggleTheme()"><mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon></button>
+          <button mat-icon-button class="glass-icon-btn" (click)="toggleTheme()"><mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon></button>
         </div>
       </div>
     </header>

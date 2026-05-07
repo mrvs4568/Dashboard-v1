@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, signal, ElementRef, AfterViewInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,11 +14,11 @@ import * as echarts from 'echarts/core';
 import { BarChart, LineChart, PieChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { ThemeService } from '../../core/services/theme.service';
 
 echarts.use([LineChart, BarChart, PieChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 type Period = 'day' | 'week' | 'month' | 'year';
-type ThemeMode = 'dark' | 'light';
 
 @Component({
   selector: 'app-financial-overview',
@@ -41,8 +41,10 @@ type ThemeMode = 'dark' | 'light';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FinancialOverviewComponent implements AfterViewInit {
+  private themeService = inject(ThemeService);
+  
   readonly period = signal<Period>('month');
-  readonly theme = signal<ThemeMode>('dark');
+  readonly isDark = this.themeService.isDarkMode;
 
   readonly periods = [
     { label: 'Today', value: 'day' as Period },
@@ -174,8 +176,7 @@ export class FinancialOverviewComponent implements AfterViewInit {
   }
   
   toggleTheme(): void { 
-    const isDark = this.theme() === 'dark';
-    this.theme.set(isDark ? 'light' : 'dark'); 
+    this.themeService.toggleTheme();
   }
 
   get periodLabel(): string {
@@ -223,7 +224,7 @@ export class FinancialOverviewComponent implements AfterViewInit {
   }
 
   private tooltip() { 
-    const isDark = this.theme() === 'dark';
+    const isDark = this.isDark();
     return { 
       backgroundColor: isDark ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.95)', 
       borderColor: isDark ? 'rgba(148,163,184,0.1)' : 'rgba(15,23,42,0.1)', 
@@ -238,8 +239,8 @@ export class FinancialOverviewComponent implements AfterViewInit {
     }; 
   }
   
-  private axisColor() { return this.theme() === 'dark' ? '#64748b' : '#94a3b8'; }
-  private splitColor() { return this.theme() === 'dark' ? 'rgba(148,163,184,0.08)' : 'rgba(15,23,42,0.05)'; }
+  private axisColor() { return this.isDark() ? '#64748b' : '#94a3b8'; }
+  private splitColor() { return this.isDark() ? 'rgba(148,163,184,0.08)' : 'rgba(15,23,42,0.05)'; }
 
   private makeIncomeExpenseChart() { 
     const d = this.data[this.period()]; 
@@ -358,7 +359,7 @@ export class FinancialOverviewComponent implements AfterViewInit {
         itemStyle: { 
           borderRadius: 8, 
           borderWidth: 4, 
-          borderColor: this.theme() === 'dark' ? '#0f172a' : '#ffffff' 
+          borderColor: this.isDark() ? '#0f172a' : '#ffffff' 
         }, 
         data: rows.map(([name, value, color]) => ({ name, value, itemStyle: { color } })) 
       }] 

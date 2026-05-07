@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
+import { ThemeService } from '../../core/services/theme.service';
 import { 
   LucideAngularModule, 
   BarChart3, 
@@ -46,6 +47,9 @@ import {
   styleUrls: ['./analytics.component.scss']
 })
 export class AnalyticsComponent {
+  private themeService = inject(ThemeService);
+  readonly isDark = this.themeService.isDarkMode;
+
   // Icons
   readonly BarChartIcon = BarChart3;
   readonly TrendingIcon = TrendingUp;
@@ -66,6 +70,11 @@ export class AnalyticsComponent {
   readonly DownIcon = ArrowDownRight;
 
   readonly selectedRange = signal('Last 30 Days');
+  readonly ranges = ['Today', 'Last 7 Days', 'Last 30 Days', 'This Year'];
+
+  setRange(range: string) {
+    this.selectedRange.set(range);
+  }
 
   // KPI Data
   readonly kpis = [
@@ -77,13 +86,13 @@ export class AnalyticsComponent {
   ];
 
   // Revenue Options
-  readonly revenueChartOptions: EChartsOption = {
+  readonly revenueChartOptions = computed<EChartsOption>(() => ({
     backgroundColor: 'transparent',
     tooltip: { 
       trigger: 'axis', 
-      backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+      backgroundColor: this.isDark() ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
       borderColor: 'rgba(139, 92, 246, 0.2)',
-      textStyle: { color: '#fff' },
+      textStyle: { color: this.isDark() ? '#fff' : '#0f172a' },
       axisPointer: { lineStyle: { color: 'rgba(139, 92, 246, 0.3)' } }
     },
     grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
@@ -96,7 +105,7 @@ export class AnalyticsComponent {
     },
     yAxis: { 
       type: 'value', 
-      splitLine: { lineStyle: { color: 'rgba(148, 163, 184, 0.05)' } },
+      splitLine: { lineStyle: { color: this.isDark() ? 'rgba(148, 163, 184, 0.05)' : 'rgba(15, 23, 42, 0.05)' } },
       axisLabel: { color: '#64748b' }
     },
     series: [{
@@ -114,15 +123,20 @@ export class AnalyticsComponent {
         }
       }
     }]
-  };
+  }));
 
   // Sales Options
-  readonly salesChartOptions: EChartsOption = {
+  readonly salesChartOptions = computed<EChartsOption>(() => ({
     backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis' },
+    tooltip: { 
+        trigger: 'axis',
+        backgroundColor: this.isDark() ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
+        borderColor: 'rgba(139, 92, 246, 0.2)',
+        textStyle: { color: this.isDark() ? '#fff' : '#0f172a' },
+    },
     grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
     xAxis: { type: 'category', data: ['W1', 'W2', 'W3', 'W4'], axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#64748b' } },
-    yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(148, 163, 184, 0.05)' } }, axisLabel: { color: '#64748b' } },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: this.isDark() ? 'rgba(148, 163, 184, 0.05)' : 'rgba(15, 23, 42, 0.05)' } }, axisLabel: { color: '#64748b' } },
     series: [{
       data: [120, 200, 150, 80],
       type: 'bar',
@@ -135,11 +149,16 @@ export class AnalyticsComponent {
         }
       }
     }]
-  };
+  }));
 
   // Funnel Options
-  readonly funnelOptions: EChartsOption = {
+  readonly funnelOptions = computed<EChartsOption>(() => ({
     backgroundColor: 'transparent',
+    tooltip: { 
+        backgroundColor: this.isDark() ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
+        borderColor: 'rgba(139, 92, 246, 0.2)',
+        textStyle: { color: this.isDark() ? '#fff' : '#0f172a' },
+    },
     series: [{
       type: 'funnel',
       left: '10%', top: 10, bottom: 10, width: '80%',
@@ -154,11 +173,16 @@ export class AnalyticsComponent {
         { value: 40, name: 'Purchase', itemStyle: { color: 'rgba(16, 185, 129, 0.8)' } }
       ]
     }]
-  };
+  }));
 
   // Traffic Options
-  readonly trafficOptions: EChartsOption = {
+  readonly trafficOptions = computed<EChartsOption>(() => ({
     backgroundColor: 'transparent',
+    tooltip: { 
+        backgroundColor: this.isDark() ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
+        borderColor: 'rgba(139, 92, 246, 0.2)',
+        textStyle: { color: this.isDark() ? '#fff' : '#0f172a' },
+    },
     series: [{
       type: 'pie',
       radius: ['60%', '85%'],
@@ -172,7 +196,7 @@ export class AnalyticsComponent {
         { value: 5, name: 'Other', itemStyle: { color: '#10b981' } }
       ]
     }]
-  };
+  }));
 
   readonly bottomMetrics = [
     { label: 'Revenue', value: '$24.8k', trend: 'up' },
@@ -184,8 +208,4 @@ export class AnalyticsComponent {
     { label: 'Bounce Rate', value: '24%', trend: 'down' },
     { label: 'Avg Time', value: '4m 32s', trend: 'up' }
   ];
-
-  setRange(range: string) {
-    this.selectedRange.set(range);
-  }
 }
