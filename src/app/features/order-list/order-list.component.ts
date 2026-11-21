@@ -52,9 +52,9 @@ import { AiService } from '../../core/services/ai.service';
             <mat-icon>file_download</mat-icon>
             <span>Export</span>
           </button>
-          <button class="action-header-btn ai-btn" (click)="toggleAiPanel()" matTooltip="Get AI business insights">
+          <button class="action-header-btn ai-btn" (click)="toggleAiPanel()" matTooltip="Show local demo order statistics">
             <mat-icon>auto_awesome</mat-icon>
-            <span>AI Insights</span>
+            <span>Demo Insights</span>
           </button>
           <button class="action-header-btn add-btn" (click)="addNewOrder()">
             <mat-icon>add</mat-icon>

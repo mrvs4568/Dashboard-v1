@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { LucideAngularModule, User, Bell, Lock, Globe, Palette, MonitorSmartphone, Shield, Check } from 'lucide-angular';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-settings',
@@ -30,6 +31,7 @@ import { LucideAngularModule, User, Bell, Lock, Globe, Palette, MonitorSmartphon
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent {
+  readonly userService = inject(UserService);
   UserIcon = User;
   BellIcon = Bell;
   LockIcon = Lock;
@@ -48,12 +50,14 @@ export class SettingsComponent {
   savedMessage = signal<string | null>(null);
 
   constructor(private fb: FormBuilder) {
+    const profile = this.userService.currentUser();
+    const [firstName, ...lastName] = profile.name.split(' ');
     this.profileForm = this.fb.group({
-      firstName: ['John'],
-      lastName: ['Doe'],
-      email: ['john.doe@example.com'],
-      title: ['Senior Developer'],
-      bio: ['Passionate about building great user experiences...'],
+      firstName: [firstName],
+      lastName: [lastName.join(' ')],
+      email: [profile.email],
+      title: ['Demo Admin'],
+      bio: ['Sample dashboard profile. Changes are not stored on a server.'],
       timezone: ['UTC']
     });
 
@@ -78,22 +82,29 @@ export class SettingsComponent {
   }
 
   saveProfile() {
-    console.log('Profile saved', this.profileForm.value);
-    this.showSaveSuccess();
+    const { firstName, lastName, email } = this.profileForm.getRawValue();
+    const name = [firstName, lastName].map(value => String(value ?? '').trim()).filter(Boolean).join(' ');
+    const emailAddress = String(email ?? '').trim();
+    if (!name || !emailAddress) {
+      this.savedMessage.set('Enter a name and email for the demo profile.');
+      return;
+    }
+    this.userService.updateProfile({ name, email: emailAddress });
+    this.showSaveMessage('Demo profile updated for this session only.');
   }
 
   saveNotifications() {
-    console.log('Notifications saved', this.notificationsForm.value);
-    this.showSaveSuccess();
+    this.showSaveMessage('Notification preferences are a UI preview; no backend settings were saved.');
   }
 
+  // There is no authentication backend. Never collect, log, or pretend to save passwords.
   saveSecurity() {
-    console.log('Security saved', this.securityForm.value);
-    this.showSaveSuccess();
+    this.securityForm.reset({ currentPassword: '', newPassword: '', confirmPassword: '', twoFactorAuth: false });
+    this.showSaveMessage('Security settings are unavailable in this demo.');
   }
 
-  private showSaveSuccess() {
-    this.savedMessage.set('Changes saved successfully.');
+  private showSaveMessage(message: string) {
+    this.savedMessage.set(message);
     setTimeout(() => {
       this.savedMessage.set(null);
     }, 3000);
