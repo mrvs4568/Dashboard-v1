@@ -91,6 +91,10 @@ import { UserService } from './core/services/user.service';
               <lucide-icon [name]="BarChart2Icon" size="22" class="nav-icon"></lucide-icon>
               <span *ngIf="isMobileScreen() || !isCollapsed()">Analytics</span>
             </a>
+            <a routerLink="/analytics-insights" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Analytics Insights">
+              <lucide-icon [name]="BarChart2Icon" size="22" class="nav-icon"></lucide-icon>
+              <span *ngIf="isMobileScreen() || !isCollapsed()">Analytics Insights</span>
+            </a>
             <a routerLink="/financial" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Financial">
               <lucide-icon [name]="BanknoteIcon" size="22" class="nav-icon"></lucide-icon>
               <span *ngIf="isMobileScreen() || !isCollapsed()">Financial</span>

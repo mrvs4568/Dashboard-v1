@@ -2,7 +2,7 @@
   <div class="page-header">
     <div class="header-titles">
       <h1>Settings</h1>
-      <p>Manage your account settings and preferences.</p>
+      <p>Demo settings: profile updates last for this session; notifications and security are not connected to a backend.</p>
     </div>
   </div>
 
@@ -44,7 +44,7 @@
 
           <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="settings-form">
             <div class="avatar-section">
-              <div class="avatar-preview">JD</div>
+              <div class="avatar-preview">{{ userService.currentUser().name.slice(0, 2).toUpperCase() }}</div>
               <div class="avatar-actions">
                 <button type="button" mat-stroked-button color="primary">Change avatar</button>
                 <button type="button" mat-button color="warn">Remove</button>
@@ -186,7 +186,7 @@
       @if (activeTab() === 'security') {
         <div class="content-section fade-in">
           <h2>Security</h2>
-          <p class="section-desc">Manage your password and account security.</p>
+          <p class="section-desc">Security controls are for layout demonstration only. There is no authentication backend, and passwords/MFA cannot be changed.</p>
           <mat-divider></mat-divider>
 
           <form [formGroup]="securityForm" (ngSubmit)="saveSecurity()" class="settings-form">
@@ -218,7 +218,7 @@
             </div>
 
             <div class="form-actions">
-              <button mat-flat-button color="primary" type="submit">Update security settings</button>
+              <button mat-flat-button color="primary" type="button" disabled>Security settings unavailable in demo</button>
             </div>
           </form>
         </div>

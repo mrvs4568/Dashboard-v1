@@ -12,10 +12,10 @@ export interface UserProfile {
 })
 export class UserService {
   private userSignal = signal<UserProfile>({
-    name: 'Moni Roy',
-    email: 'moni.roy@dashstack.com',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-    role: 'Admin'
+    name: 'Demo User',
+    email: 'demo@example.com',
+    avatar: '/images/demo-avatar.svg',
+    role: 'Demo Admin'
   });
 
   currentUser = this.userSignal.asReadonly();
