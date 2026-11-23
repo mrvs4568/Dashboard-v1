@@ -1,6 +1,6 @@
 <div class="financial-shell" [class.theme-dark]="isDark()" [class.theme-light]="!isDark()">
   <main class="dashboard-viewport">
-    
+
     <header class="dashboard-header animate-in">
       <div class="header-content">
         <div class="header-titles">
@@ -10,7 +10,7 @@
             <p>Real-time analytics and financial health monitoring</p>
           </div>
         </div>
-        
+
         <div class="header-actions">
           <button mat-stroked-button class="glass-btn btn-range" [matMenuTriggerFor]="periodMenu">
             <mat-icon class="mr-2">calendar_today</mat-icon>
@@ -18,10 +18,12 @@
             <mat-icon class="ml-1 opacity-60">expand_more</mat-icon>
           </button>
           <mat-menu #periodMenu="matMenu" class="premium-menu">
-            <button mat-menu-item *ngFor="let item of periods" (click)="setPeriod(item.value)">
-              <mat-icon [class.text-primary]="period() === item.value">{{ period() === item.value ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
-              <span>{{ item.label }}</span>
-            </button>
+            @for (item of periods; track item) {
+              <button mat-menu-item (click)="setPeriod(item.value)">
+                <mat-icon [class.text-primary]="period() === item.value">{{ period() === item.value ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+                <span>{{ item.label }}</span>
+              </button>
+            }
           </mat-menu>
           <button mat-stroked-button class="glass-btn hide-on-mobile"><mat-icon>compare_arrows</mat-icon><span class="ml-2">Compare</span></button>
           <button mat-icon-button class="glass-icon-btn hide-on-mobile"><mat-icon>file_download</mat-icon></button>
@@ -33,25 +35,27 @@
     </header>
 
     <div class="kpi-row">
-      <mat-card class="glass-card kpi-card animate-in accent-{{ kpi.accent }}" *ngFor="let kpi of kpis()">
-        <div class="kpi-internal">
-          <div class="kpi-header">
-            <div class="kpi-badge"><mat-icon>{{ kpi.icon }}</mat-icon></div>
-            <div class="kpi-trend" [class.trend-up]="kpi.trend === 'up'" [class.trend-down]="kpi.trend === 'down'">
-              <mat-icon>{{ kpi.trend === 'up' ? 'moving' : 'trending_down' }}</mat-icon>
-              <span>{{ kpi.delta }}</span>
+      @for (kpi of kpis(); track kpi) {
+        <mat-card class="glass-card kpi-card animate-in accent-{{ kpi.accent }}">
+          <div class="kpi-internal">
+            <div class="kpi-header">
+              <div class="kpi-badge"><mat-icon>{{ kpi.icon }}</mat-icon></div>
+              <div class="kpi-trend" [class.trend-up]="kpi.trend === 'up'" [class.trend-down]="kpi.trend === 'down'">
+                <mat-icon>{{ kpi.trend === 'up' ? 'moving' : 'trending_down' }}</mat-icon>
+                <span>{{ kpi.delta }}</span>
+              </div>
+            </div>
+            <div class="kpi-body">
+              <span class="kpi-label">{{ kpi.title }}</span>
+              <div class="kpi-value">{{ kpi.value }}</div>
+              <span class="kpi-helper">{{ kpi.helper }}</span>
+            </div>
+            <div class="kpi-spark">
+              <div echarts [options]="sparkline(kpi.accent === 'violet' ? '#8b5cf6' : kpi.accent === 'green' ? '#10b981' : kpi.accent === 'orange' ? '#f59e0b' : kpi.accent === 'blue' ? '#3b82f6' : '#06b6d4', kpi.spark)" class="w-full h-full"></div>
             </div>
           </div>
-          <div class="kpi-body">
-            <span class="kpi-label">{{ kpi.title }}</span>
-            <div class="kpi-value">{{ kpi.value }}</div>
-            <span class="kpi-helper">{{ kpi.helper }}</span>
-          </div>
-          <div class="kpi-spark">
-            <div echarts [options]="sparkline(kpi.accent === 'violet' ? '#8b5cf6' : kpi.accent === 'green' ? '#10b981' : kpi.accent === 'orange' ? '#f59e0b' : kpi.accent === 'blue' ? '#3b82f6' : '#06b6d4', kpi.spark)" class="w-full h-full"></div>
-          </div>
-        </div>
-      </mat-card>
+        </mat-card>
+      }
     </div>
 
     <div class="main-grid">
@@ -128,11 +132,13 @@
       <mat-card class="glass-card actions-panel animate-in">
         <div class="panel-header"><h2>Quick Actions</h2></div>
         <div class="actions-list">
-          <button mat-ripple class="action-item" *ngFor="let a of quickActions">
-            <div class="action-icon"><mat-icon>{{ a.icon }}</mat-icon></div>
-            <div class="action-text"><strong>{{ a.title }}</strong><span>{{ a.sub }}</span></div>
-            <mat-icon class="arrow">chevron_right</mat-icon>
-          </button>
+          @for (a of quickActions; track a) {
+            <button mat-ripple class="action-item">
+              <div class="action-icon"><mat-icon>{{ a.icon }}</mat-icon></div>
+              <div class="action-text"><strong>{{ a.title }}</strong><span>{{ a.sub }}</span></div>
+              <mat-icon class="arrow">chevron_right</mat-icon>
+            </button>
+          }
         </div>
       </mat-card>
     </div>
@@ -143,7 +149,7 @@
         <div class="mini-kpi"><strong>$186,450</strong><span class="trend up">↑ 16.8%</span></div>
         <div echarts [options]="profitChart()" class="h-[120px] -mx-2 -mb-2"></div>
       </mat-card>
-      
+
       <mat-card class="glass-card mini-panel animate-in">
         <div class="panel-header"><h2>Revenue Forecast</h2><button mat-icon-button class="text-primary"><mat-icon>insights</mat-icon></button></div>
         <div class="mini-kpi"><strong>$892,450</strong><span class="trend up">↑ 24.5%</span></div>
@@ -153,10 +159,12 @@
       <mat-card class="glass-card mini-panel animate-in">
         <div class="panel-header"><h2>Budget vs Actual</h2><mat-icon class="text-muted">account_balance</mat-icon></div>
         <div class="budget-items mt-2">
-          <div class="budget-item" *ngFor="let b of budgetRows">
-            <div class="flex-between"><span class="name">{{ b.name }}</span><span class="val">{{ b.progress }}%</span></div>
-            <mat-progress-bar mode="determinate" [value]="b.progress"></mat-progress-bar>
-          </div>
+          @for (b of budgetRows; track b) {
+            <div class="budget-item">
+              <div class="flex-between"><span class="name">{{ b.name }}</span><span class="val">{{ b.progress }}%</span></div>
+              <mat-progress-bar mode="determinate" [value]="b.progress"></mat-progress-bar>
+            </div>
+          }
         </div>
       </mat-card>
     </div>
@@ -165,38 +173,44 @@
       <mat-card class="glass-card list-panel animate-in">
         <div class="panel-header"><h2>Recent Transactions</h2><button mat-button color="primary">View All</button></div>
         <div class="tx-list">
-          <div class="tx-row" *ngFor="let tx of transactions">
-            <div class="tx-icon btn-{{ tx.accent }}"><mat-icon>{{ tx.icon }}</mat-icon></div>
-            <div class="tx-details"><strong>{{ tx.title }}</strong><span>{{ tx.date }}</span></div>
-            <div class="tx-amount" [class.positive]="tx.trend === 'up'">{{ tx.amount }}</div>
-          </div>
+          @for (tx of transactions; track tx) {
+            <div class="tx-row">
+              <div class="tx-icon btn-{{ tx.accent }}"><mat-icon>{{ tx.icon }}</mat-icon></div>
+              <div class="tx-details"><strong>{{ tx.title }}</strong><span>{{ tx.date }}</span></div>
+              <div class="tx-amount" [class.positive]="tx.trend === 'up'">{{ tx.amount }}</div>
+            </div>
+          }
         </div>
       </mat-card>
 
       <mat-card class="glass-card list-panel animate-in">
         <div class="panel-header"><h2>Top Categories</h2><button mat-icon-button class="text-muted"><mat-icon>filter_list</mat-icon></button></div>
         <div class="cat-list">
-          <div class="cat-row" *ngFor="let cat of categories">
-            <div class="cat-icon"><mat-icon>{{ cat.icon }}</mat-icon></div>
-            <div class="cat-details">
-              <div class="flex-between mb-1"><strong>{{ cat.name }}</strong><b>{{ cat.revenue }}</b></div>
-              <div class="bar-bg"><div class="bar-fill" [style.width.%]="cat.width"></div></div>
-              <div class="flex-between mt-1 text-xs text-muted"><span>{{ cat.orders }} orders</span><span class="trend up">{{ cat.growth }}</span></div>
+          @for (cat of categories; track cat) {
+            <div class="cat-row">
+              <div class="cat-icon"><mat-icon>{{ cat.icon }}</mat-icon></div>
+              <div class="cat-details">
+                <div class="flex-between mb-1"><strong>{{ cat.name }}</strong><b>{{ cat.revenue }}</b></div>
+                <div class="bar-bg"><div class="bar-fill" [style.width.%]="cat.width"></div></div>
+                <div class="flex-between mt-1 text-xs text-muted"><span>{{ cat.orders }} orders</span><span class="trend up">{{ cat.growth }}</span></div>
+              </div>
             </div>
-          </div>
+          }
         </div>
       </mat-card>
 
       <mat-card class="glass-card list-panel animate-in">
         <div class="panel-header"><h2>Market Overview</h2><button mat-icon-button class="text-muted"><mat-icon>show_chart</mat-icon></button></div>
         <div class="market-list">
-          <div class="market-row" *ngFor="let m of markets | slice:0:5">
-            <div class="market-info">
-              <strong>{{ m.symbol }}</strong>
-              <div class="flex items-center gap-2"><span class="val">{{ m.value }}</span><span class="trend" [class.up]="m.trend === 'up'" [class.down]="m.trend === 'down'">{{ m.trend === 'up' ? '↑' : '↓' }} {{ m.delta }}</span></div>
+          @for (m of markets | slice:0:5; track m) {
+            <div class="market-row">
+              <div class="market-info">
+                <strong>{{ m.symbol }}</strong>
+                <div class="flex items-center gap-2"><span class="val">{{ m.value }}</span><span class="trend" [class.up]="m.trend === 'up'" [class.down]="m.trend === 'down'">{{ m.trend === 'up' ? '↑' : '↓' }} {{ m.delta }}</span></div>
+              </div>
+              <div class="market-chart"><div echarts [options]="sparkline(m.trend === 'up' ? '#10b981' : '#f43f5e', m.spark)"></div></div>
             </div>
-            <div class="market-chart"><div echarts [options]="sparkline(m.trend === 'up' ? '#10b981' : '#f43f5e', m.spark)"></div></div>
-          </div>
+          }
         </div>
       </mat-card>
     </div>

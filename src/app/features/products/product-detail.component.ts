@@ -11,130 +11,131 @@ import { ProductService, Product } from '../../core/product.service';
   standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule],
   template: `
-    <div class="detail-container" *ngIf="product()">
-      <div class="breadcrumb">
-        <a routerLink="/products">Products</a>
-        <mat-icon>chevron_right</mat-icon>
-        <span>{{ product()?.name }}</span>
-      </div>
-
-      <div class="product-main">
-        <!-- Image Gallery -->
-        <div class="image-gallery">
-          <div class="main-image-card shadow-premium">
-            <img [src]="activeImage()" [alt]="product()?.name" class="main-img">
-          </div>
-          <div class="thumbnail-list">
-            <div 
-              *ngFor="let img of images()" 
-              class="thumb-item shadow-sm"
-              [class.active]="activeImage() === img"
-              (click)="activeImage.set(img)">
-              <img [src]="img" alt="Thumbnail">
-            </div>
-          </div>
+    @if (product()) {
+      <div class="detail-container">
+        <div class="breadcrumb">
+          <a routerLink="/products">Products</a>
+          <mat-icon>chevron_right</mat-icon>
+          <span>{{ product()?.name }}</span>
         </div>
-
-        <!-- Product Info -->
-        <div class="product-info-panel">
-          <div class="info-header">
-            <span class="category-tag">{{ product()?.category }}</span>
-            <h1 class="product-title">{{ product()?.name }}</h1>
-            <div class="rating-row">
-              <div class="stars">
-                <mat-icon *ngFor="let s of [1,2,3,4,5]" [class.filled]="s <= (product()?.rating || 0)">star</mat-icon>
-              </div>
-              <span class="review-count">({{ product()?.reviews }} Customer Reviews)</span>
+        <div class="product-main">
+          <!-- Image Gallery -->
+          <div class="image-gallery">
+            <div class="main-image-card shadow-premium">
+              <img [src]="activeImage()" [alt]="product()?.name" class="main-img">
+            </div>
+            <div class="thumbnail-list">
+              @for (img of images(); track img) {
+                <div
+                  class="thumb-item shadow-sm"
+                  [class.active]="activeImage() === img"
+                  (click)="activeImage.set(img)">
+                  <img [src]="img" alt="Thumbnail">
+                </div>
+              }
             </div>
           </div>
-
-          <div class="price-box">
-            <h2 class="current-price">{{ product()?.price }}</h2>
-            <span class="old-price" *ngIf="product()?.oldPrice">{{ product()?.oldPrice }}</span>
-          </div>
-
-          <p class="description">{{ product()?.description || 'No description available for this premium product. Experience the pinnacle of design and functionality.' }}</p>
-
-          <div class="action-row">
-            <div class="quantity-picker">
-              <button (click)="updateQty(-1)"><mat-icon>remove</mat-icon></button>
-              <span>{{ quantity() }}</span>
-              <button (click)="updateQty(1)"><mat-icon>add</mat-icon></button>
-            </div>
-            <button mat-flat-button color="primary" class="add-to-cart">
-              <mat-icon>shopping_cart</mat-icon>
-              Add to Cart
-            </button>
-            <button class="wishlist-btn" [class.active]="product()?.isFavorite" (click)="toggleWishlist()">
-              <mat-icon>{{ product()?.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
-            </button>
-          </div>
-
-          <div class="meta-info">
-            <div class="meta-item">
-              <mat-icon>verified</mat-icon>
-              <span>1 Year Warranty</span>
-            </div>
-            <div class="meta-item">
-              <mat-icon>local_shipping</mat-icon>
-              <span>Free Delivery in 2-3 business days</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="detail-tabs shadow-premium">
-        <mat-tab-group animationDuration="300ms">
-          <mat-tab label="Specifications">
-            <div class="tab-content">
-              <div class="specs-grid">
-                @if (product()?.specifications?.length) {
-                  @for (spec of product()?.specifications; track spec.label) {
-                    <div class="spec-item">
-                      <span class="spec-label">{{ spec.label }}</span>
-                      <span class="spec-value">{{ spec.value }}</span>
-                    </div>
+          <!-- Product Info -->
+          <div class="product-info-panel">
+            <div class="info-header">
+              <span class="category-tag">{{ product()?.category }}</span>
+              <h1 class="product-title">{{ product()?.name }}</h1>
+              <div class="rating-row">
+                <div class="stars">
+                  @for (s of [1,2,3,4,5]; track s) {
+                    <mat-icon [class.filled]="s <= (product()?.rating || 0)">star</mat-icon>
                   }
-                } @else {
-                  <p class="empty-msg">Detailed specifications are coming soon for this product.</p>
-                }
+                </div>
+                <span class="review-count">({{ product()?.reviews }} Customer Reviews)</span>
               </div>
             </div>
-          </mat-tab>
-          
-          <mat-tab label="Reviews">
-            <div class="tab-content">
-              <div class="reviews-list">
-                @if (product()?.productReviews?.length) {
-                  @for (review of product()?.productReviews; track review.id) {
-                    <div class="review-card">
-                      <div class="review-header">
-                        <img [src]="review.avatar || 'https://i.pravatar.cc/150'" class="user-avatar">
-                        <div class="user-meta">
-                          <p class="user-name">{{ review.user }}</p>
-                          <div class="rating-stars">
-                            <mat-icon *ngFor="let s of [1,2,3,4,5]" [class.filled]="s <= review.rating">star</mat-icon>
-                          </div>
-                        </div>
-                        <span class="review-date">{{ review.date | date:'mediumDate' }}</span>
+            <div class="price-box">
+              <h2 class="current-price">{{ product()?.price }}</h2>
+              @if (product()?.oldPrice) {
+                <span class="old-price">{{ product()?.oldPrice }}</span>
+              }
+            </div>
+            <p class="description">{{ product()?.description || 'No description available for this premium product. Experience the pinnacle of design and functionality.' }}</p>
+            <div class="action-row">
+              <div class="quantity-picker">
+                <button (click)="updateQty(-1)"><mat-icon>remove</mat-icon></button>
+                <span>{{ quantity() }}</span>
+                <button (click)="updateQty(1)"><mat-icon>add</mat-icon></button>
+              </div>
+              <button mat-flat-button color="primary" class="add-to-cart">
+                <mat-icon>shopping_cart</mat-icon>
+                Add to Cart
+              </button>
+              <button class="wishlist-btn" [class.active]="product()?.isFavorite" (click)="toggleWishlist()">
+                <mat-icon>{{ product()?.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              </button>
+            </div>
+            <div class="meta-info">
+              <div class="meta-item">
+                <mat-icon>verified</mat-icon>
+                <span>1 Year Warranty</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>local_shipping</mat-icon>
+                <span>Free Delivery in 2-3 business days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-tabs shadow-premium">
+          <mat-tab-group animationDuration="300ms">
+            <mat-tab label="Specifications">
+              <div class="tab-content">
+                <div class="specs-grid">
+                  @if (product()?.specifications?.length) {
+                    @for (spec of product()?.specifications; track spec.label) {
+                      <div class="spec-item">
+                        <span class="spec-label">{{ spec.label }}</span>
+                        <span class="spec-value">{{ spec.value }}</span>
                       </div>
-                      <p class="review-comment">{{ review.comment }}</p>
+                    }
+                  } @else {
+                    <p class="empty-msg">Detailed specifications are coming soon for this product.</p>
+                  }
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Reviews">
+              <div class="tab-content">
+                <div class="reviews-list">
+                  @if (product()?.productReviews?.length) {
+                    @for (review of product()?.productReviews; track review.id) {
+                      <div class="review-card">
+                        <div class="review-header">
+                          <img [src]="review.avatar || 'https://i.pravatar.cc/150'" class="user-avatar">
+                          <div class="user-meta">
+                            <p class="user-name">{{ review.user }}</p>
+                            <div class="rating-stars">
+                              @for (s of [1,2,3,4,5]; track s) {
+                                <mat-icon [class.filled]="s <= review.rating">star</mat-icon>
+                              }
+                            </div>
+                          </div>
+                          <span class="review-date">{{ review.date | date:'mediumDate' }}</span>
+                        </div>
+                        <p class="review-comment">{{ review.comment }}</p>
+                      </div>
+                    }
+                  } @else {
+                    <div class="empty-state">
+                      <mat-icon>rate_review</mat-icon>
+                      <h3>No reviews yet</h3>
+                      <p>Be the first to review this product!</p>
                     </div>
                   }
-                } @else {
-                  <div class="empty-state">
-                    <mat-icon>rate_review</mat-icon>
-                    <h3>No reviews yet</h3>
-                    <p>Be the first to review this product!</p>
-                  </div>
-                }
+                </div>
               </div>
-            </div>
-          </mat-tab>
-        </mat-tab-group>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
       </div>
-    </div>
-  `,
+    }
+    `,
   styles: [`
     .detail-container {
       padding: 40px;
@@ -165,7 +166,7 @@ import { ProductService, Product } from '../../core/product.service';
         margin-bottom: 16px;
         font-size: 12px;
       }
-      
+
       a { 
         color: var(--text-main); 
         text-decoration: none;
@@ -198,9 +199,9 @@ import { ProductService, Product } from '../../core/product.service';
       aspect-ratio: 1;
       margin-bottom: 20px;
       border: 1px solid var(--border-color);
-      
+
       img { width: 100%; height: 100%; object-fit: cover; }
-      
+
       @media (max-width: 640px) {
         border-radius: 12px;
       }
@@ -224,7 +225,7 @@ import { ProductService, Product } from '../../core/product.service';
 
         &.active { border-color: #4880ff; transform: scale(1.05); }
         img { width: 100%; height: 100%; object-fit: cover; }
-        
+
         @media (max-width: 640px) {
           width: 60px;
           height: 60px;
@@ -259,7 +260,7 @@ import { ProductService, Product } from '../../core/product.service';
       margin: 0 0 16px 0;
       letter-spacing: -1px;
       line-height: 1.1;
-      
+
       @media (max-width: 640px) {
         font-size: 28px;
         margin-bottom: 12px;
@@ -292,7 +293,7 @@ import { ProductService, Product } from '../../core/product.service';
       display: flex;
       align-items: baseline;
       gap: 12px;
-      
+
       @media (max-width: 640px) {
         margin-bottom: 24px;
       }
@@ -307,7 +308,7 @@ import { ProductService, Product } from '../../core/product.service';
       color: var(--text-main);
       opacity: 0.8;
       margin-bottom: 40px;
-      
+
       @media (max-width: 640px) {
         margin-bottom: 24px;
         font-size: 14px;
@@ -320,7 +321,7 @@ import { ProductService, Product } from '../../core/product.service';
       gap: 16px;
       margin-bottom: 40px;
       flex-wrap: wrap;
-      
+
       @media (max-width: 640px) {
         margin-bottom: 32px;
       }
@@ -359,7 +360,7 @@ import { ProductService, Product } from '../../core/product.service';
       display: flex;
       align-items: center;
       gap: 8px;
-      
+
       @media (max-width: 640px) {
         flex: 1;
         padding: 0 20px !important;

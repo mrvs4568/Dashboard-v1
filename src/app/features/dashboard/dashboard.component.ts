@@ -39,7 +39,7 @@ import { NotificationService } from '../../core/services/notification.service';
 
       <div class="stats-grid" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="onStatsDrop($event)">
         @for (stat of stats; track stat.label) {
-          <app-stat-card 
+          <app-stat-card
             cdkDrag
             [title]="stat.label"
             [value]="stat.value"
@@ -47,7 +47,7 @@ import { NotificationService } from '../../core/services/notification.service';
             [iconBg]="stat.iconBg"
             [trend]="stat.trend"
             [trendValue]="stat.trendValue"
-          >
+            >
             <div class="drag-placeholder" *cdkDragPlaceholder></div>
           </app-stat-card>
         }
@@ -55,123 +55,133 @@ import { NotificationService } from '../../core/services/notification.service';
 
       <div class="content-row" cdkDropList (cdkDropListDropped)="onWidgetDrop($event)">
         @for (widgetId of rowWidgets; track widgetId) {
-          <ng-container [ngSwitch]="widgetId">
+          @switch (widgetId) {
             <!-- Analytics Widget -->
-            <mat-card *ngSwitchCase="'analytics'" class="analytics-card" cdkDrag>
-              <div class="drag-handle" cdkDragHandle>
-                <mat-icon>drag_indicator</mat-icon>
-              </div>
-              <div class="card-header">
-                <h4 class="card-title">Sales Analytics</h4>
-                <div class="legend-row">
-                  <span class="legend-dot"></span>
-                  <span class="legend-text">Real-time Updates (30s)</span>
+            @case ('analytics') {
+              <mat-card class="analytics-card" cdkDrag>
+                <div class="drag-handle" cdkDragHandle>
+                  <mat-icon>drag_indicator</mat-icon>
                 </div>
-              </div>
-              <div class="chart-wrapper">
-                <canvas baseChart
-                  [data]="lineChartData()"
-                  [options]="lineChartOptions()"
-                  [type]="'line'">
-                </canvas>
-              </div>
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            </mat-card>
-
-            <!-- Recent Orders Widget -->
-            <mat-card *ngSwitchCase="'orders'" class="recent-orders-card" cdkDrag>
-              <div class="drag-handle" cdkDragHandle>
-                <mat-icon>drag_indicator</mat-icon>
-              </div>
-              <div class="card-header">
-                <h4 class="card-title">Recent Orders</h4>
-              </div>
-              <div class="order-list">
-                @for (order of recentOrders; track order.name) {
-                  <div class="order-item">
-                    <div class="order-left">
-                      <div class="order-avatar" [style.background-color]="order.color">
-                        {{order.initials}}
-                      </div>
-                      <div class="order-info">
-                        <p class="order-owner">{{order.name}}</p>
-                        <p class="order-desc">{{order.item}}</p>
-                      </div>
-                    </div>
-                    <span class="status-chip" [class]="order.status.toLowerCase()">
-                      {{order.status}}
-                    </span>
+                <div class="card-header">
+                  <h4 class="card-title">Sales Analytics</h4>
+                  <div class="legend-row">
+                    <span class="legend-dot"></span>
+                    <span class="legend-text">Real-time Updates (30s)</span>
                   </div>
-                }
-              </div>
-              <button class="view-all-btn">View All Orders</button>
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            </mat-card>
-
+                </div>
+                <div class="chart-wrapper">
+                  <canvas baseChart
+                    [data]="lineChartData()"
+                    [options]="lineChartOptions()"
+                    [type]="'line'">
+                  </canvas>
+                </div>
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              </mat-card>
+            }
+            <!-- Recent Orders Widget -->
+            @case ('orders') {
+              <mat-card class="recent-orders-card" cdkDrag>
+                <div class="drag-handle" cdkDragHandle>
+                  <mat-icon>drag_indicator</mat-icon>
+                </div>
+                <div class="card-header">
+                  <h4 class="card-title">Recent Orders</h4>
+                </div>
+                <div class="order-list">
+                  @for (order of recentOrders; track order.name) {
+                    <div class="order-item">
+                      <div class="order-left">
+                        <div class="order-avatar" [style.background-color]="order.color">
+                          {{order.initials}}
+                        </div>
+                        <div class="order-info">
+                          <p class="order-owner">{{order.name}}</p>
+                          <p class="order-desc">{{order.item}}</p>
+                        </div>
+                      </div>
+                      <span class="status-chip" [class]="order.status.toLowerCase()">
+                        {{order.status}}
+                      </span>
+                    </div>
+                  }
+                </div>
+                <button class="view-all-btn">View All Orders</button>
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              </mat-card>
+            }
             <!-- Notifications Widget -->
-            <mat-card *ngSwitchCase="'activity'" class="notifications-card" cdkDrag>
-              <div class="drag-handle" cdkDragHandle>
-                <mat-icon>drag_indicator</mat-icon>
-              </div>
-              <div class="card-header">
-                <h4 class="card-title">Recent Activity</h4>
-              </div>
-              <div class="activity-list">
-                 @for (n of notifications(); track n.timestamp) {
-                   <div class="activity-item">
+            @case ('activity') {
+              <mat-card class="notifications-card" cdkDrag>
+                <div class="drag-handle" cdkDragHandle>
+                  <mat-icon>drag_indicator</mat-icon>
+                </div>
+                <div class="card-header">
+                  <h4 class="card-title">Recent Activity</h4>
+                </div>
+                <div class="activity-list">
+                  @for (n of notifications(); track n.timestamp) {
+                    <div class="activity-item">
                       <div class="activity-icon" [class]="n.type">
-                         <mat-icon>{{ n.type === 'stock' ? 'inventory_2' : (n.type === 'order' ? 'shopping_cart' : (n.type === 'alert' ? 'warning' : 'info')) }}</mat-icon>
+                        <mat-icon>{{ n.type === 'stock' ? 'inventory_2' : (n.type === 'order' ? 'shopping_cart' : (n.type === 'alert' ? 'warning' : 'info')) }}</mat-icon>
                       </div>
                       <div class="activity-content">
-                         <p class="activity-title">{{ n.title }}</p>
-                         <p class="activity-time">{{ n.timestamp | date:'shortTime' }}</p>
+                        <p class="activity-title">{{ n.title }}</p>
+                        <p class="activity-time">{{ n.timestamp | date:'shortTime' }}</p>
                       </div>
-                   </div>
-                 }
-                 @if (notifications().length === 0) {
-                   <div class="empty-activity">
+                    </div>
+                  }
+                  @if (notifications().length === 0) {
+                    <div class="empty-activity">
                       <mat-icon>history</mat-icon>
                       <p>No recent activity</p>
-                   </div>
-                 }
-              </div>
-              <button class="view-all-btn" *ngIf="notifications().length > 0">Clear Recent</button>
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            </mat-card>
-          </ng-container>
+                    </div>
+                  }
+                </div>
+                @if (notifications().length > 0) {
+                  <button class="view-all-btn">Clear Recent</button>
+                }
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              </mat-card>
+            }
+          }
 
           <!-- Dynamic Widgets -->
-          <ng-container [ngSwitch]="widgetId">
-            <mat-card *ngSwitchCase="'inventory'" class="analytics-card" cdkDrag>
-              <div class="drag-handle" cdkDragHandle><mat-icon>drag_indicator</mat-icon></div>
-              <div class="card-header"><h4 class="card-title">Inventory Status</h4></div>
-              <div class="activity-list">
-                <div class="activity-item"><div class="activity-icon info"><mat-icon>inventory</mat-icon></div><div class="activity-content"><p class="activity-title">Warehouse A</p><p class="activity-time">85% Capacity</p></div></div>
-                <div class="activity-item"><div class="activity-icon info"><mat-icon>inventory</mat-icon></div><div class="activity-content"><p class="activity-title">Warehouse B</p><p class="activity-time">42% Capacity</p></div></div>
-              </div>
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            </mat-card>
-
-            <mat-card *ngSwitchCase="'satisfaction'" class="analytics-card" cdkDrag>
-              <div class="drag-handle" cdkDragHandle><mat-icon>drag_indicator</mat-icon></div>
-              <div class="card-header"><h4 class="card-title">Customer Satisfaction</h4></div>
-              <div class="empty-activity">
-                <mat-icon style="color: #00B69B">sentiment_very_satisfied</mat-icon>
-                <p>98% Positive Feedback</p>
-              </div>
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            </mat-card>
-
-            <mat-card *ngSwitchCase="'tasks'" class="analytics-card" cdkDrag>
-              <div class="drag-handle" cdkDragHandle><mat-icon>drag_indicator</mat-icon></div>
-              <div class="card-header"><h4 class="card-title">Pending Tasks</h4></div>
-              <div class="activity-list">
-                <div class="activity-item"><div class="activity-content"><p class="activity-title">Review Q3 Reports</p><p class="activity-time">Due in 2h</p></div></div>
-                <div class="activity-item"><div class="activity-content"><p class="activity-title">Approve Invoices</p><p class="activity-time">Due tomorrow</p></div></div>
-              </div>
-              <div class="drag-placeholder" *cdkDragPlaceholder></div>
-            </mat-card>
-          </ng-container>
+          @switch (widgetId) {
+            @case ('inventory') {
+              <mat-card class="analytics-card" cdkDrag>
+                <div class="drag-handle" cdkDragHandle><mat-icon>drag_indicator</mat-icon></div>
+                <div class="card-header"><h4 class="card-title">Inventory Status</h4></div>
+                <div class="activity-list">
+                  <div class="activity-item"><div class="activity-icon info"><mat-icon>inventory</mat-icon></div><div class="activity-content"><p class="activity-title">Warehouse A</p><p class="activity-time">85% Capacity</p></div></div>
+                  <div class="activity-item"><div class="activity-icon info"><mat-icon>inventory</mat-icon></div><div class="activity-content"><p class="activity-title">Warehouse B</p><p class="activity-time">42% Capacity</p></div></div>
+                </div>
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              </mat-card>
+            }
+            @case ('satisfaction') {
+              <mat-card class="analytics-card" cdkDrag>
+                <div class="drag-handle" cdkDragHandle><mat-icon>drag_indicator</mat-icon></div>
+                <div class="card-header"><h4 class="card-title">Customer Satisfaction</h4></div>
+                <div class="empty-activity">
+                  <mat-icon style="color: #00B69B">sentiment_very_satisfied</mat-icon>
+                  <p>98% Positive Feedback</p>
+                </div>
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              </mat-card>
+            }
+            @case ('tasks') {
+              <mat-card class="analytics-card" cdkDrag>
+                <div class="drag-handle" cdkDragHandle><mat-icon>drag_indicator</mat-icon></div>
+                <div class="card-header"><h4 class="card-title">Pending Tasks</h4></div>
+                <div class="activity-list">
+                  <div class="activity-item"><div class="activity-content"><p class="activity-title">Review Q3 Reports</p><p class="activity-time">Due in 2h</p></div></div>
+                  <div class="activity-item"><div class="activity-content"><p class="activity-title">Approve Invoices</p><p class="activity-time">Due tomorrow</p></div></div>
+                </div>
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              </mat-card>
+            }
+          }
         }
       </div>
 
@@ -192,29 +202,31 @@ import { NotificationService } from '../../core/services/notification.service';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let deal of dealsDetails">
-                <td>
-                  <div class="product-info">
-                    <div class="product-img" [style.background-image]="'url(' + deal.image + ')'"></div>
-                    <span>{{deal.productName}}</span>
-                  </div>
-                </td>
-                <td>{{deal.location}}</td>
-                <td>{{deal.dateTime}}</td>
-                <td>{{deal.piece}}</td>
-                <td>{{deal.amount}}</td>
-                <td>
-                  <span class="status-chip" [class]="deal.status.toLowerCase()">
-                    {{deal.status}}
-                  </span>
-                </td>
-              </tr>
+              @for (deal of dealsDetails; track deal) {
+                <tr>
+                  <td>
+                    <div class="product-info">
+                      <div class="product-img" [style.background-image]="'url(' + deal.image + ')'"></div>
+                      <span>{{deal.productName}}</span>
+                    </div>
+                  </td>
+                  <td>{{deal.location}}</td>
+                  <td>{{deal.dateTime}}</td>
+                  <td>{{deal.piece}}</td>
+                  <td>{{deal.amount}}</td>
+                  <td>
+                    <span class="status-chip" [class]="deal.status.toLowerCase()">
+                      {{deal.status}}
+                    </span>
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
       </mat-card>
     </div>
-  `,
+    `,
   styles: [`
     .dashboard-container {
       display: flex;
@@ -301,7 +313,7 @@ import { NotificationService } from '../../core/services/notification.service';
       &:active {
         cursor: grabbing;
       }
-      
+
       &:hover {
         background: var(--bg-color);
         color: var(--primary);
@@ -327,7 +339,7 @@ import { NotificationService } from '../../core/services/notification.service';
       flex-direction: column;
       height: 100%;
       box-sizing: border-box;
-      
+
       &:hover .drag-handle {
         opacity: 0.6;
       }
@@ -343,7 +355,7 @@ import { NotificationService } from '../../core/services/notification.service';
       grid-template-columns: 2fr 1fr 1.2fr;
       gap: 24px;
       align-items: stretch;
-      
+
       @media (max-width: 1600px) {
         grid-template-columns: 1.5fr 1fr 1fr;
       }
@@ -433,7 +445,7 @@ import { NotificationService } from '../../core/services/notification.service';
       padding: 12px;
       border-radius: 12px;
       transition: background 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-      
+
       &:hover {
         background: var(--bg-color);
       }
@@ -510,7 +522,7 @@ import { NotificationService } from '../../core/services/notification.service';
        padding: 8px;
        border-radius: 12px;
        transition: background 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-       
+
        &:hover { 
          background: var(--bg-color); 
        }
@@ -524,11 +536,11 @@ import { NotificationService } from '../../core/services/notification.service';
        align-items: center;
        justify-content: center;
        box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.2);
-       
+
        &.stock { background: rgba(225, 29, 72, 0.1); color: #E11D48; }
        &.order { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
        &.info { background: rgba(79, 70, 229, 0.1); color: #4F46E5; }
-       
+
        mat-icon { font-size: 18px; width: 18px; height: 18px; }
     }
 
@@ -575,7 +587,7 @@ import { NotificationService } from '../../core/services/notification.service';
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-      
+
       &:hover {
         background: var(--bg-color);
         border-color: var(--primary);
@@ -601,7 +613,7 @@ import { NotificationService } from '../../core/services/notification.service';
       min-width: 800px;
       border-collapse: separate;
       border-spacing: 0 8px;
-      
+
       th {
         text-align: left;
         font-size: 12px;
@@ -619,7 +631,7 @@ import { NotificationService } from '../../core/services/notification.service';
         color: var(--text-main);
         background: var(--bg-color);
         transition: background 0.2s;
-        
+
         &:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
         &:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
       }

@@ -13,12 +13,14 @@
 
       <section class="header-actions">
         <button mat-stroked-button class="glass-btn" [matMenuTriggerFor]="timeMenu">
-          <mat-icon>calendar_today</mat-icon> 
-          <span>{{ selectedTimeRange() }}</span> 
+          <mat-icon>calendar_today</mat-icon>
+          <span>{{ selectedTimeRange() }}</span>
           <mat-icon>arrow_drop_down</mat-icon>
         </button>
         <mat-menu #timeMenu="matMenu" class="modern-menu">
-          <button mat-menu-item *ngFor="let range of timeRanges" (click)="setTimeRange(range)">{{ range }}</button>
+          @for (range of timeRanges; track range) {
+            <button mat-menu-item (click)="setTimeRange(range)">{{ range }}</button>
+          }
         </mat-menu>
 
         <button mat-stroked-button class="glass-btn" (click)="openFilter()"><mat-icon>compare_arrows</mat-icon> Compare <mat-icon>arrow_drop_down</mat-icon></button>
@@ -31,17 +33,19 @@
     </header>
 
     <section class="kpi-grid reveal" style="--delay: 50ms">
-      <mat-card class="kpi-card tone-{{ item.tone }}" *ngFor="let item of kpis">
-        <div class="kpi-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
-        <div class="kpi-content">
-          <span>{{ item.label }}</span>
-          <strong>{{ item.value }}</strong>
-          <small><mat-icon>trending_up</mat-icon> {{ item.delta }} <em>{{ item.helper }}</em></small>
-        </div>
-        <div class="spark">
-          <div echarts [options]="item.spark"></div>
-        </div>
-      </mat-card>
+      @for (item of kpis; track item) {
+        <mat-card class="kpi-card tone-{{ item.tone }}">
+          <div class="kpi-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+          <div class="kpi-content">
+            <span>{{ item.label }}</span>
+            <strong>{{ item.value }}</strong>
+            <small><mat-icon>trending_up</mat-icon> {{ item.delta }} <em>{{ item.helper }}</em></small>
+          </div>
+          <div class="spark">
+            <div echarts [options]="item.spark"></div>
+          </div>
+        </mat-card>
+      }
     </section>
 
     <section class="main-grid reveal" style="--delay: 100ms">
@@ -90,14 +94,16 @@
           </div>
         </div>
         <div class="insight-list">
-          <div class="insight tone-{{ item.tone }}" *ngFor="let item of insights">
-            <div class="insight-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
-            <div class="insight-text">
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.text }}</p>
+          @for (item of insights; track item) {
+            <div class="insight tone-{{ item.tone }}">
+              <div class="insight-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
+              <div class="insight-text">
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.text }}</p>
+              </div>
+              <mat-icon class="chevron">chevron_right</mat-icon>
             </div>
-            <mat-icon class="chevron">chevron_right</mat-icon>
-          </div>
+          }
         </div>
         <button mat-flat-button class="full-action-btn">View All Insights</button>
       </mat-card>
@@ -192,19 +198,21 @@
           </div>
         </div>
         <div class="table-list">
-          <div class="table-row" *ngFor="let vendor of filteredVendors()">
-            <div class="row-main">
-              <div class="avatar"><mat-icon>store</mat-icon></div>
-              <div class="details">
-                <strong>{{ vendor.name }}</strong>
-                <span>Marketplace Partner</span>
+          @for (vendor of filteredVendors(); track vendor) {
+            <div class="table-row">
+              <div class="row-main">
+                <div class="avatar"><mat-icon>store</mat-icon></div>
+                <div class="details">
+                  <strong>{{ vendor.name }}</strong>
+                  <span>Marketplace Partner</span>
+                </div>
+              </div>
+              <div class="row-val">
+                <strong>{{ vendor.revenue }}</strong>
+                <small class="up">{{ vendor.growth }}</small>
               </div>
             </div>
-            <div class="row-val">
-              <strong>{{ vendor.revenue }}</strong>
-              <small class="up">{{ vendor.growth }}</small>
-            </div>
-          </div>
+          }
         </div>
       </mat-card>
 
@@ -242,19 +250,21 @@
           </div>
         </div>
         <div class="table-list">
-          <div class="table-row" *ngFor="let prod of filteredProducts()">
-            <div class="row-main">
-              <div class="avatar square"><mat-icon>{{ prod.icon }}</mat-icon></div>
-              <div class="details">
-                <strong>{{ prod.name }}</strong>
-                <span>Best seller</span>
+          @for (prod of filteredProducts(); track prod) {
+            <div class="table-row">
+              <div class="row-main">
+                <div class="avatar square"><mat-icon>{{ prod.icon }}</mat-icon></div>
+                <div class="details">
+                  <strong>{{ prod.name }}</strong>
+                  <span>Best seller</span>
+                </div>
+              </div>
+              <div class="row-val">
+                <strong>{{ prod.price }}</strong>
+                <small [class.up]="prod.trend==='up'" [class.down]="prod.trend==='down'">{{ prod.delta }}</small>
               </div>
             </div>
-            <div class="row-val">
-              <strong>{{ prod.price }}</strong>
-              <small [class.up]="prod.trend==='up'" [class.down]="prod.trend==='down'">{{ prod.delta }}</small>
-            </div>
-          </div>
+          }
         </div>
       </mat-card>
     </section>
@@ -268,16 +278,20 @@
           </div>
         </div>
         <div class="journey-flow-wrapper">
-          <div class="journey-step" *ngFor="let step of journey; let last = last">
-            <div class="j-icon"><mat-icon>{{ step.icon }}</mat-icon></div>
-            <div class="j-content">
-              <h3>{{ step.stage }}</h3>
-              <span>{{ step.metric }}</span>
-              <strong>{{ step.value }}</strong>
-              <small class="up"><mat-icon>arrow_upward</mat-icon>{{ step.delta }}</small>
+          @for (step of journey; track step; let last = $last) {
+            <div class="journey-step">
+              <div class="j-icon"><mat-icon>{{ step.icon }}</mat-icon></div>
+              <div class="j-content">
+                <h3>{{ step.stage }}</h3>
+                <span>{{ step.metric }}</span>
+                <strong>{{ step.value }}</strong>
+                <small class="up"><mat-icon>arrow_upward</mat-icon>{{ step.delta }}</small>
+              </div>
+              @if (!last) {
+                <div class="j-connector"></div>
+              }
             </div>
-            <div class="j-connector" *ngIf="!last"></div>
-          </div>
+          }
         </div>
       </mat-card>
 
@@ -295,17 +309,19 @@
             <span class="hide-mobile">Orders</span>
             <span class="hide-mobile">Growth</span>
           </div>
-          <div class="td-row" *ngFor="let cat of categories">
-            <strong>{{ cat.name }}</strong>
-            <div class="bar-cell">
-              <div class="bar-track">
-                <div class="bar-fill" [style.width.%]="cat.width"></div>
+          @for (cat of categories; track cat) {
+            <div class="td-row">
+              <strong>{{ cat.name }}</strong>
+              <div class="bar-cell">
+                <div class="bar-track">
+                  <div class="bar-fill" [style.width.%]="cat.width"></div>
+                </div>
+                <strong>{{ cat.revenue }}</strong>
               </div>
-              <strong>{{ cat.revenue }}</strong>
+              <span class="hide-mobile">{{ cat.orders }}</span>
+              <small class="up hide-mobile"><mat-icon>arrow_upward</mat-icon>{{ cat.growth }}</small>
             </div>
-            <span class="hide-mobile">{{ cat.orders }}</span>
-            <small class="up hide-mobile"><mat-icon>arrow_upward</mat-icon>{{ cat.growth }}</small>
-          </div>
+          }
         </div>
       </mat-card>
     </section>

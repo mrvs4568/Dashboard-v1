@@ -18,7 +18,7 @@ import { CalendarService } from '../../../core/services/calendar.service';
     <div class="modal-container bg-white relative">
       <!-- Decorative background blur -->
       <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[60px] pointer-events-none"></div>
-      
+
       <div class="header relative p-8 pb-6 border-b border-gray-100/60">
         <div class="flex justify-between items-start z-10 relative">
           <div class="flex items-center gap-5">
@@ -37,59 +37,65 @@ import { CalendarService } from '../../../core/services/calendar.service';
       </div>
 
       <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="flex flex-col p-8 pt-6 gap-6 relative z-10">
-        
+
         <!-- Title Input -->
         <div class="form-group flex flex-col gap-2.5">
           <label class="text-[13px] font-semibold text-gray-700 uppercase tracking-wide">Event Title</label>
           <div class="input-wrapper relative flex items-center">
             <mat-icon class="absolute left-4 text-gray-400 z-10 text-[22px] w-[22px] h-[22px]">title</mat-icon>
-            <input type="text" formControlName="title" placeholder="e.g., Design Sync" 
-                   class="premium-input w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-[3px] focus:ring-primary/10 focus:border-primary transition-all outline-none text-gray-800 placeholder:text-gray-400 font-medium text-[15px]">
-          </div>
-          <span class="text-red-500 text-xs font-medium ml-1" *ngIf="eventForm.get('title')?.touched && eventForm.get('title')?.hasError('required')">Event title is required</span>
-        </div>
-
-        <!-- Date Input -->
-        <div class="form-group flex flex-col gap-2.5">
-          <label class="text-[13px] font-semibold text-gray-700 uppercase tracking-wide">Date</label>
-          <div class="input-wrapper relative flex items-center">
-            <input type="date" formControlName="date" 
-                   class="premium-input w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-[3px] focus:ring-primary/10 focus:border-primary transition-all outline-none text-gray-800 font-medium text-[15px]">
-          </div>
-          <span class="text-red-500 text-xs font-medium ml-1" *ngIf="eventForm.get('date')?.touched && eventForm.get('date')?.hasError('required')">Date is required</span>
-        </div>
-
-        <!-- Color Theme -->
-        <div class="color-picker-section mt-1">
-          <label class="text-[13px] font-semibold text-gray-700 uppercase tracking-wide mb-3 block">Color Theme</label>
-          <div class="flex gap-4">
-            @for (color of colorOptions; track color.value) {
-              <button type="button" 
-                      class="color-swatch-premium shadow-sm"
-                      [ngClass]="color.value"
-                      [class.selected]="eventForm.get('colorClass')?.value === color.value"
-                      (click)="eventForm.get('colorClass')?.setValue(color.value)">
-                <mat-icon *ngIf="eventForm.get('colorClass')?.value === color.value" class="check-icon">check</mat-icon>
-              </button>
+            <input type="text" formControlName="title" placeholder="e.g., Design Sync"
+              class="premium-input w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-[3px] focus:ring-primary/10 focus:border-primary transition-all outline-none text-gray-800 placeholder:text-gray-400 font-medium text-[15px]">
+            </div>
+            @if (eventForm.get('title')?.touched && eventForm.get('title')?.hasError('required')) {
+              <span class="text-red-500 text-xs font-medium ml-1">Event title is required</span>
             }
           </div>
-        </div>
 
-        <!-- Actions -->
-        <div class="flex gap-4 mt-4 pt-6 border-t border-gray-100/80">
-          <button type="button" class="flex-1 py-3.5 px-4 font-semibold rounded-xl text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-800 transition-all" (click)="onClose()">
-            Cancel
-          </button>
-          <button type="submit" 
-                  class="flex-1 py-3.5 px-4 rounded-xl font-bold text-white transition-all duration-300" 
-                  [ngClass]="eventForm.invalid ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' : 'bg-primary hover:bg-primary/95 shadow-[0_8px_16px_-4px_rgba(72,128,255,0.4)] hover:-translate-y-0.5'"
-                  [disabled]="eventForm.invalid">
-            Add Event
-          </button>
-        </div>
-      </form>
-    </div>
-  `,
+          <!-- Date Input -->
+          <div class="form-group flex flex-col gap-2.5">
+            <label class="text-[13px] font-semibold text-gray-700 uppercase tracking-wide">Date</label>
+            <div class="input-wrapper relative flex items-center">
+              <input type="date" formControlName="date"
+                class="premium-input w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-[3px] focus:ring-primary/10 focus:border-primary transition-all outline-none text-gray-800 font-medium text-[15px]">
+              </div>
+              @if (eventForm.get('date')?.touched && eventForm.get('date')?.hasError('required')) {
+                <span class="text-red-500 text-xs font-medium ml-1">Date is required</span>
+              }
+            </div>
+
+            <!-- Color Theme -->
+            <div class="color-picker-section mt-1">
+              <label class="text-[13px] font-semibold text-gray-700 uppercase tracking-wide mb-3 block">Color Theme</label>
+              <div class="flex gap-4">
+                @for (color of colorOptions; track color.value) {
+                  <button type="button"
+                    class="color-swatch-premium shadow-sm"
+                    [ngClass]="color.value"
+                    [class.selected]="eventForm.get('colorClass')?.value === color.value"
+                    (click)="eventForm.get('colorClass')?.setValue(color.value)">
+                  @if (eventForm.get('colorClass')?.value === color.value) {
+                    <mat-icon class="check-icon">check</mat-icon>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-4 mt-4 pt-6 border-t border-gray-100/80">
+            <button type="button" class="flex-1 py-3.5 px-4 font-semibold rounded-xl text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-800 transition-all" (click)="onClose()">
+              Cancel
+            </button>
+            <button type="submit"
+              class="flex-1 py-3.5 px-4 rounded-xl font-bold text-white transition-all duration-300"
+              [ngClass]="eventForm.invalid ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' : 'bg-primary hover:bg-primary/95 shadow-[0_8px_16px_-4px_rgba(72,128,255,0.4)] hover:-translate-y-0.5'"
+              [disabled]="eventForm.invalid">
+              Add Event
+            </button>
+          </div>
+        </form>
+      </div>
+    `,
   styles: [`
     :host {
       display: block;
@@ -98,7 +104,7 @@ import { CalendarService } from '../../../core/services/calendar.service';
       overflow: hidden;
       box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.18);
     }
-    
+
     .modal-container {
       max-width: 460px;
       width: 100%;
@@ -182,7 +188,7 @@ export class AddEventModalComponent {
   onSubmit() {
     if (this.eventForm.valid) {
       const formValue = this.eventForm.getRawValue();
-      
+
       // Parse the date directly from the selected yyyy-mm-dd
       const dateParts = formValue.date?.split('-') || [];
       let eventDate = new Date();

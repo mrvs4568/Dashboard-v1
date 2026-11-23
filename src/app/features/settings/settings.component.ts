@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,6 @@ import { UserService } from '../../core/services/user.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
@@ -26,7 +25,7 @@ import { UserService } from '../../core/services/user.service';
     MatSelectModule,
     MatDividerModule,
     LucideAngularModule
-  ],
+],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
@@ -42,7 +41,7 @@ export class SettingsComponent {
   CheckIcon = Check;
 
   activeTab = signal<'profile' | 'notifications' | 'appearance' | 'security'>('profile');
-  
+
   profileForm: FormGroup;
   notificationsForm: FormGroup;
   securityForm: FormGroup;

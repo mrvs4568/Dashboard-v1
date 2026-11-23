@@ -15,10 +15,12 @@
         <mat-icon>expand_more</mat-icon>
       </button>
       <mat-menu #rangeMenu="matMenu">
-        <button mat-menu-item *ngFor="let r of timeRanges" (click)="setRange(r)">
-          <mat-icon>{{ selectedRange() === r ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
-          <span>{{ r }}</span>
-        </button>
+        @for (r of timeRanges; track r) {
+          <button mat-menu-item (click)="setRange(r)">
+            <mat-icon>{{ selectedRange() === r ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{ r }}</span>
+          </button>
+        }
       </mat-menu>
 
       <button mat-stroked-button class="glass-btn hide-sm">
@@ -36,28 +38,40 @@
   <div class="dashboard-shell">
     <main class="dashboard-content">
       <section class="kpi-grid">
-        <mat-card class="kpi-card glass-card animate-in" *ngFor="let kpi of kpis(); let i = index" [style.--delay]="i * 70 + 'ms'" [class]="'kpi-card glass-card animate-in ' + kpi.color">
-          <div class="kpi-top">
-            <div class="kpi-icon-wrap" [class]="kpi.color">
-              <lucide-icon [img]="BotIcon" size="22" *ngIf="kpi.icon === 'BotIcon'"></lucide-icon>
-              <lucide-icon [img]="TrendingIcon" size="22" *ngIf="kpi.icon === 'TrendingIcon'"></lucide-icon>
-              <lucide-icon [img]="ShieldIcon" size="22" *ngIf="kpi.icon === 'ShieldIcon'"></lucide-icon>
-              <lucide-icon [img]="ZapIcon" size="22" *ngIf="kpi.icon === 'ZapIcon'"></lucide-icon>
-              <lucide-icon [img]="DatabaseIcon" size="22" *ngIf="kpi.icon === 'DatabaseIcon'"></lucide-icon>
+        @for (kpi of kpis(); track kpi; let i = $index) {
+          <mat-card class="kpi-card glass-card animate-in" [style.--delay]="i * 70 + 'ms'" [class]="'kpi-card glass-card animate-in ' + kpi.color">
+            <div class="kpi-top">
+              <div class="kpi-icon-wrap" [class]="kpi.color">
+                @if (kpi.icon === 'BotIcon') {
+                  <lucide-icon [img]="BotIcon" size="22"></lucide-icon>
+                }
+                @if (kpi.icon === 'TrendingIcon') {
+                  <lucide-icon [img]="TrendingIcon" size="22"></lucide-icon>
+                }
+                @if (kpi.icon === 'ShieldIcon') {
+                  <lucide-icon [img]="ShieldIcon" size="22"></lucide-icon>
+                }
+                @if (kpi.icon === 'ZapIcon') {
+                  <lucide-icon [img]="ZapIcon" size="22"></lucide-icon>
+                }
+                @if (kpi.icon === 'DatabaseIcon') {
+                  <lucide-icon [img]="DatabaseIcon" size="22"></lucide-icon>
+                }
+              </div>
+              <div class="kpi-spark">
+                <div echarts [options]="sparkline(kpi.color === 'violet' ? '#8b5cf6' : kpi.color === 'blue' ? '#3b82f6' : kpi.color === 'emerald' ? '#10b981' : kpi.color === 'amber' ? '#f59e0b' : kpi.color === 'rose' ? '#ec4899' : '#06b6d4', kpi.spark)"></div>
+              </div>
             </div>
-            <div class="kpi-spark">
-              <div echarts [options]="sparkline(kpi.color === 'violet' ? '#8b5cf6' : kpi.color === 'blue' ? '#3b82f6' : kpi.color === 'emerald' ? '#10b981' : kpi.color === 'amber' ? '#f59e0b' : kpi.color === 'rose' ? '#ec4899' : '#06b6d4', kpi.spark)"></div>
+            <div class="kpi-details">
+              <span>{{ kpi.label }}</span>
+              <strong>{{ kpi.value }}</strong>
+              <small [class.up]="kpi.trend === 'up'" [class.down]="kpi.trend === 'down'">
+                <mat-icon>{{ kpi.trend === 'up' ? 'north' : 'south' }}</mat-icon>
+                {{ kpi.delta }} <em>vs {{ selectedRange() }}</em>
+              </small>
             </div>
-          </div>
-          <div class="kpi-details">
-            <span>{{ kpi.label }}</span>
-            <strong>{{ kpi.value }}</strong>
-            <small [class.up]="kpi.trend === 'up'" [class.down]="kpi.trend === 'down'">
-              <mat-icon>{{ kpi.trend === 'up' ? 'north' : 'south' }}</mat-icon>
-              {{ kpi.delta }} <em>vs {{ selectedRange() }}</em>
-            </small>
-          </div>
-        </mat-card>
+          </mat-card>
+        }
       </section>
 
       <section class="hero-grid">
@@ -78,10 +92,12 @@
               <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
             </div>
             <div class="neural-stats">
-              <div class="stat-item" *ngFor="let s of modelStats">
-                <span>{{ s.label }}</span>
-                <strong>{{ s.value }} <small [class.up]="s.trend === 'up'" [class.down]="s.trend === 'down'">{{ s.delta }}</small></strong>
-              </div>
+              @for (s of modelStats; track s) {
+                <div class="stat-item">
+                  <span>{{ s.label }}</span>
+                  <strong>{{ s.value }} <small [class.up]="s.trend === 'up'" [class.down]="s.trend === 'down'">{{ s.delta }}</small></strong>
+                </div>
+              }
             </div>
           </div>
           <div class="model-health"><span>Model Health</span><div class="health-bar"><b style="width: 92%"></b></div><strong>92%</strong></div>
@@ -97,10 +113,12 @@
           </div>
           <div class="mlo-list">
             <h3>Model Performance Overview</h3>
-            <div class="mlo-metric" *ngFor="let metric of mlMetrics" [style.--progress-color]="metric.color">
-              <div><span>{{ metric.label }}</span><span>{{ metric.value }}%</span></div>
-              <mat-progress-bar mode="determinate" [value]="metric.value"></mat-progress-bar>
-            </div>
+            @for (metric of mlMetrics; track metric) {
+              <div class="mlo-metric" [style.--progress-color]="metric.color">
+                <div><span>{{ metric.label }}</span><span>{{ metric.value }}%</span></div>
+                <mat-progress-bar mode="determinate" [value]="metric.value"></mat-progress-bar>
+              </div>
+            }
           </div>
           <button mat-button class="view-all-btn">View All Models <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
         </mat-card>
@@ -111,58 +129,72 @@
           <div class="panel-header"><div><h2>AI Recommendation Engine</h2><span>Recommendation Click-Through Rate</span></div></div>
           <div class="stat-card"><strong>24.8%</strong><small class="up">↑ 15.6% vs last month</small><div echarts [options]="recoSparkOptions()" class="mini-chart"></div></div>
           <h3>Top Recommendations</h3>
-          <div class="compact-list"><div class="compact-row" *ngFor="let item of recommendations"><span class="thumb"><mat-icon>inventory_2</mat-icon></span><div><strong>{{ item.name }}</strong><small>{{ item.category }}</small></div><b>{{ item.match }}</b></div></div>
+          <div class="compact-list">@for (item of recommendations; track item) {
+            <div class="compact-row"><span class="thumb"><mat-icon>inventory_2</mat-icon></span><div><strong>{{ item.name }}</strong><small>{{ item.category }}</small></div><b>{{ item.match }}</b></div>
+          }</div>
           <button mat-button class="view-all-btn">View All Recommendations <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
         </mat-card>
 
         <mat-card class="panel glass-card animate-in automation-panel">
           <div class="panel-header"><h2>Smart Automation</h2></div>
           <div class="automation-main"><div class="radial"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle cx="50" cy="50" r="42" class="fg"></circle></svg><div><strong>78%</strong><small>↑ 12.4%</small></div></div><div class="auto-stats"><span>Tasks Automated <b>2,456</b></span><span>Time Saved <b>124.5h</b></span><span>Success Rate <b>96.3%</b></span><span>Automation Rules <b>68</b></span></div></div>
-          <div class="auto-list"><h3>Recent Automations</h3><div class="auto-row" *ngFor="let a of automations"><span [class]="a.color"><mat-icon>{{ a.icon }}</mat-icon></span><div><strong>{{ a.title }}</strong><small>{{ a.body }}</small></div></div></div>
-          <button mat-button class="view-all-btn">View All Automations <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
-        </mat-card>
+          <div class="auto-list"><h3>Recent Automations</h3>@for (a of automations; track a) {
+          <div class="auto-row"><span [class]="a.color"><mat-icon>{{ a.icon }}</mat-icon></span><div><strong>{{ a.title }}</strong><small>{{ a.body }}</small></div></div>
+        }</div>
+        <button mat-button class="view-all-btn">View All Automations <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
+      </mat-card>
 
-        <mat-card class="panel glass-card animate-in sentiment-panel">
-          <div class="panel-header"><h2>Sentiment Analysis</h2><button mat-stroked-button class="mini-btn">This Month</button></div>
-          <div class="sentiment-wrap"><div class="donut-box"><div echarts [options]="sentimentOptions()" class="chart-fill"></div><div class="donut-center"><strong>82.6%</strong><span>Positive</span></div></div><div class="legend-list"><span><i class="positive"></i>Positive 82.6%</span><span><i class="neutral"></i>Neutral 12.1%</span><span><i class="negative"></i>Negative 5.3%</span></div></div>
-          <div class="small-panel"><h3>Sentiment Trend</h3><div echarts [options]="sentimentTrendOptions()" class="small-chart"></div></div>
-        </mat-card>
+      <mat-card class="panel glass-card animate-in sentiment-panel">
+        <div class="panel-header"><h2>Sentiment Analysis</h2><button mat-stroked-button class="mini-btn">This Month</button></div>
+        <div class="sentiment-wrap"><div class="donut-box"><div echarts [options]="sentimentOptions()" class="chart-fill"></div><div class="donut-center"><strong>82.6%</strong><span>Positive</span></div></div><div class="legend-list"><span><i class="positive"></i>Positive 82.6%</span><span><i class="neutral"></i>Neutral 12.1%</span><span><i class="negative"></i>Negative 5.3%</span></div></div>
+        <div class="small-panel"><h3>Sentiment Trend</h3><div echarts [options]="sentimentTrendOptions()" class="small-chart"></div></div>
+      </mat-card>
 
-        <mat-card class="panel glass-card animate-in chat-panel">
-          <div class="panel-header"><h2>AI Chat Analytics</h2><button mat-stroked-button class="mini-btn">This Month</button></div>
-          <div class="chat-stats"><div><span>Total Chats</span><strong>45,678</strong><small class="up">↑ 16.2%</small></div><div><span>Resolved</span><strong>38,456</strong><small class="up">84.2%</small></div><div><span>Avg. Response</span><strong>1.24s</strong><small class="up">↓ 8.7%</small></div></div>
-          <div class="small-panel"><h3>Chat Volume Trend</h3><div echarts [options]="chatTrendOptions()" class="small-chart"></div></div>
-          <div class="intent-list"><h3>Top Intents</h3><div class="intent-row" *ngFor="let item of chatIntents"><span>{{ item.label }}</span><div><b [style.width.%]="item.value * 2.2"></b></div><em>{{ item.value }}%</em></div></div>
-        </mat-card>
+      <mat-card class="panel glass-card animate-in chat-panel">
+        <div class="panel-header"><h2>AI Chat Analytics</h2><button mat-stroked-button class="mini-btn">This Month</button></div>
+        <div class="chat-stats"><div><span>Total Chats</span><strong>45,678</strong><small class="up">↑ 16.2%</small></div><div><span>Resolved</span><strong>38,456</strong><small class="up">84.2%</small></div><div><span>Avg. Response</span><strong>1.24s</strong><small class="up">↓ 8.7%</small></div></div>
+        <div class="small-panel"><h3>Chat Volume Trend</h3><div echarts [options]="chatTrendOptions()" class="small-chart"></div></div>
+        <div class="intent-list"><h3>Top Intents</h3>@for (item of chatIntents; track item) {
+        <div class="intent-row"><span>{{ item.label }}</span><div><b [style.width.%]="item.value * 2.2"></b></div><em>{{ item.value }}%</em></div>
+      }</div>
+    </mat-card>
 
-        <mat-card class="panel glass-card animate-in intel-panel">
-          <div class="panel-header"><h2>Data Intelligence</h2></div>
-          <div class="intel-grid"><div class="intel-card" *ngFor="let card of dataCards" [class]="'intel-card ' + card.color"><mat-icon>{{ card.icon }}</mat-icon><div><span>{{ card.label }}</span><strong>{{ card.value }}</strong><small [class.down]="card.delta.includes('-')">{{ card.delta }}</small></div></div></div>
-          <div class="small-panel"><h3>Data Quality Score Trend</h3><div echarts [options]="qualityTrendOptions()" class="small-chart"></div></div>
-          <button mat-button class="view-all-btn">View Data Catalog <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
-        </mat-card>
-      </section>
-    </main>
+    <mat-card class="panel glass-card animate-in intel-panel">
+      <div class="panel-header"><h2>Data Intelligence</h2></div>
+      <div class="intel-grid">@for (card of dataCards; track card) {
+        <div class="intel-card" [class]="'intel-card ' + card.color"><mat-icon>{{ card.icon }}</mat-icon><div><span>{{ card.label }}</span><strong>{{ card.value }}</strong><small [class.down]="card.delta.includes('-')">{{ card.delta }}</small></div></div>
+      }</div>
+      <div class="small-panel"><h3>Data Quality Score Trend</h3><div echarts [options]="qualityTrendOptions()" class="small-chart"></div></div>
+      <button mat-button class="view-all-btn">View Data Catalog <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
+    </mat-card>
+  </section>
+</main>
 
-    <aside class="dashboard-sidebar">
-      <section class="sidebar-panel glass-card animate-in">
-        <div class="sidebar-header"><h2><mat-icon>auto_awesome</mat-icon>AI Insights</h2><span>AI</span></div>
-        <div class="insights-list"><div class="insight-item" *ngFor="let item of insights" [class]="item.type"><mat-icon>{{ item.icon }}</mat-icon><div><strong>{{ item.title }}</strong><p>{{ item.body }}</p></div><mat-icon>chevron_right</mat-icon></div></div>
-        <button mat-flat-button class="sidebar-btn">View All Insights</button>
-      </section>
+<aside class="dashboard-sidebar">
+  <section class="sidebar-panel glass-card animate-in">
+    <div class="sidebar-header"><h2><mat-icon>auto_awesome</mat-icon>AI Insights</h2><span>AI</span></div>
+    <div class="insights-list">@for (item of insights; track item) {
+      <div class="insight-item" [class]="item.type"><mat-icon>{{ item.icon }}</mat-icon><div><strong>{{ item.title }}</strong><p>{{ item.body }}</p></div><mat-icon>chevron_right</mat-icon></div>
+    }</div>
+    <button mat-flat-button class="sidebar-btn">View All Insights</button>
+  </section>
 
-      <section class="sidebar-panel glass-card animate-in">
-        <div class="sidebar-header"><h2>Real-time Activity Feed</h2><span class="live-dot">● Live</span></div>
-        <div class="feed-list"><div class="feed-item" *ngFor="let item of activities" [class]="item.type"><span><mat-icon>{{ item.icon }}</mat-icon></span><div><strong>{{ item.title }}</strong><small>{{ item.time }}</small></div><mat-icon>chevron_right</mat-icon></div></div>
-        <button mat-button class="view-all-btn">View All Activity</button>
-      </section>
+  <section class="sidebar-panel glass-card animate-in">
+    <div class="sidebar-header"><h2>Real-time Activity Feed</h2><span class="live-dot">● Live</span></div>
+    <div class="feed-list">@for (item of activities; track item) {
+      <div class="feed-item" [class]="item.type"><span><mat-icon>{{ item.icon }}</mat-icon></span><div><strong>{{ item.title }}</strong><small>{{ item.time }}</small></div><mat-icon>chevron_right</mat-icon></div>
+    }</div>
+    <button mat-button class="view-all-btn">View All Activity</button>
+  </section>
 
-      <section class="sidebar-panel glass-card animate-in workspace-panel">
-        <div class="sidebar-header"><h2>Generative AI Workspace</h2></div>
-        <div class="token-card"><span>Tokens Used</span><strong>2.45M</strong><small class="up">↑ 32.7%</small><div echarts [options]="tokenSparkOptions()" class="token-chart"></div></div>
-        <div class="case-list"><h3>Top Use Cases</h3><div class="case-row" *ngFor="let c of useCases"><span>{{ c.label }}</span><div><b [style.width.%]="c.value * 2.2"></b></div><em>{{ c.value }}%</em></div></div>
-        <button mat-flat-button class="sidebar-btn workspace-btn">Open Workspace <lucide-icon [img]="ChevronRightIcon" size="15"></lucide-icon></button>
-      </section>
-    </aside>
-  </div>
+  <section class="sidebar-panel glass-card animate-in workspace-panel">
+    <div class="sidebar-header"><h2>Generative AI Workspace</h2></div>
+    <div class="token-card"><span>Tokens Used</span><strong>2.45M</strong><small class="up">↑ 32.7%</small><div echarts [options]="tokenSparkOptions()" class="token-chart"></div></div>
+    <div class="case-list"><h3>Top Use Cases</h3>@for (c of useCases; track c) {
+    <div class="case-row"><span>{{ c.label }}</span><div><b [style.width.%]="c.value * 2.2"></b></div><em>{{ c.value }}%</em></div>
+  }</div>
+  <button mat-flat-button class="sidebar-btn workspace-btn">Open Workspace <lucide-icon [img]="ChevronRightIcon" size="15"></lucide-icon></button>
+</section>
+</aside>
+</div>
 </div>

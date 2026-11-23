@@ -1,5 +1,6 @@
+import { CommonModule } from "@angular/common";
 import { Component, ViewChild, AfterViewInit, OnInit, inject, Inject, Optional } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -40,14 +41,13 @@ const ELEMENT_DATA: UserData[] = [
   selector: 'app-user-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
     LucideAngularModule
-  ],
+],
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
@@ -56,20 +56,26 @@ const ELEMENT_DATA: UserData[] = [
           <lucide-icon [name]="CloseIcon" size="20"></lucide-icon>
         </button>
       </div>
-      
+
       <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
         <div class="dialog-content">
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" placeholder="Enter full name">
-            <mat-error *ngIf="userForm.get('name')?.hasError('required')">Name is required</mat-error>
+            @if (userForm.get('name')?.hasError('required')) {
+              <mat-error>Name is required</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Email</mat-label>
             <input matInput formControlName="email" type="email" placeholder="Enter email address">
-            <mat-error *ngIf="userForm.get('email')?.hasError('required')">Email is required</mat-error>
-            <mat-error *ngIf="userForm.get('email')?.hasError('email')">Please enter a valid email</mat-error>
+            @if (userForm.get('email')?.hasError('required')) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (userForm.get('email')?.hasError('email')) {
+              <mat-error>Please enter a valid email</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -81,7 +87,9 @@ const ELEMENT_DATA: UserData[] = [
               <mat-option value="Designer">Designer</mat-option>
               <mat-option value="Viewer">Viewer</mat-option>
             </mat-select>
-            <mat-error *ngIf="userForm.get('role')?.hasError('required')">Role is required</mat-error>
+            @if (userForm.get('role')?.hasError('required')) {
+              <mat-error>Role is required</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="form-field">
@@ -90,7 +98,9 @@ const ELEMENT_DATA: UserData[] = [
               <mat-option value="Active">Active</mat-option>
               <mat-option value="Inactive">Inactive</mat-option>
             </mat-select>
-            <mat-error *ngIf="userForm.get('status')?.hasError('required')">Status is required</mat-error>
+            @if (userForm.get('status')?.hasError('required')) {
+              <mat-error>Status is required</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -100,7 +110,7 @@ const ELEMENT_DATA: UserData[] = [
         </div>
       </form>
     </div>
-  `,
+    `,
   styles: [`
     .dialog-container {
       display: flex;
@@ -169,7 +179,7 @@ export class UserDialogComponent {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, LucideAngularModule],
+  imports: [MatButtonModule, LucideAngularModule],
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
@@ -247,34 +257,40 @@ export class ConfirmDialogComponent {
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
-        <h2 class="dialog-title">Activity Log<ng-container *ngIf="data?.userName"> - {{ data?.userName }}</ng-container></h2>
+        <h2 class="dialog-title">Activity Log@if (data?.userName) {
+          - {{ data?.userName }}
+        }</h2>
         <button mat-icon-button (click)="dialogRef.close()" class="close-btn">
           <lucide-icon [name]="CloseIcon" size="20"></lucide-icon>
         </button>
       </div>
       <div class="dialog-content">
-        <ng-container *ngIf="(logs$ | async) as logs">
-          <div *ngIf="logs.length === 0" class="empty-state">
-            No recent activity found.
-          </div>
-          <div class="log-list">
-            <div *ngFor="let log of logs" class="log-item">
-              <div class="log-icon" [ngClass]="log.action.toLowerCase()">
-                <lucide-icon [name]="ActivityIcon" size="16"></lucide-icon>
-              </div>
-              <div class="log-details">
-                <div class="log-text">
-                  <strong>{{ log.userName }}</strong> {{ getActionText(log.action) }} 
-                  <span class="log-target">{{ log.details }}</span>
-                </div>
-                <div class="log-time">{{ log.timestamp | date:'medium' }}</div>
-              </div>
+        @if ((logs$ | async); as logs) {
+          @if (logs.length === 0) {
+            <div class="empty-state">
+              No recent activity found.
             </div>
+          }
+          <div class="log-list">
+            @for (log of logs; track log) {
+              <div class="log-item">
+                <div class="log-icon" [ngClass]="log.action.toLowerCase()">
+                  <lucide-icon [name]="ActivityIcon" size="16"></lucide-icon>
+                </div>
+                <div class="log-details">
+                  <div class="log-text">
+                    <strong>{{ log.userName }}</strong> {{ getActionText(log.action) }}
+                    <span class="log-target">{{ log.details }}</span>
+                  </div>
+                  <div class="log-time">{{ log.timestamp | date:'medium' }}</div>
+                </div>
+              </div>
+            }
           </div>
-        </ng-container>
+        }
       </div>
     </div>
-  `,
+    `,
   styles: [`
     .dialog-container {
       display: flex;
@@ -397,7 +413,6 @@ export class ActivityLogDialogComponent implements OnInit {
   selector: 'app-users',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -406,7 +421,7 @@ export class ActivityLogDialogComponent implements OnInit {
     MatIconModule,
     MatDialogModule,
     LucideAngularModule
-  ],
+],
   template: `
     <div class="users-page">
       <div class="page-header">
@@ -429,7 +444,7 @@ export class ActivityLogDialogComponent implements OnInit {
       <mat-card class="table-card">
         <div class="table-container">
           <table mat-table [dataSource]="dataSource" matSort>
-            
+
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
               <td mat-cell *matCellDef="let user"> 
@@ -675,7 +690,7 @@ export class ActivityLogDialogComponent implements OnInit {
     .minimal-paginator {
       border-top: 1px solid var(--border-color);
     }
-    
+
     ::ng-deep .mat-mdc-header-row {
       height: 56px;
     }
@@ -757,7 +772,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
           lastActive: 'Just now'
         };
         this.dataSource.data = [newUser, ...this.dataSource.data];
-        
+
         // Log activity
         this.activityLogService.addLog({
           userId: newUser.id,
@@ -783,7 +798,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
           const data = [...this.dataSource.data];
           data[index] = updatedUser;
           this.dataSource.data = data;
-          
+
           // Log activity
           this.activityLogService.addLog({
             userId: user.id,
@@ -805,7 +820,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.dataSource.data = this.dataSource.data.filter(u => u.id !== user.id);
-        
+
         // Log activity
         this.activityLogService.addLog({
           userId: user.id,

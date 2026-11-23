@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +13,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   selector: 'app-create-widget-modal',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
@@ -22,10 +21,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule
-  ],
+],
   template: `
     <div class="modal-container dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-      
+
       <!-- HEADER -->
       <div class="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
         <div class="space-y-1">

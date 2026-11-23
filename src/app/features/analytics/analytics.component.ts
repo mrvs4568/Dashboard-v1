@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,7 +34,6 @@ import {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -42,7 +41,7 @@ import {
     MatTooltipModule,
     NgxEchartsModule,
     LucideAngularModule
-  ],
+],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
 })

@@ -8,18 +8,18 @@ export class TimeAgoPipe implements PipeTransform {
   transform(date: Date): string {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
+
     if (diffInSeconds < 60) return 'Just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
     if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    
+
     return date.toLocaleDateString();
   }
 }
 
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
@@ -42,7 +42,6 @@ import { UserService } from './core/services/user.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
@@ -60,89 +59,123 @@ import { UserService } from './core/services/user.service';
     LucideAngularModule,
     ThemeToggleComponent,
     TimeAgoPipe
-  ],
+],
   template: `
     <mat-sidenav-container class="app-container" [class.is-collapsed]="isCollapsed()" autosize>
-      <mat-sidenav 
-        [mode]="isMobileScreen() ? 'over' : 'side'" 
-        [opened]="isMobileScreen() ? isMobileMenuOpen() : true" 
+      <mat-sidenav
+        [mode]="isMobileScreen() ? 'over' : 'side'"
+        [opened]="isMobileScreen() ? isMobileMenuOpen() : true"
         (closedStart)="isMobileScreen() && isMobileMenuOpen.set(false)"
-        class="app-sidenav" 
-        [class.collapsed]="!isMobileScreen() && isCollapsed()" 
+        class="app-sidenav"
+        [class.collapsed]="!isMobileScreen() && isCollapsed()"
         [class.mobile-active]="isMobileScreen() && isMobileMenuOpen()">
-        
+
         <div class="logo-container">
           <div class="logo-box">
-             <div class="logo-inner"></div>
+            <div class="logo-inner"></div>
           </div>
-          <span class="logo-text" *ngIf="isMobileScreen() || !isCollapsed()">Dash<span>Stack</span></span>
-          <button mat-icon-button (click)="toggleMobileMenu()" class="mobile-close-btn" *ngIf="isMobileScreen()">
-            <mat-icon>close</mat-icon>
-          </button>
+          @if (isMobileScreen() || !isCollapsed()) {
+            <span class="logo-text">Dash<span>Stack</span></span>
+          }
+          @if (isMobileScreen()) {
+            <button mat-icon-button (click)="toggleMobileMenu()" class="mobile-close-btn">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
         </div>
 
         <nav class="nav-container">
           <div class="nav-section">
             <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Dashboard">
               <lucide-icon [name]="DashboardIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Dashboard</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Dashboard</span>
+              }
             </a>
             <a routerLink="/analytics" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Analytics">
               <lucide-icon [name]="BarChart2Icon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Analytics</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Analytics</span>
+              }
             </a>
             <a routerLink="/analytics-insights" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Analytics Insights">
               <lucide-icon [name]="BarChart2Icon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Analytics Insights</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Analytics Insights</span>
+              }
             </a>
             <a routerLink="/financial" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Financial">
               <lucide-icon [name]="BanknoteIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Financial</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Financial</span>
+              }
             </a>
             <a routerLink="/crm-dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="CRM Dashboard">
               <lucide-icon [name]="DashboardIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">CRM Dashboard</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>CRM Dashboard</span>
+              }
             </a>
             <a routerLink="/ai-dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="AI Dashboard">
               <lucide-icon [name]="BrainIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">AI Dashboard</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>AI Dashboard</span>
+              }
             </a>
             <a routerLink="/ecommerce" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Ecommerce">
               <lucide-icon [name]="StoreIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Ecommerce</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Ecommerce</span>
+              }
             </a>
             <a routerLink="/products" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Products">
               <lucide-icon [name]="ProductIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Products</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Products</span>
+              }
             </a>
             <a routerLink="/product-stock" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Product Stock">
               <lucide-icon [name]="StockIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Product Stock</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Product Stock</span>
+              }
             </a>
             <a routerLink="/favorites" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Favorites">
               <lucide-icon [name]="HeartIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Favorites</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Favorites</span>
+              }
             </a>
             <a routerLink="/inbox" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Inbox">
               <lucide-icon [name]="MailIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Inbox</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Inbox</span>
+              }
             </a>
             <a routerLink="/orders" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Orders">
               <lucide-icon [name]="OrderListIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Order List</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Order List</span>
+              }
             </a>
             <a routerLink="/users" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Users">
               <lucide-icon [name]="UsersIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Users List</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Users List</span>
+              }
             </a>
 
             <div class="nav-dropdown-group" [class.open]="isPagesOpen()">
               <button class="nav-item dropdown-toggle" (click)="togglePages()" title="Pages">
                 <lucide-icon [name]="GlobeIcon" size="22" class="nav-icon"></lucide-icon>
-                <span *ngIf="isMobileScreen() || !isCollapsed()">Pages</span>
-                <lucide-icon [name]="ChevronDownIcon" size="16" class="chevron-icon" *ngIf="isMobileScreen() || !isCollapsed()"></lucide-icon>
+                @if (isMobileScreen() || !isCollapsed()) {
+                  <span>Pages</span>
+                }
+                @if (isMobileScreen() || !isCollapsed()) {
+                  <lucide-icon [name]="ChevronDownIcon" size="16" class="chevron-icon"></lucide-icon>
+                }
               </button>
-              
+
               <div class="dropdown-items" [class.collapsed-visible]="isCollapsed() && isPagesOpen()">
                 <a routerLink="/pricing" routerLinkActive="active" class="nav-sub-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Pricing">
                   <lucide-icon [name]="PricingIcon" size="18" class="nav-icon sub-icon"></lucide-icon>
@@ -163,13 +196,17 @@ import { UserService } from './core/services/user.service';
           <div class="nav-spacer"></div>
 
           <div class="nav-section border-t pt-4">
-             <a routerLink="/settings" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Settings">
+            <a routerLink="/settings" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Settings">
               <lucide-icon [name]="SettingsIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Settings</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Settings</span>
+              }
             </a>
             <button class="nav-item logout-btn" title="Logout">
               <lucide-icon [name]="LogoutIcon" size="22" class="nav-icon"></lucide-icon>
-              <span *ngIf="isMobileScreen() || !isCollapsed()">Logout</span>
+              @if (isMobileScreen() || !isCollapsed()) {
+                <span>Logout</span>
+              }
             </button>
           </div>
         </nav>
@@ -190,7 +227,7 @@ import { UserService } from './core/services/user.service';
 
           <div class="header-right">
             <app-theme-toggle></app-theme-toggle>
-            
+
             <button mat-icon-button class="header-action-btn notification-btn" [matMenuTriggerFor]="notificationMenu">
               <lucide-icon [name]="BellIcon" size="24" [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0"></lucide-icon>
             </button>
@@ -199,13 +236,15 @@ import { UserService } from './core/services/user.service';
               <div class="notification-header" (click)="$event.stopPropagation()">
                 <div class="header-main">
                   <h3>Notifications</h3>
-                  <span class="unread-badge" *ngIf="unreadCount() > 0">{{ unreadCount() }} New</span>
+                  @if (unreadCount() > 0) {
+                    <span class="unread-badge">{{ unreadCount() }} New</span>
+                  }
                 </div>
                 <button mat-button class="mark-read-btn" (click)="notificationService.markAllAsRead()">
                   Mark all as read
                 </button>
               </div>
-              
+
               <div class="notification-list" (click)="$event.stopPropagation()">
                 @if (notifications().length > 0) {
                   @for (n of notifications(); track n.id) {
@@ -224,14 +263,18 @@ import { UserService } from './core/services/user.service';
                       </div>
                       <div class="item-content">
                         <div class="item-top">
-                          <span class="item-category" *ngIf="n.category">{{ n.category }}</span>
+                          @if (n.category) {
+                            <span class="item-category">{{ n.category }}</span>
+                          }
                           <span class="item-time">{{ n.timestamp | timeAgo }}</span>
                         </div>
                         <p class="item-title">{{ n.title }}</p>
                         <p class="item-message">{{ n.message }}</p>
-                        <div class="item-actions" *ngIf="!n.isRead">
-                           <div class="unread-dot"></div>
-                        </div>
+                        @if (!n.isRead) {
+                          <div class="item-actions">
+                            <div class="unread-dot"></div>
+                          </div>
+                        }
                       </div>
                     </div>
                   }
@@ -277,7 +320,7 @@ import { UserService } from './core/services/user.service';
         </main>
       </mat-sidenav-content>
     </mat-sidenav-container>
-  `,
+    `,
   styles: [`
     :host {
       display: block;
@@ -309,7 +352,7 @@ import { UserService } from './core/services/user.service';
 
       &.collapsed {
         width: var(--sidebar-collapsed-width);
-        
+
         .logo-container {
           justify-content: center;
           padding: 0;
@@ -442,7 +485,7 @@ import { UserService } from './core/services/user.service';
     .nav-dropdown-group {
       display: flex;
       flex-direction: column;
-      
+
       .dropdown-items {
         display: none;
         flex-direction: column;
@@ -549,7 +592,7 @@ import { UserService } from './core/services/user.service';
       padding: 0 24px;
       box-shadow: var(--shadow-sm);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      
+
       @media (max-width: 768px) {
         padding: 0 16px;
         border-radius: 16px;
@@ -574,7 +617,7 @@ import { UserService } from './core/services/user.service';
     .search-wrapper {
       position: relative;
       width: 320px;
-      
+
       &.desktop-search {
         @media (max-width: 1024px) {
           display: none;
@@ -630,15 +673,15 @@ import { UserService } from './core/services/user.service';
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
-      
-      &:hover { 
+
+      &:hover {
         color: var(--text-main);
         background: var(--surface);
         border-color: var(--border-highlight);
         transform: translateY(-1px);
         box-shadow: var(--shadow-sm);
       }
-      
+
       ::ng-deep .mat-badge-content {
         background: linear-gradient(135deg, #E11D48, #F43F5E) !important;
         color: white !important;
@@ -665,7 +708,7 @@ import { UserService } from './core/services/user.service';
       color: var(--primary) !important;
       opacity: 1 !important;
       overflow: visible !important;
-      
+
       lucide-icon {
         display: flex;
         align-items: center;
@@ -837,7 +880,7 @@ import { UserService } from './core/services/user.service';
       /* Custom Scrollbar */
       &::-webkit-scrollbar { width: 6px; }
       &::-webkit-scrollbar-track { background: transparent; }
-      &::-webkit-scrollbar-thumb { 
+      &::-webkit-scrollbar-thumb {
         background: var(--border-color);
         border-radius: 10px;
       }
@@ -888,7 +931,7 @@ import { UserService } from './core/services/user.service';
       align-items: center;
       justify-content: center;
       transition: all 0.3s;
-      
+
       &.stock { background: #FFF1F2; color: #E11D48; }
       &.order { background: #F0F9FF; color: #0EA5E9; }
       &.alert { background: #FFFBEB; color: #D97706; }
@@ -918,7 +961,7 @@ import { UserService } from './core/services/user.service';
       height: 14px;
       border-radius: 50%;
       border: 2px solid var(--surface);
-      
+
       &.stock { background: #E11D48; }
       &.order { background: #0EA5E9; }
       &.alert { background: #D97706; }
@@ -1095,7 +1138,7 @@ export class AppComponent {
   readonly InfoIcon = Info;
   readonly UserIcon = User;
   readonly CheckIcon = Check;
-  
+
   getNotificationIcon(type: string): any {
     switch (type) {
       case 'stock': return Package;

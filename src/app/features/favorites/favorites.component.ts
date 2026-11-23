@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +10,7 @@ import { ProductService, Product } from '../../core/product.service';
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatIconModule, MatButtonModule, FormsModule],
+  imports: [RouterLink, MatCardModule, MatIconModule, MatButtonModule, FormsModule],
   template: `
     <div class="favorites-container">
       <div class="header-section">
@@ -34,75 +34,80 @@ import { ProductService, Product } from '../../core/product.service';
         </div>
       } @else {
         <div class="products-grid">
-          <div class="product-card" *ngFor="let product of productService.favorites()">
-            <div class="product-image-container">
-              <span class="badge" *ngIf="product.badge" [style.background-color]="product.badgeColor">
-                {{product.badge}}
-              </span>
-              
-              <div class="image-slider">
-                <div class="image-wrapper" [style.transform]="'translateX(-' + (product.currentImageIndex || 0) * 100 + '%)'">
-                  <img *ngFor="let img of (product.images || [product.image])" [src]="img" [alt]="product.name" class="product-img">
-                </div>
-              </div>
-
-              <!-- Mini Carousel Nav -->
-              <ng-container *ngIf="product.images && product.images.length > 1">
-                <div class="mini-nav">
-                  <button class="m-nav-btn prev" (click)="prevProductImg($event, product)">
-                    <mat-icon>chevron_left</mat-icon>
-                  </button>
-                  <button class="m-nav-btn next" (click)="nextProductImg($event, product)">
-                    <mat-icon>chevron_right</mat-icon>
-                  </button>
-                </div>
-                <div class="mini-indicators">
-                  <span *ngFor="let img of product.images; let i = index" 
-                        class="m-indicator" 
-                        [class.active]="(product.currentImageIndex || 0) === i">
+          @for (product of productService.favorites(); track product) {
+            <div class="product-card">
+              <div class="product-image-container">
+                @if (product.badge) {
+                  <span class="badge" [style.background-color]="product.badgeColor">
+                    {{product.badge}}
                   </span>
+                }
+                <div class="image-slider">
+                  <div class="image-wrapper" [style.transform]="'translateX(-' + (product.currentImageIndex || 0) * 100 + '%)'">
+                    @for (img of (product.images || [product.image]); track img) {
+                      <img [src]="img" [alt]="product.name" class="product-img">
+                    }
+                  </div>
                 </div>
-              </ng-container>
-
-              <button class="favorite-btn active" (click)="toggleFavorite($event, product)" title="Remove from favorites">
-                <mat-icon>favorite</mat-icon>
-              </button>
+                <!-- Mini Carousel Nav -->
+                @if (product.images && product.images.length > 1) {
+                  <div class="mini-nav">
+                    <button class="m-nav-btn prev" (click)="prevProductImg($event, product)">
+                      <mat-icon>chevron_left</mat-icon>
+                    </button>
+                    <button class="m-nav-btn next" (click)="nextProductImg($event, product)">
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
+                  <div class="mini-indicators">
+                    @for (img of product.images; track img; let i = $index) {
+                      <span
+                        class="m-indicator"
+                        [class.active]="(product.currentImageIndex || 0) === i">
+                      </span>
+                    }
+                  </div>
+                }
+                <button class="favorite-btn active" (click)="toggleFavorite($event, product)" title="Remove from favorites">
+                  <mat-icon>favorite</mat-icon>
+                </button>
+              </div>
+              <div class="product-content">
+                @if (!product.isEditing) {
+                  <div class="product-info">
+                    <h3 class="product-name">{{product.name}}</h3>
+                    <div class="price-row">
+                      <span class="current-price">{{product.price}}</span>
+                      @if (product.oldPrice) {
+                        <span class="old-price">{{product.oldPrice}}</span>
+                      }
+                    </div>
+                  </div>
+                  <div class="product-footer">
+                    <div class="rating">
+                      <mat-icon class="star-icon">star</mat-icon>
+                      <span class="rating-val">{{product.rating}}</span>
+                      <span class="reviews">({{product.reviews}})</span>
+                    </div>
+                    <button mat-flat-button class="edit-btn" (click)="toggleEdit(product)">Edit</button>
+                  </div>
+                } @else {
+                  <div class="edit-mode">
+                    <input class="edit-input" [(ngModel)]="product.name" placeholder="Product Name">
+                    <input class="edit-input" [(ngModel)]="product.price" placeholder="Price">
+                    <div class="edit-actions">
+                      <button class="save-btn" (click)="toggleEdit(product)">Save</button>
+                      <button class="cancel-btn" (click)="toggleEdit(product)">Cancel</button>
+                    </div>
+                  </div>
+                }
+              </div>
             </div>
-
-            <div class="product-content">
-              @if (!product.isEditing) {
-                <div class="product-info">
-                  <h3 class="product-name">{{product.name}}</h3>
-                  <div class="price-row">
-                    <span class="current-price">{{product.price}}</span>
-                    <span class="old-price" *ngIf="product.oldPrice">{{product.oldPrice}}</span>
-                  </div>
-                </div>
-                
-                <div class="product-footer">
-                  <div class="rating">
-                    <mat-icon class="star-icon">star</mat-icon>
-                    <span class="rating-val">{{product.rating}}</span>
-                    <span class="reviews">({{product.reviews}})</span>
-                  </div>
-                  <button mat-flat-button class="edit-btn" (click)="toggleEdit(product)">Edit</button>
-                </div>
-              } @else {
-                <div class="edit-mode">
-                  <input class="edit-input" [(ngModel)]="product.name" placeholder="Product Name">
-                  <input class="edit-input" [(ngModel)]="product.price" placeholder="Price">
-                  <div class="edit-actions">
-                    <button class="save-btn" (click)="toggleEdit(product)">Save</button>
-                    <button class="cancel-btn" (click)="toggleEdit(product)">Cancel</button>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
+          }
         </div>
       }
     </div>
-  `,
+    `,
   styles: [`
     .favorites-container {
       display: flex;
@@ -141,7 +146,7 @@ import { ProductService, Product } from '../../core/product.service';
       background: var(--surface);
       border-radius: 12px;
       border: 1px dashed var(--border-color);
-      
+
       .empty-icon-wrapper {
         width: 80px;
         height: 80px;
@@ -207,7 +212,7 @@ import { ProductService, Product } from '../../core/product.service';
       display: flex;
       flex-direction: column;
       transition: transform 0.2s;
-      
+
       &:hover {
         transform: translateY(-4px);
       }

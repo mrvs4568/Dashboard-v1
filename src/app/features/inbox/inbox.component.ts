@@ -25,15 +25,17 @@ interface Email {
   template: `
     <div class="inbox-container">
       <!-- Page Header -->
-      <div class="header-section" *ngIf="view() === 'list'">
-        <h1 class="page-title">{{currentFilter() | titlecase}}</h1>
-        <div class="header-actions">
-          <div class="search-box">
-            <mat-icon>search</mat-icon>
-            <input type="text" placeholder="Search mail..." [(ngModel)]="searchTerm">
+      @if (view() === 'list') {
+        <div class="header-section">
+          <h1 class="page-title">{{currentFilter() | titlecase}}</h1>
+          <div class="header-actions">
+            <div class="search-box">
+              <mat-icon>search</mat-icon>
+              <input type="text" placeholder="Search mail..." [(ngModel)]="searchTerm">
+            </div>
           </div>
         </div>
-      </div>
+      }
 
       <div class="inbox-layout">
         <!-- Inbox Sidebar -->
@@ -113,10 +115,18 @@ interface Email {
                 <div class="header-left">
                   <mat-checkbox [checked]="isAllSelected()" (change)="toggleAll()"></mat-checkbox>
                   <button mat-icon-button class="action-icon" (click)="refreshInbox()"><mat-icon>refresh</mat-icon></button>
-                  <button mat-icon-button class="action-icon" (click)="archiveSelected()" *ngIf="selectedIds().size > 0"><mat-icon>archive</mat-icon></button>
-                  <button mat-icon-button class="action-icon" (click)="reportSpamSelected()" *ngIf="selectedIds().size > 0"><mat-icon>report_gmailerrorred</mat-icon></button>
-                  <button mat-icon-button class="action-icon" (click)="deleteSelected()" *ngIf="selectedIds().size > 0"><mat-icon>delete_outline</mat-icon></button>
-                  <button mat-icon-button class="action-icon" (click)="markSelectedAsRead()" *ngIf="selectedIds().size > 0"><mat-icon>drafts</mat-icon></button>
+                  @if (selectedIds().size > 0) {
+                    <button mat-icon-button class="action-icon" (click)="archiveSelected()"><mat-icon>archive</mat-icon></button>
+                  }
+                  @if (selectedIds().size > 0) {
+                    <button mat-icon-button class="action-icon" (click)="reportSpamSelected()"><mat-icon>report_gmailerrorred</mat-icon></button>
+                  }
+                  @if (selectedIds().size > 0) {
+                    <button mat-icon-button class="action-icon" (click)="deleteSelected()"><mat-icon>delete_outline</mat-icon></button>
+                  }
+                  @if (selectedIds().size > 0) {
+                    <button mat-icon-button class="action-icon" (click)="markSelectedAsRead()"><mat-icon>drafts</mat-icon></button>
+                  }
                   <button mat-icon-button class="action-icon"><mat-icon>more_vert</mat-icon></button>
                 </div>
                 <div class="header-right">
@@ -174,24 +184,30 @@ interface Email {
                   </div>
                 </div>
               </div>
-              
+
               <div class="detail-body">
                 <div class="subject-row">
                   <h2 class="email-subject">{{selectedEmail()?.subject}}</h2>
                   <div class="subject-actions">
-                    <span class="label" *ngIf="selectedEmail()?.label" [style.background-color]="selectedEmail()?.labelColor">
-                      {{selectedEmail()?.label}}
-                    </span>
+                    @if (selectedEmail()?.label) {
+                      <span class="label" [style.background-color]="selectedEmail()?.labelColor">
+                        {{selectedEmail()?.label}}
+                      </span>
+                    }
                     <button mat-icon-button (click)="printEmail()"><mat-icon>print</mat-icon></button>
                   </div>
                 </div>
 
                 <div class="sender-info">
                   <div class="sender-avatar">
-                    <img *ngIf="selectedEmail()?.avatar" [src]="selectedEmail()?.avatar" [alt]="selectedEmail()?.sender">
-                    <div *ngIf="!selectedEmail()?.avatar" class="avatar-placeholder">
-                      {{selectedEmail()?.sender?.[0]}}
-                    </div>
+                    @if (selectedEmail()?.avatar) {
+                      <img [src]="selectedEmail()?.avatar" [alt]="selectedEmail()?.sender">
+                    }
+                    @if (!selectedEmail()?.avatar) {
+                      <div class="avatar-placeholder">
+                        {{selectedEmail()?.sender?.[0]}}
+                      </div>
+                    }
                   </div>
                   <div class="sender-details">
                     <div class="sender-name-row">
@@ -211,69 +227,69 @@ interface Email {
                 <div class="email-content">
                   <p>{{selectedEmail()?.snippet}}</p>
                   <br>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vel urna tellus. In varius lacus eu tellus feugiat, sit amet aliquam pede euismod. Pellentesque feugiat velit enim, sed maximus est lobortis ac. Quisque non sollicitudin dolor. Nam a dui a massa hendrerit accumsan. Etiam interdum diam a neque sodales finibus. Proin et justo ex. Mauris sit amet consequat tellus.</p>
-                  <br>
-                  <p>Best regards,<br>{{selectedEmail()?.sender}}</p>
-                </div>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vel urna tellus. In varius lacus eu tellus feugiat, sit amet aliquam pede euismod. Pellentesque feugiat velit enim, sed maximus est lobortis ac. Quisque non sollicitudin dolor. Nam a dui a massa hendrerit accumsan. Etiam interdum diam a neque sodales finibus. Proin et justo ex. Mauris sit amet consequat tellus.</p>
+                    <br>
+                      <p>Best regards,<br>{{selectedEmail()?.sender}}</p>
+                    </div>
 
-                <div class="detail-actions">
-                  <button mat-stroked-button class="reply-btn" (click)="replyEmail(selectedEmail()!)">
-                    <mat-icon>reply</mat-icon>
-                    Reply
-                  </button>
-                  <button mat-stroked-button class="forward-btn" (click)="forwardEmail(selectedEmail()!)">
-                    <mat-icon>forward</mat-icon>
-                    Forward
-                  </button>
-                </div>
-              </div>
-            </div>
-          }
-
-          <!-- Compose View -->
-          @if (view() === 'compose') {
-            <div class="compose-view">
-              <div class="compose-header">
-                <h3>New Message</h3>
-                <div class="header-actions">
-                  <button mat-icon-button><mat-icon>remove</mat-icon></button>
-                  <button mat-icon-button><mat-icon>close_fullscreen</mat-icon></button>
-                  <button mat-icon-button (click)="setView('list')"><mat-icon>close</mat-icon></button>
-                </div>
-              </div>
-              <div class="compose-body">
-                <div class="input-group">
-                  <input type="text" placeholder="Recipients" [(ngModel)]="composeTo">
-                  <span class="cc-bcc">Cc Bcc</span>
-                </div>
-                <div class="input-group">
-                  <input type="text" placeholder="Subject" [(ngModel)]="composeSubject">
-                </div>
-                <!-- Simple textarea for message body instead of contenteditable for easier binding -->
-                <textarea class="message-textarea" placeholder="Write your message here..." [(ngModel)]="composeBody"></textarea>
-              </div>
-              <div class="compose-footer">
-                <div class="footer-left">
-                  <button mat-flat-button color="primary" class="send-btn" [disabled]="!composeTo" (click)="sendEmail()">Send</button>
-                  <div class="formatting-tools">
-                    <button mat-icon-button (click)="toggleFormatting()"><mat-icon>text_format</mat-icon></button>
-                    <button mat-icon-button (click)="triggerFileUpload()"><mat-icon>attach_file</mat-icon></button>
-                    <button mat-icon-button (click)="insertLink()"><mat-icon>link</mat-icon></button>
-                    <button mat-icon-button (click)="insertEmoticon()"><mat-icon>insert_emoticon</mat-icon></button>
-                    <button mat-icon-button (click)="openDrive()"><mat-icon>add_to_drive</mat-icon></button>
+                    <div class="detail-actions">
+                      <button mat-stroked-button class="reply-btn" (click)="replyEmail(selectedEmail()!)">
+                        <mat-icon>reply</mat-icon>
+                        Reply
+                      </button>
+                      <button mat-stroked-button class="forward-btn" (click)="forwardEmail(selectedEmail()!)">
+                        <mat-icon>forward</mat-icon>
+                        Forward
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div class="footer-right">
-                  <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
-                  <button mat-icon-button (click)="setView('list')"><mat-icon>delete_outline</mat-icon></button>
+              }
+
+              <!-- Compose View -->
+              @if (view() === 'compose') {
+                <div class="compose-view">
+                  <div class="compose-header">
+                    <h3>New Message</h3>
+                    <div class="header-actions">
+                      <button mat-icon-button><mat-icon>remove</mat-icon></button>
+                      <button mat-icon-button><mat-icon>close_fullscreen</mat-icon></button>
+                      <button mat-icon-button (click)="setView('list')"><mat-icon>close</mat-icon></button>
+                    </div>
+                  </div>
+                  <div class="compose-body">
+                    <div class="input-group">
+                      <input type="text" placeholder="Recipients" [(ngModel)]="composeTo">
+                      <span class="cc-bcc">Cc Bcc</span>
+                    </div>
+                    <div class="input-group">
+                      <input type="text" placeholder="Subject" [(ngModel)]="composeSubject">
+                    </div>
+                    <!-- Simple textarea for message body instead of contenteditable for easier binding -->
+                    <textarea class="message-textarea" placeholder="Write your message here..." [(ngModel)]="composeBody"></textarea>
+                  </div>
+                  <div class="compose-footer">
+                    <div class="footer-left">
+                      <button mat-flat-button color="primary" class="send-btn" [disabled]="!composeTo" (click)="sendEmail()">Send</button>
+                      <div class="formatting-tools">
+                        <button mat-icon-button (click)="toggleFormatting()"><mat-icon>text_format</mat-icon></button>
+                        <button mat-icon-button (click)="triggerFileUpload()"><mat-icon>attach_file</mat-icon></button>
+                        <button mat-icon-button (click)="insertLink()"><mat-icon>link</mat-icon></button>
+                        <button mat-icon-button (click)="insertEmoticon()"><mat-icon>insert_emoticon</mat-icon></button>
+                        <button mat-icon-button (click)="openDrive()"><mat-icon>add_to_drive</mat-icon></button>
+                      </div>
+                    </div>
+                    <div class="footer-right">
+                      <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+                      <button mat-icon-button (click)="setView('list')"><mat-icon>delete_outline</mat-icon></button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              }
             </div>
-          }
+          </div>
         </div>
-      </div>
-    </div>
-  `,
+    `,
   styles: [`
     .inbox-container {
       display: flex;
@@ -479,7 +495,7 @@ interface Email {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       @media (max-width: 640px) {
         padding: 8px 12px;
       }
@@ -495,7 +511,7 @@ interface Email {
       color: var(--text-main);
       opacity: 0.5;
       &:hover { opacity: 1; }
-      
+
       @media (max-width: 640px) {
         width: 32px;
         height: 32px;
@@ -508,7 +524,7 @@ interface Email {
       font-weight: 600;
       opacity: 0.5;
       margin-right: 8px;
-      
+
       @media (max-width: 640px) {
         display: none;
       }
@@ -528,7 +544,7 @@ interface Email {
       cursor: pointer;
       transition: all 0.2s;
       background: var(--surface);
-      
+
       @media (max-width: 850px) {
         grid-template-columns: 160px 1fr 80px;
       }
@@ -929,7 +945,7 @@ export class InboxComponent {
   currentFilter = signal<string>('inbox');
   selectedEmail = signal<Email | null>(null);
   selectedIds = signal<Set<number>>(new Set());
-  
+
   // Compose form
   composeTo = '';
   composeSubject = '';
@@ -1018,7 +1034,7 @@ export class InboxComponent {
 
   filteredEmails() {
     let list = this.emails();
-    
+
     // Filter by tab
     const filter = this.currentFilter();
     if (filter === 'starred') {
@@ -1220,7 +1236,7 @@ export class InboxComponent {
 
   sendEmail() {
     if (!this.composeTo) return;
-    
+
     const newEmail: Email = {
       id: Date.now(),
       sender: 'Me',

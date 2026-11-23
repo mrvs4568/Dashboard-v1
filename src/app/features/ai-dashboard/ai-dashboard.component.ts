@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,7 +36,6 @@ type Trend = 'up' | 'down';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -44,8 +43,8 @@ type Trend = 'up' | 'down';
     MatProgressBarModule,
     MatDividerModule,
     NgxEchartsModule,
-    LucideAngularModule,
-  ],
+    LucideAngularModule
+],
   templateUrl: './ai-dashboard.component.html',
   styleUrls: ['./ai-dashboard.component.scss'],
 })

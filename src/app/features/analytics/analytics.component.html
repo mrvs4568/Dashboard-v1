@@ -18,10 +18,12 @@
           <mat-icon iconPositionEnd>expand_more</mat-icon>
         </button>
         <mat-menu #rangeMenu="matMenu">
-          <button mat-menu-item *ngFor="let r of ranges" (click)="setRange(r)">
-            <mat-icon>{{ selectedRange() === r ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
-            <span>{{ r }}</span>
-          </button>
+          @for (r of ranges; track r) {
+            <button mat-menu-item (click)="setRange(r)">
+              <mat-icon>{{ selectedRange() === r ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+              <span>{{ r }}</span>
+            </button>
+          }
         </mat-menu>
         <button mat-stroked-button class="glass-btn">
           <lucide-icon [name]="FilterIcon" size="16"></lucide-icon>
@@ -38,25 +40,27 @@
   <div class="grid grid-cols-12 gap-6">
     <!-- Main Content Area -->
     <div class="col-span-10 space-y-6">
-      
+
       <!-- KPI Cards Row -->
       <div class="grid grid-cols-5 gap-4">
-        <mat-card class="kpi-card" *ngFor="let kpi of kpis">
-          <div class="kpi-top">
-            <div class="kpi-icon-box" [class]="kpi.color">
-              <lucide-icon [name]="kpi.color === 'purple' ? DollarIcon : UsersIcon" size="20"></lucide-icon>
+        @for (kpi of kpis; track kpi) {
+          <mat-card class="kpi-card">
+            <div class="kpi-top">
+              <div class="kpi-icon-box" [class]="kpi.color">
+                <lucide-icon [name]="kpi.color === 'purple' ? DollarIcon : UsersIcon" size="20"></lucide-icon>
+              </div>
+              <div class="mini-spark"></div>
             </div>
-            <div class="mini-spark"></div>
-          </div>
-          <div class="kpi-body">
-            <span class="label">{{ kpi.label }}</span>
-            <strong class="value">{{ kpi.value }}</strong>
-            <div class="trend" [class.up]="kpi.trend === 'up'" [class.down]="kpi.trend === 'down'">
-              <lucide-icon [name]="kpi.trend === 'up' ? UpIcon : DownIcon" size="14"></lucide-icon>
-              <span>{{ kpi.delta }}</span>
+            <div class="kpi-body">
+              <span class="label">{{ kpi.label }}</span>
+              <strong class="value">{{ kpi.value }}</strong>
+              <div class="trend" [class.up]="kpi.trend === 'up'" [class.down]="kpi.trend === 'down'">
+                <lucide-icon [name]="kpi.trend === 'up' ? UpIcon : DownIcon" size="14"></lucide-icon>
+                <span>{{ kpi.delta }}</span>
+              </div>
             </div>
-          </div>
-        </mat-card>
+          </mat-card>
+        }
       </div>
 
       <!-- Main Analytics Section -->
@@ -109,8 +113,8 @@
           </div>
           <div class="panel-main">
             <div class="realtime-chart">
-               <!-- Placeholder for active users chart -->
-               <div class="tiny-bar-chart"></div>
+              <!-- Placeholder for active users chart -->
+              <div class="tiny-bar-chart"></div>
             </div>
             <div class="metrics-list mt-6">
               <div class="metric-row">
@@ -153,8 +157,8 @@
         <mat-card class="panel col-span-2 compact">
           <h3>User Growth</h3>
           <div class="growth-box">
-             <strong>148.5k</strong>
-             <div class="mini-line-green"></div>
+            <strong>148.5k</strong>
+            <div class="mini-line-green"></div>
           </div>
         </mat-card>
 
@@ -205,11 +209,13 @@
 
       <!-- KPI Overview Strip -->
       <div class="grid grid-cols-8 gap-3">
-        <mat-card class="mini-kpi-card" *ngFor="let m of bottomMetrics">
-          <span>{{ m.label }}</span>
-          <strong>{{ m.value }}</strong>
-          <div class="mini-trend" [class.up]="m.trend === 'up'" [class.down]="m.trend === 'down'"></div>
-        </mat-card>
+        @for (m of bottomMetrics; track m) {
+          <mat-card class="mini-kpi-card">
+            <span>{{ m.label }}</span>
+            <strong>{{ m.value }}</strong>
+            <div class="mini-trend" [class.up]="m.trend === 'up'" [class.down]="m.trend === 'down'"></div>
+          </mat-card>
+        }
       </div>
 
     </div>
