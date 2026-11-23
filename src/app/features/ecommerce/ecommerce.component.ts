@@ -284,7 +284,7 @@ export class EcommerceComponent implements OnInit {
     return {
       animationDuration: 1000,
       tooltip: { ...this.baseTooltip(), position: 'top' },
-      grid: { left: 0, right: 10, top: 10, bottom: 0, containLabel: true },
+      grid: { left: 48, right: 14, top: 12, bottom: 26, containLabel: true },
       xAxis: { type: 'category', data: xs, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
       yAxis: { type: 'category', data: ys, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
       visualMap: { show: false, min: 20, max: 95, inRange: { color: ['#24116d', '#8b22f6', '#f43fcd', '#f59e0b', '#22c55e'] } },

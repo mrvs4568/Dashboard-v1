@@ -437,3 +437,103 @@ small mat-icon { font-size: 14px; width: 14px; height: 14px; }
   .kpi-grid { grid-template-columns: 1fr; gap: 16px; }
   .behavior-legend { grid-template-columns: 1fr; }
 }
+
+/* E-commerce responsive layout corrections */
+.categories-panel,
+.journey-panel,
+.donut-panel {
+  min-width: 0;
+}
+
+.categories-panel .data-table {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.categories-panel .th-row,
+.categories-panel .td-row {
+  grid-template-columns: minmax(145px, 1.3fr) minmax(140px, 1.2fr) minmax(65px, .7fr) minmax(65px, .7fr);
+  min-width: 525px;
+  gap: 10px;
+}
+
+.categories-panel .bar-cell {
+  min-width: 0;
+  gap: 8px;
+}
+
+.categories-panel .bar-cell strong {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.journey-flow-wrapper {
+  max-width: 100%;
+  min-width: 0;
+  gap: 12px;
+  scroll-snap-type: x proximity;
+}
+
+.journey-step {
+  flex: 0 0 145px;
+  scroll-snap-align: start;
+}
+
+.behavior-legend {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.behavior-legend span {
+  min-width: 0;
+  gap: 8px;
+}
+
+.behavior-legend span b {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .categories-panel .th-row,
+  .categories-panel .td-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-width: 0;
+  }
+}
+
+/* Give journey and category tables full width */
+.bottom-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+/* E-commerce heatmap and vendor layout fixes */
+.heatmap-panel {
+  min-width: 0;
+}
+
+.tertiary-grid > .table-panel:first-child .table-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tertiary-grid > .table-panel:first-child .table-row,
+.tertiary-grid > .table-panel:first-child .row-main {
+  min-width: 0;
+}
+
+.tertiary-grid > .table-panel:first-child .details {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tertiary-grid > .table-panel:first-child .row-val {
+  flex-shrink: 0;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.tertiary-grid > .table-panel:first-child .panel-header {
+  flex-wrap: wrap;
+  gap: 12px;
+}
