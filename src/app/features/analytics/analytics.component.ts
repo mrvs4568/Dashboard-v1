@@ -8,26 +8,18 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { ThemeService } from '../../core/services/theme.service';
-import { 
-  LucideAngularModule, 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  CircleDollarSign, 
-  Timer, 
-  ChevronDown, 
-  Filter, 
-  Calendar, 
-  Download,
-  Info,
-  Map,
-  MousePointer2,
-  PieChart,
-  RefreshCcw,
-  Zap,
-  ArrowUpRight,
-  ArrowDownRight
-} from 'lucide-angular';
+import {
+  LucideChartNoAxesColumnIncreasing,
+  LucideCalendar,
+  LucideFilter,
+  LucideDownload,
+  LucideCircleDollarSign,
+  LucideUsers,
+  LucideArrowUpRight,
+  LucideArrowDownRight,
+  LucideMap,
+  LucideZap
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-analytics',
@@ -40,7 +32,16 @@ import {
     MatMenuModule,
     MatTooltipModule,
     NgxEchartsModule,
-    LucideAngularModule
+    LucideChartNoAxesColumnIncreasing,
+    LucideCalendar,
+    LucideFilter,
+    LucideDownload,
+    LucideCircleDollarSign,
+    LucideUsers,
+    LucideArrowUpRight,
+    LucideArrowDownRight,
+    LucideMap,
+    LucideZap
 ],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
@@ -48,25 +49,6 @@ import {
 export class AnalyticsComponent {
   private themeService = inject(ThemeService);
   readonly isDark = this.themeService.isDarkMode;
-
-  // Icons
-  readonly BarChartIcon = BarChart3;
-  readonly TrendingIcon = TrendingUp;
-  readonly UsersIcon = Users;
-  readonly DollarIcon = CircleDollarSign;
-  readonly TimerIcon = Timer;
-  readonly ChevronDownIcon = ChevronDown;
-  readonly FilterIcon = Filter;
-  readonly CalendarIcon = Calendar;
-  readonly DownloadIcon = Download;
-  readonly InfoIcon = Info;
-  readonly MapIcon = Map;
-  readonly CursorIcon = MousePointer2;
-  readonly PieChartIcon = PieChart;
-  readonly RefreshIcon = RefreshCcw;
-  readonly ZapIcon = Zap;
-  readonly UpIcon = ArrowUpRight;
-  readonly DownIcon = ArrowDownRight;
 
   readonly selectedRange = signal('Last 30 Days');
   readonly ranges = ['Today', 'Last 7 Days', 'Last 30 Days', 'This Year'];

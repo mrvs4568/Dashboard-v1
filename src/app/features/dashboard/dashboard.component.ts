@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { LucideAngularModule, TrendingUp, TrendingDown } from 'lucide-angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
@@ -23,7 +22,6 @@ import { NotificationService } from '../../core/services/notification.service';
     MatCardModule, 
     MatIconModule, 
     MatDialogModule,
-    LucideAngularModule, 
     BaseChartDirective, 
     StatCardComponent, 
     CdkDropList, 
@@ -682,8 +680,6 @@ export class DashboardComponent {
     }
   }
 
-  readonly TrendUp = TrendingUp;
-  readonly TrendDown = TrendingDown;
 
   onStatsDrop(event: CdkDragDrop<any[]>) {
     const newStats = [...this.stats];

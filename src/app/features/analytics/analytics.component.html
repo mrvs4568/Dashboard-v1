@@ -3,7 +3,7 @@
   <header class="analytics-header">
     <div class="header-titles">
       <div class="logo-orb">
-        <lucide-icon [name]="BarChartIcon" size="24"></lucide-icon>
+        <svg lucideChartNoAxesColumnIncreasing size="24"></svg>
       </div>
       <div>
         <h1>Analytics Overview</h1>
@@ -13,7 +13,7 @@
     <div class="header-actions">
       <div class="action-buttons">
         <button mat-stroked-button class="glass-btn" [matMenuTriggerFor]="rangeMenu">
-          <lucide-icon [name]="CalendarIcon" size="16"></lucide-icon>
+          <svg lucideCalendar size="16"></svg>
           <span>{{ selectedRange() }}</span>
           <mat-icon iconPositionEnd>expand_more</mat-icon>
         </button>
@@ -26,11 +26,11 @@
           }
         </mat-menu>
         <button mat-stroked-button class="glass-btn">
-          <lucide-icon [name]="FilterIcon" size="16"></lucide-icon>
+          <svg lucideFilter size="16"></svg>
           <span>Filters</span>
         </button>
         <button mat-flat-button class="primary-btn">
-          <lucide-icon [name]="DownloadIcon" size="16"></lucide-icon>
+          <svg lucideDownload size="16"></svg>
           Export
         </button>
       </div>
@@ -47,7 +47,11 @@
           <mat-card class="kpi-card">
             <div class="kpi-top">
               <div class="kpi-icon-box" [class]="kpi.color">
-                <lucide-icon [name]="kpi.color === 'purple' ? DollarIcon : UsersIcon" size="20"></lucide-icon>
+                @if (kpi.color === 'purple') {
+                  <svg lucideCircleDollarSign size="20"></svg>
+                } @else {
+                  <svg lucideUsers size="20"></svg>
+                }
               </div>
               <div class="mini-spark"></div>
             </div>
@@ -55,7 +59,11 @@
               <span class="label">{{ kpi.label }}</span>
               <strong class="value">{{ kpi.value }}</strong>
               <div class="trend" [class.up]="kpi.trend === 'up'" [class.down]="kpi.trend === 'down'">
-                <lucide-icon [name]="kpi.trend === 'up' ? UpIcon : DownIcon" size="14"></lucide-icon>
+                @if (kpi.trend === 'up') {
+                  <svg lucideArrowUpRight size="14"></svg>
+                } @else {
+                  <svg lucideArrowDownRight size="14"></svg>
+                }
                 <span>{{ kpi.delta }}</span>
               </div>
             </div>
@@ -190,7 +198,7 @@
         <mat-card class="panel col-span-2 compact">
           <h3>Geo Analytics</h3>
           <div class="map-placeholder">
-            <lucide-icon [name]="MapIcon" size="32" class="text-blue-500/50"></lucide-icon>
+            <svg lucideMap size="32" class="text-blue-500/50"></svg>
           </div>
           <ul class="country-list">
             <li>US <strong>45%</strong></li>
@@ -225,7 +233,7 @@
       <section class="sidebar-panel">
         <div class="panel-header">
           <h3>AI Insights</h3>
-          <lucide-icon [name]="ZapIcon" size="16" class="text-indigo-400"></lucide-icon>
+          <svg lucideZap size="16" class="text-indigo-400"></svg>
         </div>
         <div class="ai-prediction">
           <span class="text-xs text-slate-400">Revenue Prediction</span>

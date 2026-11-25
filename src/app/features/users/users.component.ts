@@ -12,7 +12,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { LucideAngularModule, Edit, Trash2, Filter, Search, X, History, Activity } from 'lucide-angular';
+import { LucideX, LucideActivity, LucideSearch, LucideHistory, LucideEdit, LucideTrash2 } from '@lucide/angular';
 import { ActivityLogService, ActivityLog } from '../../core/services/activity-log.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -46,14 +46,14 @@ const ELEMENT_DATA: UserData[] = [
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    LucideAngularModule
+    LucideX
 ],
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
         <h2 class="dialog-title">{{ data ? 'Edit User' : 'Add New User' }}</h2>
         <button mat-icon-button (click)="dialogRef.close()" class="close-btn">
-          <lucide-icon [name]="CloseIcon" size="20"></lucide-icon>
+          <svg lucideX size="20"></svg>
         </button>
       </div>
 
@@ -154,7 +154,6 @@ const ELEMENT_DATA: UserData[] = [
 })
 export class UserDialogComponent {
   userForm: FormGroup;
-  readonly CloseIcon = X;
 
   constructor(
     public dialogRef: MatDialogRef<UserDialogComponent>,
@@ -179,13 +178,13 @@ export class UserDialogComponent {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [MatButtonModule, LucideAngularModule],
+  imports: [MatButtonModule, LucideX],
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
         <h2 class="dialog-title">Confirm Delete</h2>
         <button mat-icon-button (click)="dialogRef.close(false)" class="close-btn">
-          <lucide-icon [name]="CloseIcon" size="20"></lucide-icon>
+          <svg lucideX size="20"></svg>
         </button>
       </div>
       <div class="dialog-content">
@@ -242,7 +241,6 @@ export class UserDialogComponent {
   `]
 })
 export class ConfirmDialogComponent {
-  readonly CloseIcon = X;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
@@ -253,7 +251,7 @@ export class ConfirmDialogComponent {
 @Component({
   selector: 'app-activity-log-dialog',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, LucideAngularModule],
+  imports: [CommonModule, MatButtonModule, LucideX, LucideActivity],
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
@@ -261,7 +259,7 @@ export class ConfirmDialogComponent {
           - {{ data?.userName }}
         }</h2>
         <button mat-icon-button (click)="dialogRef.close()" class="close-btn">
-          <lucide-icon [name]="CloseIcon" size="20"></lucide-icon>
+          <svg lucideX size="20"></svg>
         </button>
       </div>
       <div class="dialog-content">
@@ -275,7 +273,7 @@ export class ConfirmDialogComponent {
             @for (log of logs; track log) {
               <div class="log-item">
                 <div class="log-icon" [ngClass]="log.action.toLowerCase()">
-                  <lucide-icon [name]="ActivityIcon" size="16"></lucide-icon>
+                  <svg lucideActivity size="16"></svg>
                 </div>
                 <div class="log-details">
                   <div class="log-text">
@@ -376,8 +374,6 @@ export class ConfirmDialogComponent {
   `]
 })
 export class ActivityLogDialogComponent implements OnInit {
-  readonly CloseIcon = X;
-  readonly ActivityIcon = Activity;
   logs$!: Observable<ActivityLog[]>;
   activityLogService = inject(ActivityLogService);
 
@@ -420,7 +416,7 @@ export class ActivityLogDialogComponent implements OnInit {
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    LucideAngularModule
+    LucideSearch, LucideHistory, LucideEdit, LucideTrash2
 ],
   template: `
     <div class="users-page">
@@ -428,11 +424,11 @@ export class ActivityLogDialogComponent implements OnInit {
         <h1 class="page-title">Users List</h1>
         <div class="header-actions">
            <div class="search-box">
-             <lucide-icon [name]="SearchIcon" size="16" class="search-icon"></lucide-icon>
+             <svg lucideSearch size="16" class="search-icon"></svg>
              <input type="text" placeholder="Search by name, email, or role..." (keyup)="applyFilter($event)" class="search-input">
            </div>
            <button mat-stroked-button class="filter-btn" (click)="viewAllActivity()">
-            <lucide-icon [name]="HistoryIcon" size="16"></lucide-icon>
+            <svg lucideHistory size="16"></svg>
             All Activity
           </button>
           <button mat-flat-button color="primary" class="add-user-btn" (click)="openAddUserDialog()">
@@ -486,13 +482,13 @@ export class ActivityLogDialogComponent implements OnInit {
               <td mat-cell *matCellDef="let user">
                 <div class="row-actions">
                   <button mat-icon-button title="View Activity" class="action-history-btn" (click)="viewUserActivity(user)">
-                    <lucide-icon [name]="HistoryIcon" size="18"></lucide-icon>
+                    <svg lucideHistory size="18"></svg>
                   </button>
                   <button mat-icon-button title="Edit" class="action-edit-btn" (click)="editUser(user)">
-                    <lucide-icon [name]="EditIcon" size="18"></lucide-icon>
+                    <svg lucideEdit size="18"></svg>
                   </button>
                   <button mat-icon-button title="Delete" class="action-delete-btn" (click)="deleteUser(user)">
-                    <lucide-icon [name]="TrashIcon" size="18"></lucide-icon>
+                    <svg lucideTrash2 size="18"></svg>
                   </button>
                 </div>
               </td>
@@ -711,11 +707,6 @@ export class UsersComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  readonly EditIcon = Edit;
-  readonly TrashIcon = Trash2;
-  readonly FilterIcon = Filter;
-  readonly SearchIcon = Search;
-  readonly HistoryIcon = History;
 
   dialog = inject(MatDialog);
   activityLogService = inject(ActivityLogService);
