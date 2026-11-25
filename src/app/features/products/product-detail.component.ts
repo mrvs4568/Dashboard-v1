@@ -363,8 +363,11 @@ import { ProductService, Product } from '../../core/product.service';
       gap: 8px;
 
       @media (max-width: 640px) {
-        flex: 1;
-        padding: 0 20px !important;
+        flex: 1 0 100%;
+        order: 1;
+        width: 100%;
+        white-space: nowrap;
+        padding: 0 16px !important;
       }
     }
 
@@ -406,6 +409,21 @@ import { ProductService, Product } from '../../core/product.service';
     }
 
     .detail-tabs {
+      mat-tab-group {
+        --mat-tab-active-label-text-color: var(--primary);
+        --mat-tab-active-hover-label-text-color: var(--primary);
+        --mat-tab-active-focus-label-text-color: var(--primary);
+        --mat-tab-active-indicator-color: var(--primary);
+        --mat-tab-active-hover-indicator-color: var(--primary);
+        --mat-tab-active-focus-indicator-color: var(--primary);
+        --mat-tab-inactive-label-text-color: var(--text-muted);
+        --mat-tab-inactive-hover-label-text-color: var(--text-main);
+        --mat-tab-inactive-focus-label-text-color: var(--text-main);
+        --mat-tab-pagination-icon-color: var(--text-main);
+        --mat-tab-divider-color: var(--border-color);
+        --mat-tab-label-text-weight: 600;
+      }
+      color: var(--text-main);
       background: var(--surface);
       border-radius: 24px;
       overflow: hidden;
@@ -421,7 +439,7 @@ import { ProductService, Product } from '../../core/product.service';
 
     .specs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
       gap: 20px;
       @media (max-width: 640px) {
         grid-template-columns: 1fr;
@@ -432,12 +450,36 @@ import { ProductService, Product } from '../../core/product.service';
     .spec-item {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      min-width: 0;
       padding: 16px;
       background: var(--bg-color);
       border-radius: 12px;
 
-      .spec-label { color: var(--text-main); opacity: 0.7; font-weight: 600; }
-      .spec-value { color: var(--text-main); font-weight: 800; }
+      .spec-label {
+        color: var(--text-muted);
+        font-weight: 600;
+        flex-shrink: 0;
+        max-width: 45%;
+        overflow-wrap: break-word;
+      }
+
+      .spec-value {
+        color: var(--text-main);
+        font-weight: 700;
+        text-align: right;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 480px) {
+        flex-direction: column;
+        gap: 6px;
+
+        .spec-label { max-width: 100%; }
+        .spec-value { text-align: left; }
+      }
     }
 
     .reviews-list {
@@ -449,7 +491,12 @@ import { ProductService, Product } from '../../core/product.service';
     .review-card {
       padding: 24px;
       background: var(--bg-color);
+      border: 1px solid var(--border-color);
       border-radius: 20px;
+
+      @media (max-width: 640px) {
+        padding: 16px;
+      }
     }
 
     .review-header {
@@ -457,6 +504,7 @@ import { ProductService, Product } from '../../core/product.service';
       align-items: center;
       gap: 16px;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
     .user-avatar {
@@ -476,8 +524,8 @@ import { ProductService, Product } from '../../core/product.service';
       }
     }
 
-    .review-date { font-size: 12px; color: var(--text-main); opacity: 0.6; font-weight: 600; }
-    .review-comment { font-size: 15px; line-height: 1.6; color: var(--text-main); opacity: 0.8; margin: 0; }
+    .review-date { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+    .review-comment { font-size: 15px; line-height: 1.6; color: var(--text-main); overflow-wrap: anywhere; margin: 0; }
 
     .empty-state {
       text-align: center;
