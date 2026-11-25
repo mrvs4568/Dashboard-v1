@@ -36,6 +36,7 @@ import { LucideBanknote, LucideBell, LucideBox, LucideBrain, LucideCalendar, Luc
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { NotificationService } from './core/services/notification.service';
 import { UserService } from './core/services/user.service';
+import { CartService } from './core/cart.service';
 
 @Component({
   selector: 'app-root',
@@ -227,6 +228,19 @@ import { UserService } from './core/services/user.service';
 
           <div class="header-right">
             <app-theme-toggle></app-theme-toggle>
+
+            <a mat-icon-button
+               routerLink="/cart"
+               class="header-action-btn cart-btn"
+               [attr.aria-label]="'Shopping cart, ' + cartService.itemCount() + (cartService.itemCount() === 1 ? ' item' : ' items')"
+               title="Shopping cart">
+              <svg lucideShoppingCart size="20"></svg>
+              @if (cartService.itemCount() > 0) {
+                <span class="cart-count" aria-hidden="true">
+                  {{ cartService.itemCount() > 99 ? '99+' : cartService.itemCount() }}
+                </span>
+              }
+            </a>
 
             <button mat-icon-button class="header-action-btn notification-btn" [matMenuTriggerFor]="notificationMenu">
               <span class="notification-bell" [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0">
@@ -712,6 +726,35 @@ import { UserService } from './core/services/user.service';
       border-radius: 24px;
     }
 
+    .header-action-btn.cart-btn {
+      position: relative;
+      overflow: visible;
+      flex-shrink: 0;
+      color: var(--primary);
+      text-decoration: none;
+
+      .cart-count {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2563EB;
+        color: #FFFFFF;
+        border: 2px solid var(--surface);
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+        box-sizing: border-box;
+        pointer-events: none;
+      }
+    }
+
     .header-action-btn.notification-btn {
       color: var(--primary) !important;
       opacity: 1 !important;
@@ -1102,6 +1145,7 @@ import { UserService } from './core/services/user.service';
 export class AppComponent {
   notificationService = inject(NotificationService);
   userService = inject(UserService);
+  readonly cartService = inject(CartService);
   private dialog = inject(MatDialog);
   isCollapsed = signal(false);
   isMobileMenuOpen = signal(false);

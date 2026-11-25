@@ -5,11 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProductService, Product } from '../../core/product.service';
+import { CartService } from '../../core/cart.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTabsModule, MatSnackBarModule],
   template: `
     @if (product()) {
       <div class="detail-container">
@@ -62,7 +64,7 @@ import { ProductService, Product } from '../../core/product.service';
                 <span>{{ quantity() }}</span>
                 <button (click)="updateQty(1)"><mat-icon>add</mat-icon></button>
               </div>
-              <button mat-flat-button color="primary" class="add-to-cart">
+              <button mat-flat-button color="primary" class="add-to-cart" (click)="addToCart()">
                 <mat-icon>shopping_cart</mat-icon>
                 Add to Cart
               </button>
@@ -544,6 +546,8 @@ import { ProductService, Product } from '../../core/product.service';
 export class ProductDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
+  private cartService = inject(CartService);
+  private snackBar = inject(MatSnackBar);
 
   product = signal<Product | undefined>(undefined);
   activeImage = signal<string>('');
@@ -568,7 +572,30 @@ export class ProductDetailComponent implements OnInit {
 
   updateQty(delta: number) {
     const newVal = this.quantity() + delta;
-    if (newVal >= 1) this.quantity.set(newVal);
+    if (newVal >= 1 && newVal <= 99) this.quantity.set(newVal);
+  }
+
+  addToCart(): void {
+    const product = this.product();
+    if (!product) return;
+
+    const added = this.cartService.addToCart(
+      product, this.quantity()
+    );
+
+    if (added) {
+      this.snackBar.open(
+        `${product.name} added to cart`,
+        'Close',
+        { duration: 3000 }
+      );
+    } else {
+      this.snackBar.open(
+        'Unable to add item. Check quantity and price.',
+        'Close',
+        { duration: 4000 }
+      );
+    }
   }
 
   toggleWishlist() {
