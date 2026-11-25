@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -108,6 +108,7 @@ import { ProductService, Product } from '../../core/product.service';
       }
     </div>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .favorites-container {
       display: flex;

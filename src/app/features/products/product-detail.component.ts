@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, Input, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,7 +22,7 @@ import { ProductService, Product } from '../../core/product.service';
           <!-- Image Gallery -->
           <div class="image-gallery">
             <div class="main-image-card shadow-premium">
-              <img [src]="activeImage()" [alt]="product()?.name" class="main-img">
+              <img [src]="activeImage()" [alt]="$safeNavigationMigration(product()?.name)" class="main-img">
             </div>
             <div class="thumbnail-list">
               @for (img of images(); track img) {
@@ -136,6 +136,7 @@ import { ProductService, Product } from '../../core/product.service';
       </div>
     }
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .detail-container {
       padding: 40px;

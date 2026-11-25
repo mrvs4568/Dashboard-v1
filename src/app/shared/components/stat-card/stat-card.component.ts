@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { LucideTrendingUp, LucideTrendingDown } from '@lucide/angular';
@@ -32,6 +32,7 @@ import { LucideTrendingUp, LucideTrendingDown } from '@lucide/angular';
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .stat-card {
       position: relative;

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 import { ProductStockService, ProductStock } from '../../core/product-stock.service';
@@ -84,6 +84,7 @@ import { ProductStockService, ProductStock } from '../../core/product-stock.serv
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .product-stock-container {
       padding: 40px;
