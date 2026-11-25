@@ -46,11 +46,10 @@ export class ProductService {
       oldPrice: '$150.00',
       rating: 4.8,
       reviews: 120,
-      image: 'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=400&q=80',
+      image: '/images/products/apple-watch-1.jpg',
       images: [
-        'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=400&q=80',
-        'https://images.unsplash.com/photo-1508685096489-7abac4f4bd9a?w=400&q=80',
-        'https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400&q=80'
+        '/images/products/apple-watch-1.jpg',
+        '/images/products/apple-watch-2.jpg'
       ],
       currentImageIndex: 0,
       category: 'Electronics',
@@ -115,7 +114,7 @@ export class ProductService {
       oldPrice: '$60.00',
       rating: 4.2,
       reviews: 42,
-      image: 'https://images.unsplash.com/photo-1556905055-8f358a7a4bb4?w=400&q=80',
+      image: '/images/products/wool-sweater.jpg',
       category: 'Fashion'
     },
     {
