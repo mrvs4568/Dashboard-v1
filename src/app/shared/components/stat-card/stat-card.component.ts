@@ -1,12 +1,12 @@
 import { Component, input } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideTrendingUp, LucideTrendingDown } from '@lucide/angular';
 
 @Component({
   selector: 'app-stat-card',
   standalone: true,
-  imports: [MatCardModule, LucideAngularModule],
+  imports: [MatCardModule, LucideTrendingUp, LucideTrendingDown],
   template: `
     <div class="stat-card">
       <div class="card-glow" [style.background-color]="iconBgColor()"></div>
@@ -21,7 +21,11 @@ import { LucideAngularModule } from 'lucide-angular';
       </div>
       <div class="stat-trend-footer">
         <span class="trend-score" [class.up]="trend() === 'up'" [class.down]="trend() === 'down'">
-          <lucide-icon [name]="trend() === 'up' ? 'TrendingUp' : 'TrendingDown'" size="16" class="trend-icon"></lucide-icon>
+          @if (trend() === 'up') {
+            <svg lucideTrendingUp size="16" class="trend-icon"></svg>
+          } @else {
+            <svg lucideTrendingDown size="16" class="trend-icon"></svg>
+          }
           {{trendValue()}}
         </span>
         <span class="trend-label">vs last month</span>

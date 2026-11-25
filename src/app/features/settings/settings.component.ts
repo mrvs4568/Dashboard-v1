@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
-import { LucideAngularModule, User, Bell, Lock, Globe, Palette, MonitorSmartphone, Shield, Check } from 'lucide-angular';
+import { LucideUser, LucideBell, LucidePalette, LucideShield, LucideCheck } from '@lucide/angular';
 import { UserService } from '../../core/services/user.service';
 
 @Component({
@@ -24,21 +24,13 @@ import { UserService } from '../../core/services/user.service';
     MatFormFieldModule,
     MatSelectModule,
     MatDividerModule,
-    LucideAngularModule
+    LucideUser, LucideBell, LucidePalette, LucideShield, LucideCheck
 ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent {
   readonly userService = inject(UserService);
-  UserIcon = User;
-  BellIcon = Bell;
-  LockIcon = Lock;
-  GlobeIcon = Globe;
-  PaletteIcon = Palette;
-  MonitorSmartphoneIcon = MonitorSmartphone;
-  ShieldIcon = Shield;
-  CheckIcon = Check;
 
   activeTab = signal<'profile' | 'notifications' | 'appearance' | 'security'>('profile');
 

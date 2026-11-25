@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Plus, MoreVertical, Star, Trash2, Check, X, Search, Calendar, Filter, Sparkles, Tag, ChevronRight, Activity, Clock, Zap } from 'lucide-angular';
+import { LucidePlus, LucideStar, LucideTrash2, LucideCheck, LucideSearch, LucideSparkles, LucideCalendar, LucideActivity, LucideZap, LucideClock, LucideChevronRight } from '@lucide/angular';
 
 interface Todo {
   id: string;
@@ -20,15 +20,15 @@ interface Todo {
   selector: 'app-todo',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucidePlus, LucideStar, LucideTrash2, LucideCheck, LucideSearch, LucideSparkles, LucideCalendar, LucideActivity, LucideZap, LucideClock, LucideChevronRight],
   template: `
     <div class="min-h-screen bg-[#0F172A] text-slate-200 p-4 md:p-8 lg:p-12 font-sans selection:bg-indigo-500/30">
 
       <!-- Premium Glass Header -->
-      <header class="max-w-6xl mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header class="max-w-6xl mx-auto mb-10 flex flex-col flex-wrap md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-3">
           <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase border border-indigo-500/20">
-            <lucide-icon [name]="SparklesIcon" size="12"></lucide-icon>
+            <svg lucideSparkles size="12"></svg>
             AI-Enhanced Workflow
           </div>
           <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-3">
@@ -40,17 +40,17 @@ interface Todo {
         </div>
 
         <!-- Real-time Stats Cards -->
-        <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-          <div class="glass-stat px-6 py-4 rounded-2xl min-w-[140px]">
+        <div class="flex flex-wrap gap-4 max-w-full pb-2">
+          <div class="glass-stat box-border px-6 py-4 rounded-2xl min-w-[140px]">
             <div class="flex items-center gap-2 text-indigo-400 mb-1">
-              <lucide-icon [name]="ActivityIcon" size="14"></lucide-icon>
+              <svg lucideActivity size="14"></svg>
               <span class="text-[10px] font-bold uppercase tracking-wider">Productivity</span>
             </div>
             <div class="text-2xl font-black text-white">94%</div>
           </div>
-          <div class="glass-stat px-6 py-4 rounded-2xl min-w-[140px]">
+          <div class="glass-stat box-border px-6 py-4 rounded-2xl min-w-[140px]">
             <div class="flex items-center gap-2 text-emerald-400 mb-1">
-              <lucide-icon [name]="CheckIcon" size="14"></lucide-icon>
+              <svg lucideCheck size="14"></svg>
               <span class="text-[10px] font-bold uppercase tracking-wider">Completed</span>
             </div>
             <div class="text-2xl font-black text-white">{{ completedCount() }}</div>
@@ -62,34 +62,36 @@ interface Todo {
 
         <!-- Search & Control Bar -->
         <div class="flex flex-col lg:flex-row gap-4 items-center">
-          <div class="relative w-full lg:flex-1 group">
-            <lucide-icon [name]="SearchIcon" size="20" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></lucide-icon>
+          <div class="relative w-full min-w-0 lg:flex-1 group">
+            <svg lucideSearch size="20" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></svg>
             <input
               type="text"
               placeholder="Query tasks by title or metadata..."
               [ngModel]="searchQuery()"
               (ngModelChange)="searchQuery.set($event)"
-              class="w-full pl-12 pr-6 py-4 bg-white/5 dark:bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 text-white placeholder-slate-500 transition-all font-medium"
+              class="w-full box-border pl-12 pr-6 py-4 bg-white/5 dark:bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 text-white placeholder-slate-500 transition-all font-medium"
               >
           </div>
 
-          <div class="flex items-center gap-3 w-full lg:w-auto">
+          <div class="flex items-center gap-3 w-full lg:w-auto shrink-0">
             <div class="flex bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
-              <button class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
+              <button class="px-4 py-2 border-0 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
                 [class.bg-indigo-500]="activeFilter() === 'all'"
                 [class.text-white]="activeFilter() === 'all'"
                 [class.text-slate-400]="activeFilter() !== 'all'"
+                [class.bg-transparent]="activeFilter() !== 'all'"
               (click)="activeFilter.set('all')">All</button>
-              <button class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
+              <button class="px-4 py-2 border-0 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
                 [class.bg-indigo-500]="activeFilter() === 'starred'"
                 [class.text-white]="activeFilter() === 'starred'"
                 [class.text-slate-400]="activeFilter() !== 'starred'"
+                [class.bg-transparent]="activeFilter() !== 'starred'"
               (click)="activeFilter.set('starred')">Starred</button>
             </div>
 
             <button (click)="openAddModal()"
-              class="flex-1 lg:flex-none h-14 px-8 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 active:scale-[0.98] text-white rounded-2xl font-bold transition-all text-sm shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
-              <lucide-icon [name]="PlusIcon" size="18"></lucide-icon>
+              class="flex-1 lg:flex-none h-14 px-8 border-0 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 active:scale-[0.98] text-white rounded-2xl font-bold transition-all text-sm shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+              <svg lucidePlus size="18"></svg>
               Assemble Task
             </button>
           </div>
@@ -109,13 +111,13 @@ interface Todo {
 
                   <div class="flex items-center gap-6 flex-1">
                     <!-- Premium Checkbox Wrapper -->
-                    <div class="relative flex items-center justify-center group/check" (click)="$event.stopPropagation(); toggleTask(task)">
-                      <div class="w-7 h-7 rounded-full border-2 transition-all flex items-center justify-center"
+                    <div class="relative flex shrink-0 items-center justify-center group/check" (click)="$event.stopPropagation(); toggleTask(task)">
+                      <div class="w-7 h-7 box-border rounded-full border-2 border-solid transition-all flex items-center justify-center"
                         [class.bg-emerald-500]="task.completed"
                         [class.border-emerald-500]="task.completed"
                         [class.border-slate-600]="!task.completed">
                         @if (task.completed) {
-                          <lucide-icon [name]="CheckIcon" size="16" class="text-white"></lucide-icon>
+                          <svg lucideCheck size="16" class="text-white"></svg>
                         }
                       </div>
                       <!-- Click ripple effect simulation -->
@@ -133,14 +135,14 @@ interface Todo {
                         </h3>
                         @if (task.priority === 'High') {
                           <span class="flex items-center gap-1.5 px-2 py-0.5 bg-rose-500/10 text-rose-400 rounded-md text-[10px] font-black uppercase border border-rose-500/20 tracking-tighter animate-pulse">
-                            <lucide-icon [name]="ZapIcon" size="10"></lucide-icon> Critical
+                            <svg lucideZap size="10"></svg> Critical
                           </span>
                         }
                       </div>
 
                       <div class="flex items-center gap-4 text-xs font-semibold text-slate-500">
                         <div class="flex items-center gap-1.5 overflow-hidden">
-                          <lucide-icon [name]="CalendarIcon" size="14" class="text-indigo-400"></lucide-icon>
+                          <svg lucideCalendar size="14" class="text-indigo-400"></svg>
                           <span>{{ task.date }}</span>
                         </div>
                         @if (task.tag) {
@@ -160,18 +162,18 @@ interface Todo {
                         [class.text-amber-400]="task.starred"
                         [class.text-slate-600]="!task.starred"
                         (click)="toggleStar(task)">
-                        <lucide-icon [name]="StarIcon" size="18" [attr.fill]="task.starred ? 'currentColor' : 'none'"></lucide-icon>
+                        <svg lucideStar size="18" [attr.fill]="task.starred ? 'currentColor' : 'none'"></svg>
                       </button>
                       <button (click)="deleteTask(task)"
                         class="h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 hover:border-rose-500/50 hover:bg-rose-500/10 text-slate-600 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100 hidden md:flex">
-                        <lucide-icon [name]="Trash2Icon" size="18"></lucide-icon>
+                        <svg lucideTrash2 size="18"></svg>
                       </button>
                     </div>
 
                     <div class="h-10 flex items-center gap-3 px-4 bg-white/5 rounded-xl border border-white/5 text-[10px] font-bold text-slate-500 group-hover:border-indigo-500/30 transition-all">
-                      <lucide-icon [name]="ClockIcon" size="12" class="text-indigo-400"></lucide-icon>
+                      <svg lucideClock size="12" class="text-indigo-400"></svg>
                       <span class="uppercase tracking-widest leading-none">Active Draft</span>
-                      <lucide-icon [name]="ChevronRightIcon" size="14" class="text-slate-700"></lucide-icon>
+                      <svg lucideChevronRight size="14" class="text-slate-700"></svg>
                     </div>
                   </div>
 
@@ -181,7 +183,7 @@ interface Todo {
                 } @empty {
                 <div class="py-24 text-center flex flex-col items-center justify-center space-y-4">
                   <div class="w-20 h-20 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 block animate-bounce">
-                    <lucide-icon [name]="ActivityIcon" size="40"></lucide-icon>
+                    <svg lucideActivity size="40"></svg>
                   </div>
                   <div>
                     <h3 class="text-xl font-black text-white mb-2 tracking-tight">System Idle</h3>
@@ -204,9 +206,9 @@ interface Todo {
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-widest leading-none">{{ completedCount() }} Task Intercepts Resolved</span>
               </div>
 
-              <button class="text-indigo-400 hover:text-indigo-300 text-xs font-black uppercase tracking-[0.15em] transition-all flex items-center gap-2 group">
+              <button class="bg-transparent border-0 cursor-pointer text-indigo-400 hover:text-indigo-300 text-xs font-black uppercase tracking-[0.15em] transition-all flex items-center gap-2 group">
                 Flush Completed
-                <lucide-icon [name]="CheckIcon" size="14" class="group-hover:translate-x-1 transition-transform"></lucide-icon>
+                <svg lucideCheck size="14" class="group-hover:translate-x-1 transition-transform"></svg>
               </button>
             </footer>
 
@@ -251,18 +253,6 @@ interface Todo {
 })
 export class TodoComponent {
   // Lucide Icons
-  readonly PlusIcon = Plus;
-  readonly StarIcon = Star;
-  readonly Trash2Icon = Trash2;
-  readonly CheckIcon = Check;
-  readonly SearchIcon = Search;
-  readonly SparklesIcon = Sparkles;
-  readonly CalendarIcon = Calendar;
-  readonly FilterIcon = Filter;
-  readonly ActivityIcon = Activity;
-  readonly ZapIcon = Zap;
-  readonly ClockIcon = Clock;
-  readonly ChevronRightIcon = ChevronRight;
 
   searchQuery = signal('');
   activeFilter = signal<'all' | 'starred'>('all');

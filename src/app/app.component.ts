@@ -31,7 +31,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { LucideAngularModule, LayoutDashboard, Users, Settings, Bell, Search, Menu, LogOut, ChevronDown, ShoppingBag, Heart, Mail, ClipboardList, Globe, Box, CreditCard, LayoutGrid, Package, ShoppingCart, AlertTriangle, Info, User, Check, X, Image, Calendar, BarChart2, Store, CheckSquare, Banknote, Brain } from 'lucide-angular';
+import { LucideBanknote, LucideBell, LucideBox, LucideBrain, LucideCalendar, LucideChartNoAxesColumn, LucideChevronDown, LucideClipboardList, LucideCreditCard, LucideGlobe, LucideHeart, LucideInfo, LucideLayoutDashboard, LucideLogOut, LucideMail, LucideMenu, LucidePackage, LucideSearch, LucideSettings, LucideShoppingBag, LucideShoppingCart, LucideSquareCheckBig, LucideStore, LucideTriangleAlert, LucideUser, LucideUsers } from '@lucide/angular';
 
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { NotificationService } from './core/services/notification.service';
@@ -56,7 +56,7 @@ import { UserService } from './core/services/user.service';
     MatMenuModule,
     MatDividerModule,
     MatDialogModule,
-    LucideAngularModule,
+    LucideBanknote, LucideBell, LucideBox, LucideBrain, LucideCalendar, LucideChartNoAxesColumn, LucideChevronDown, LucideClipboardList, LucideCreditCard, LucideGlobe, LucideHeart, LucideInfo, LucideLayoutDashboard, LucideLogOut, LucideMail, LucideMenu, LucidePackage, LucideSearch, LucideSettings, LucideShoppingBag, LucideShoppingCart, LucideSquareCheckBig, LucideStore, LucideTriangleAlert, LucideUser, LucideUsers,
     ThemeToggleComponent,
     TimeAgoPipe
 ],
@@ -87,79 +87,79 @@ import { UserService } from './core/services/user.service';
         <nav class="nav-container">
           <div class="nav-section">
             <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Dashboard">
-              <lucide-icon [name]="DashboardIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideLayoutDashboard size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Dashboard</span>
               }
             </a>
             <a routerLink="/analytics" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Analytics">
-              <lucide-icon [name]="BarChart2Icon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideChartNoAxesColumn size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Analytics</span>
               }
             </a>
             <a routerLink="/analytics-insights" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Analytics Insights">
-              <lucide-icon [name]="BarChart2Icon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideChartNoAxesColumn size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Analytics Insights</span>
               }
             </a>
             <a routerLink="/financial" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Financial">
-              <lucide-icon [name]="BanknoteIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideBanknote size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Financial</span>
               }
             </a>
             <a routerLink="/crm-dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="CRM Dashboard">
-              <lucide-icon [name]="DashboardIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideLayoutDashboard size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>CRM Dashboard</span>
               }
             </a>
             <a routerLink="/ai-dashboard" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="AI Dashboard">
-              <lucide-icon [name]="BrainIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideBrain size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>AI Dashboard</span>
               }
             </a>
             <a routerLink="/ecommerce" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Ecommerce">
-              <lucide-icon [name]="StoreIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideStore size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Ecommerce</span>
               }
             </a>
             <a routerLink="/products" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Products">
-              <lucide-icon [name]="ProductIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideShoppingBag size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Products</span>
               }
             </a>
             <a routerLink="/product-stock" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Product Stock">
-              <lucide-icon [name]="StockIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideBox size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Product Stock</span>
               }
             </a>
             <a routerLink="/favorites" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Favorites">
-              <lucide-icon [name]="HeartIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideHeart size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Favorites</span>
               }
             </a>
             <a routerLink="/inbox" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Inbox">
-              <lucide-icon [name]="MailIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideMail size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Inbox</span>
               }
             </a>
             <a routerLink="/orders" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Orders">
-              <lucide-icon [name]="OrderListIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideClipboardList size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Order List</span>
               }
             </a>
             <a routerLink="/users" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Users">
-              <lucide-icon [name]="UsersIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideUsers size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Users List</span>
               }
@@ -167,26 +167,26 @@ import { UserService } from './core/services/user.service';
 
             <div class="nav-dropdown-group" [class.open]="isPagesOpen()">
               <button class="nav-item dropdown-toggle" (click)="togglePages()" title="Pages">
-                <lucide-icon [name]="GlobeIcon" size="22" class="nav-icon"></lucide-icon>
+                <svg lucideGlobe size="22" class="nav-icon"></svg>
                 @if (isMobileScreen() || !isCollapsed()) {
                   <span>Pages</span>
                 }
                 @if (isMobileScreen() || !isCollapsed()) {
-                  <lucide-icon [name]="ChevronDownIcon" size="16" class="chevron-icon"></lucide-icon>
+                  <svg lucideChevronDown size="16" class="chevron-icon"></svg>
                 }
               </button>
 
               <div class="dropdown-items" [class.collapsed-visible]="isCollapsed() && isPagesOpen()">
                 <a routerLink="/pricing" routerLinkActive="active" class="nav-sub-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Pricing">
-                  <lucide-icon [name]="PricingIcon" size="18" class="nav-icon sub-icon"></lucide-icon>
+                  <svg lucideCreditCard size="18" class="nav-icon sub-icon"></svg>
                   <span>Pricing</span>
                 </a>
                 <a routerLink="/calendar" routerLinkActive="active" class="nav-sub-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Calendar">
-                  <lucide-icon [name]="CalendarIcon" size="18" class="nav-icon sub-icon"></lucide-icon>
+                  <svg lucideCalendar size="18" class="nav-icon sub-icon"></svg>
                   <span>Calendar</span>
                 </a>
                 <a routerLink="/todo" routerLinkActive="active" class="nav-sub-item" (click)="isMobileScreen() && toggleMobileMenu()" title="To-Do">
-                  <lucide-icon [name]="CheckSquareIcon" size="18" class="nav-icon sub-icon"></lucide-icon>
+                  <svg lucideSquareCheckBig size="18" class="nav-icon sub-icon"></svg>
                   <span>To-Do</span>
                 </a>
               </div>
@@ -197,13 +197,13 @@ import { UserService } from './core/services/user.service';
 
           <div class="nav-section border-t pt-4">
             <a routerLink="/settings" routerLinkActive="active" class="nav-item" (click)="isMobileScreen() && toggleMobileMenu()" title="Settings">
-              <lucide-icon [name]="SettingsIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideSettings size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Settings</span>
               }
             </a>
             <button class="nav-item logout-btn" title="Logout">
-              <lucide-icon [name]="LogoutIcon" size="22" class="nav-icon"></lucide-icon>
+              <svg lucideLogOut size="22" class="nav-icon"></svg>
               @if (isMobileScreen() || !isCollapsed()) {
                 <span>Logout</span>
               }
@@ -217,10 +217,10 @@ import { UserService } from './core/services/user.service';
         <header class="app-header">
           <div class="header-left">
             <button mat-icon-button (click)="isMobileScreen() ? toggleMobileMenu() : toggleSidebar()" class="menu-btn">
-              <lucide-icon [name]="MenuIcon" size="20"></lucide-icon>
+              <svg lucideMenu size="20"></svg>
             </button>
             <div class="search-wrapper desktop-search">
-              <lucide-icon [name]="SearchIcon" size="16" class="search-icon"></lucide-icon>
+              <svg lucideSearch size="16" class="search-icon"></svg>
               <input type="text" placeholder="Search..." class="search-input">
             </div>
           </div>
@@ -229,7 +229,9 @@ import { UserService } from './core/services/user.service';
             <app-theme-toggle></app-theme-toggle>
 
             <button mat-icon-button class="header-action-btn notification-btn" [matMenuTriggerFor]="notificationMenu">
-              <lucide-icon [name]="BellIcon" size="24" [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0"></lucide-icon>
+              <span class="notification-bell" [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0">
+                <svg lucideBell size="24"></svg>
+              </span>
             </button>
 
             <mat-menu #notificationMenu="matMenu" class="notification-dropdown">
@@ -257,7 +259,13 @@ import { UserService } from './core/services/user.service';
                           </div>
                         } @else {
                           <div class="icon-container" [class]="n.type">
-                            <lucide-icon [name]="getNotificationIcon(n.type)" size="18"></lucide-icon>
+                            @switch (n.type) {
+                              @case ('stock') { <svg lucidePackage size="18"></svg> }
+                              @case ('order') { <svg lucideShoppingCart size="18"></svg> }
+                              @case ('alert') { <svg lucideTriangleAlert size="18"></svg> }
+                              @case ('user') { <svg lucideUser size="18"></svg> }
+                              @default { <svg lucideInfo size="18"></svg> }
+                            }
                           </div>
                         }
                       </div>
@@ -281,7 +289,7 @@ import { UserService } from './core/services/user.service';
                 } @else {
                   <div class="empty-state">
                     <div class="empty-icon">
-                      <lucide-icon [name]="BellIcon" size="48"></lucide-icon>
+                      <svg lucideBell size="48"></svg>
                     </div>
                     <h4>All caught up!</h4>
                     <p>No new notifications at the moment.</p>
@@ -300,7 +308,7 @@ import { UserService } from './core/services/user.service';
             </mat-menu>
 
             <button mat-icon-button class="header-action-btn">
-              <lucide-icon [name]="GlobeIcon" size="20"></lucide-icon>
+              <svg lucideGlobe size="20"></svg>
             </button>
             <div class="profile-divider"></div>
             <div class="user-block">
@@ -709,7 +717,7 @@ import { UserService } from './core/services/user.service';
       opacity: 1 !important;
       overflow: visible !important;
 
-      lucide-icon {
+      .notification-bell {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1110,45 +1118,7 @@ export class AppComponent {
     this.isMobileScreen.set(window.innerWidth <= 1024);
   }
 
-  readonly DashboardIcon = LayoutDashboard;
-  readonly BarChart2Icon = BarChart2;
-  readonly BanknoteIcon = Banknote;
-  readonly BrainIcon = Brain;
-  readonly StoreIcon = Store;
-  readonly CheckSquareIcon = CheckSquare;
-  readonly ProductIcon = ShoppingBag;
-  readonly StockIcon = Box;
-  readonly HeartIcon = Heart;
-  readonly MailIcon = Mail;
-  readonly OrderListIcon = ClipboardList;
-  readonly UsersIcon = Users;
-  readonly PricingIcon = CreditCard;
-  readonly CalendarIcon = Calendar;
-  readonly CreditCardIcon = CreditCard;
-  readonly SettingsIcon = Settings;
-  readonly BellIcon = Bell;
-  readonly SearchIcon = Search;
-  readonly MenuIcon = Menu;
-  readonly LogoutIcon = LogOut;
-  readonly GlobeIcon = Globe;
-  readonly ChevronDownIcon = ChevronDown;
-  readonly PackageIcon = Package;
-  readonly ShoppingCartIcon = ShoppingCart;
-  readonly AlertIcon = AlertTriangle;
-  readonly InfoIcon = Info;
-  readonly UserIcon = User;
-  readonly CheckIcon = Check;
 
-  getNotificationIcon(type: string): any {
-    switch (type) {
-      case 'stock': return Package;
-      case 'order': return ShoppingCart;
-      case 'alert': return AlertTriangle;
-      case 'user': return User;
-      case 'info':
-      default: return Info;
-    }
-  }
 
   notifications = this.notificationService.notifications;
   unreadCount = this.notificationService.unreadCount;

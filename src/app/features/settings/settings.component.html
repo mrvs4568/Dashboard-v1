@@ -10,19 +10,19 @@
     <aside class="settings-sidebar">
       <nav class="settings-nav">
         <button class="nav-item" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
-          <lucide-icon [name]="UserIcon" size="20"></lucide-icon>
+          <svg lucideUser size="20"></svg>
           <span>Profile</span>
         </button>
         <button class="nav-item" [class.active]="activeTab() === 'notifications'" (click)="setTab('notifications')">
-          <lucide-icon [name]="BellIcon" size="20"></lucide-icon>
+          <svg lucideBell size="20"></svg>
           <span>Notifications</span>
         </button>
         <button class="nav-item" [class.active]="activeTab() === 'appearance'" (click)="setTab('appearance')">
-          <lucide-icon [name]="PaletteIcon" size="20"></lucide-icon>
+          <svg lucidePalette size="20"></svg>
           <span>Appearance</span>
         </button>
         <button class="nav-item" [class.active]="activeTab() === 'security'" (click)="setTab('security')">
-          <lucide-icon [name]="ShieldIcon" size="20"></lucide-icon>
+          <svg lucideShield size="20"></svg>
           <span>Security</span>
         </button>
       </nav>
@@ -31,7 +31,7 @@
     <main class="settings-content">
       @if (savedMessage()) {
         <div class="save-toast">
-          <lucide-icon [name]="CheckIcon" size="18"></lucide-icon>
+          <svg lucideCheck size="18"></svg>
           <span>{{ savedMessage() }}</span>
         </div>
       }

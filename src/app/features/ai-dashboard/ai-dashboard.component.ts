@@ -10,23 +10,14 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import * as echarts from 'echarts';
 import {
-  LucideAngularModule,
-  Activity,
-  BarChart3,
-  Bot,
-  Brain,
-  ChevronRight,
-  Cpu,
-  Database,
-  Info,
-  Layers,
-  MessageSquare,
-  PieChart,
-  ShieldCheck,
-  TrendingUp,
-  Workflow,
-  Zap,
-} from 'lucide-angular';
+  LucideBot,
+  LucideBrain,
+  LucideChevronRight,
+  LucideDatabase,
+  LucideShieldCheck,
+  LucideTrendingUp,
+  LucideZap
+} from '@lucide/angular';
 
 type Period = 'Today' | 'Last 7 Days' | 'Last 30 Days' | 'Last 90 Days' | 'This Year';
 type Trend = 'up' | 'down';
@@ -43,27 +34,18 @@ type Trend = 'up' | 'down';
     MatProgressBarModule,
     MatDividerModule,
     NgxEchartsModule,
-    LucideAngularModule
+    LucideBot,
+    LucideBrain,
+    LucideChevronRight,
+    LucideDatabase,
+    LucideShieldCheck,
+    LucideTrendingUp,
+    LucideZap
 ],
   templateUrl: './ai-dashboard.component.html',
   styleUrls: ['./ai-dashboard.component.scss'],
 })
 export class AiDashboardComponent {
-  readonly BrainIcon = Brain;
-  readonly CpuIcon = Cpu;
-  readonly DatabaseIcon = Database;
-  readonly ActivityIcon = Activity;
-  readonly ShieldIcon = ShieldCheck;
-  readonly ZapIcon = Zap;
-  readonly TrendingIcon = TrendingUp;
-  readonly ChevronRightIcon = ChevronRight;
-  readonly ChatIcon = MessageSquare;
-  readonly ChartIcon = BarChart3;
-  readonly PieChartIcon = PieChart;
-  readonly InfoIcon = Info;
-  readonly LayersIcon = Layers;
-  readonly WorkflowIcon = Workflow;
-  readonly BotIcon = Bot;
 
   readonly isDark = signal(true);
   readonly selectedRange = signal<Period>('Last 30 Days');

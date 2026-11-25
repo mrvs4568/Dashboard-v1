@@ -1,16 +1,20 @@
 import { Component, inject } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Sun, Moon } from 'lucide-angular';
+import { LucideSun, LucideMoon } from '@lucide/angular';
 import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
-  imports: [MatButtonModule, LucideAngularModule],
+  imports: [MatButtonModule, LucideSun, LucideMoon],
   template: `
     <button mat-icon-button (click)="themeService.toggleTheme()" class="theme-btn">
-      <lucide-icon [name]="themeService.isDarkMode() ? SunIcon : MoonIcon" size="20"></lucide-icon>
+      @if (themeService.isDarkMode()) {
+        <svg lucideSun size="20"></svg>
+      } @else {
+        <svg lucideMoon size="20"></svg>
+      }
     </button>
   `,
   styles: [`
@@ -23,6 +27,4 @@ import { ThemeService } from '../../../core/services/theme.service';
 })
 export class ThemeToggleComponent {
   themeService = inject(ThemeService);
-  readonly SunIcon = Sun;
-  readonly MoonIcon = Moon;
 }

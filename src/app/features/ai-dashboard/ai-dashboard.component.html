@@ -1,7 +1,7 @@
 <div class="ai-dashboard-page" [class.dark-theme]="isDark()" [class.light-theme]="!isDark()">
   <header class="page-header animate-in">
     <div class="logo-area">
-      <div class="brand-shell"><lucide-icon [img]="BrainIcon" size="30"></lucide-icon></div>
+      <div class="brand-shell"><svg lucideBrain size="30"></svg></div>
       <div>
         <h1>AI & Data Visualizations</h1>
         <p>Comprehensive AI insights and data intelligence overview</p>
@@ -43,19 +43,19 @@
             <div class="kpi-top">
               <div class="kpi-icon-wrap" [class]="kpi.color">
                 @if (kpi.icon === 'BotIcon') {
-                  <lucide-icon [img]="BotIcon" size="22"></lucide-icon>
+                  <svg lucideBot size="22"></svg>
                 }
                 @if (kpi.icon === 'TrendingIcon') {
-                  <lucide-icon [img]="TrendingIcon" size="22"></lucide-icon>
+                  <svg lucideTrendingUp size="22"></svg>
                 }
                 @if (kpi.icon === 'ShieldIcon') {
-                  <lucide-icon [img]="ShieldIcon" size="22"></lucide-icon>
+                  <svg lucideShieldCheck size="22"></svg>
                 }
                 @if (kpi.icon === 'ZapIcon') {
-                  <lucide-icon [img]="ZapIcon" size="22"></lucide-icon>
+                  <svg lucideZap size="22"></svg>
                 }
                 @if (kpi.icon === 'DatabaseIcon') {
-                  <lucide-icon [img]="DatabaseIcon" size="22"></lucide-icon>
+                  <svg lucideDatabase size="22"></svg>
                 }
               </div>
               <div class="kpi-spark">
@@ -88,7 +88,7 @@
           <div class="panel-header"><div><h2>Neural Metrics</h2><span>Live neural architecture health</span></div></div>
           <div class="neural-layout">
             <div class="brain-stage">
-              <div class="brain-orb"><lucide-icon [name]="BrainIcon" size="86"></lucide-icon></div>
+              <div class="brain-orb"><svg lucideBrain size="86"></svg></div>
               <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
             </div>
             <div class="neural-stats">
@@ -120,7 +120,7 @@
               </div>
             }
           </div>
-          <button mat-button class="view-all-btn">View All Models <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
+          <button mat-button class="view-all-btn">View All Models <svg lucideChevronRight size="14"></svg></button>
         </mat-card>
       </section>
 
@@ -132,7 +132,7 @@
           <div class="compact-list">@for (item of recommendations; track item) {
             <div class="compact-row"><span class="thumb"><mat-icon>inventory_2</mat-icon></span><div><strong>{{ item.name }}</strong><small>{{ item.category }}</small></div><b>{{ item.match }}</b></div>
           }</div>
-          <button mat-button class="view-all-btn">View All Recommendations <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
+          <button mat-button class="view-all-btn">View All Recommendations <svg lucideChevronRight size="14"></svg></button>
         </mat-card>
 
         <mat-card class="panel glass-card animate-in automation-panel">
@@ -141,7 +141,7 @@
           <div class="auto-list"><h3>Recent Automations</h3>@for (a of automations; track a) {
           <div class="auto-row"><span [class]="a.color"><mat-icon>{{ a.icon }}</mat-icon></span><div><strong>{{ a.title }}</strong><small>{{ a.body }}</small></div></div>
         }</div>
-        <button mat-button class="view-all-btn">View All Automations <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
+        <button mat-button class="view-all-btn">View All Automations <svg lucideChevronRight size="14"></svg></button>
       </mat-card>
 
       <mat-card class="panel glass-card animate-in sentiment-panel">
@@ -165,7 +165,7 @@
         <div class="intel-card" [class]="'intel-card ' + card.color"><mat-icon>{{ card.icon }}</mat-icon><div><span>{{ card.label }}</span><strong>{{ card.value }}</strong><small [class.down]="card.delta.includes('-')">{{ card.delta }}</small></div></div>
       }</div>
       <div class="small-panel"><h3>Data Quality Score Trend</h3><div echarts [options]="qualityTrendOptions()" class="small-chart"></div></div>
-      <button mat-button class="view-all-btn">View Data Catalog <lucide-icon [img]="ChevronRightIcon" size="14"></lucide-icon></button>
+      <button mat-button class="view-all-btn">View Data Catalog <svg lucideChevronRight size="14"></svg></button>
     </mat-card>
   </section>
 </main>
@@ -193,7 +193,7 @@
     <div class="case-list"><h3>Top Use Cases</h3>@for (c of useCases; track c) {
     <div class="case-row"><span>{{ c.label }}</span><div><b [style.width.%]="c.value * 2.2"></b></div><em>{{ c.value }}%</em></div>
   }</div>
-  <button mat-flat-button class="sidebar-btn workspace-btn">Open Workspace <lucide-icon [img]="ChevronRightIcon" size="15"></lucide-icon></button>
+  <button mat-flat-button class="sidebar-btn workspace-btn">Open Workspace <svg lucideChevronRight size="15"></svg></button>
 </section>
 </aside>
 </div>
