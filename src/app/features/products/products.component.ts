@@ -1,5 +1,5 @@
 import { Component, computed, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +10,7 @@ import { ProductService, Product } from '../../core/product.service';
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, FormsModule, RouterModule],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, FormsModule, RouterModule],
   template: `
     <div class="products-container">
       <div class="header-section">
@@ -29,15 +29,15 @@ import { ProductService, Product } from '../../core/product.service';
 
       <!-- Categories -->
       <div class="categories-section">
-        <button 
-          class="category-btn" 
+        <button
+          class="category-btn"
           [class.active]="selectedCategory() === 'All'"
           (click)="updateCategory('All')">
           All
         </button>
         @for (cat of categories; track cat) {
-          <button 
-            class="category-btn" 
+          <button
+            class="category-btn"
             [class.active]="selectedCategory() === cat"
             (click)="updateCategory(cat)">
             {{cat}}
@@ -55,7 +55,7 @@ import { ProductService, Product } from '../../core/product.service';
             <p class="banner-text">{{featuredItems[activeBanner()].text}}</p>
             <button mat-flat-button color="primary" class="banner-btn">Get Started</button>
           </div>
-          
+
           <div class="carousel-nav">
             <button class="nav-btn prev" (click)="prevBanner()">
               <mat-icon>chevron_left</mat-icon>
@@ -66,12 +66,13 @@ import { ProductService, Product } from '../../core/product.service';
           </div>
 
           <div class="carousel-indicators">
-            <span 
-              *ngFor="let item of featuredItems; let i = index" 
-              class="indicator" 
-              [class.active]="activeBanner() === i"
-              (click)="activeBanner.set(i)">
-            </span>
+            @for (item of featuredItems; track item; let i = $index) {
+              <span
+                class="indicator"
+                [class.active]="activeBanner() === i"
+                (click)="activeBanner.set(i)">
+              </span>
+            }
           </div>
         </mat-card>
       </div>
@@ -89,114 +90,128 @@ import { ProductService, Product } from '../../core/product.service';
             </button>
           </div>
         </div>
-        
+
         <div class="trending-carousel">
           <div class="trending-track" [style.transform]="'translateX(-' + (activeTrendingSlide() * 100) + '%)'">
-            <div class="trending-slide" *ngFor="let slide of trendingSlides()">
-              <div class="trending-grid">
-                <mat-card class="product-card mini" *ngFor="let product of slide" [routerLink]="['/product', product.id]" style="cursor: pointer;">
-                  <div class="product-image-container mini">
-                    <img [src]="product.image" [alt]="product.name" class="product-img">
-                  </div>
-                  <div class="product-details mini">
-                    <h4 class="product-name mini">{{product.name}}</h4>
-                    <p class="current-price mini">{{product.price}}</p>
-                  </div>
-                </mat-card>
+            @for (slide of trendingSlides(); track slide) {
+              <div class="trending-slide">
+                <div class="trending-grid">
+                  @for (product of slide; track product) {
+                    <mat-card class="product-card mini" [routerLink]="['/product', product.id]" style="cursor: pointer;">
+                      <div class="product-image-container mini">
+                        <img [src]="product.image" [alt]="product.name" class="product-img">
+                      </div>
+                      <div class="product-details mini">
+                        <h4 class="product-name mini">{{product.name}}</h4>
+                        <p class="current-price mini">{{product.price}}</p>
+                      </div>
+                    </mat-card>
+                  }
+                </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>
 
       <!-- Products Grid -->
       <div class="products-grid">
-        <mat-card class="product-card" *ngFor="let product of paginatedProducts()" [routerLink]="['/product', product.id]" style="cursor: pointer;">
-          <div class="product-image-container" (click)="$event.stopPropagation()">
-            <span class="badge" *ngIf="product.badge" [style.background-color]="product.badgeColor">
-              {{product.badge}}
-            </span>
-            <div class="image-wrapper" [style.transform]="'translateX(-' + (product.currentImageIndex || 0) * 100 + '%)'">
-              <img *ngFor="let img of (product.images || [product.image])" [src]="img" [alt]="product.name" class="product-img">
-            </div>
-
-            <!-- Mini Carousel Nav -->
-            <ng-container *ngIf="product.images && product.images.length > 1">
-              <div class="mini-nav">
-                <button class="m-nav-btn prev" (click)="prevProductImg($event, product)">
-                  <mat-icon>chevron_left</mat-icon>
-                </button>
-                <button class="m-nav-btn next" (click)="nextProductImg($event, product)">
-                  <mat-icon>chevron_right</mat-icon>
-                </button>
-              </div>
-              <div class="mini-indicators">
-                <span *ngFor="let img of product.images; let i = index" 
-                      class="m-indicator" 
-                      [class.active]="(product.currentImageIndex || 0) === i">
+        @for (product of paginatedProducts(); track product) {
+          <mat-card class="product-card" [routerLink]="['/product', product.id]" style="cursor: pointer;">
+            <div class="product-image-container" (click)="$event.stopPropagation()">
+              @if (product.badge) {
+                <span class="badge" [style.background-color]="product.badgeColor">
+                  {{product.badge}}
                 </span>
+              }
+              <div class="image-wrapper" [style.transform]="'translateX(-' + (product.currentImageIndex || 0) * 100 + '%)'">
+                @for (img of (product.images || [product.image]); track img) {
+                  <img [src]="img" [alt]="product.name" class="product-img">
+                }
               </div>
-            </ng-container>
-
-            <button class="favorite-btn" [class.active]="product.isFavorite" (click)="toggleFavorite($event, product)">
-              <mat-icon>{{product.isFavorite ? 'favorite' : 'favorite_border'}}</mat-icon>
-            </button>
-          </div>
-          <div class="product-details">
-            @if (!product.isEditing) {
-              <div class="title-row">
-                <h3 class="product-name">{{product.name}}</h3>
-                <div class="rating">
-                  <mat-icon class="star-icon">star</mat-icon>
-                  <span>{{product.rating}} ({{product.reviews}})</span>
+              <!-- Mini Carousel Nav -->
+              @if (product.images && product.images.length > 1) {
+                <div class="mini-nav">
+                  <button class="m-nav-btn prev" (click)="prevProductImg($event, product)">
+                    <mat-icon>chevron_left</mat-icon>
+                  </button>
+                  <button class="m-nav-btn next" (click)="nextProductImg($event, product)">
+                    <mat-icon>chevron_right</mat-icon>
+                  </button>
                 </div>
-              </div>
-              <div class="price-row">
-                <span class="current-price">{{product.price}}</span>
-                <span class="old-price" *ngIf="product.oldPrice">{{product.oldPrice}}</span>
-              </div>
-              <button class="edit-btn" (click)="toggleEdit(product)">Edit Product</button>
-            } @else {
-              <div class="edit-mode">
-                <input class="edit-input" [(ngModel)]="product.name" placeholder="Product Name">
-                <input class="edit-input" [(ngModel)]="product.price" placeholder="Price">
-                <div class="edit-actions">
-                  <button class="save-btn" (click)="toggleEdit(product)">Save</button>
-                  <button class="cancel-btn" (click)="toggleEdit(product)">Cancel</button>
+                <div class="mini-indicators">
+                  @for (img of product.images; track img; let i = $index) {
+                    <span
+                      class="m-indicator"
+                      [class.active]="(product.currentImageIndex || 0) === i">
+                    </span>
+                  }
                 </div>
-              </div>
-            }
-          </div>
-        </mat-card>
+              }
+              <button class="favorite-btn" [class.active]="product.isFavorite" (click)="toggleFavorite($event, product)">
+                <mat-icon>{{product.isFavorite ? 'favorite' : 'favorite_border'}}</mat-icon>
+              </button>
+            </div>
+            <div class="product-details">
+              @if (!product.isEditing) {
+                <div class="title-row">
+                  <h3 class="product-name">{{product.name}}</h3>
+                  <div class="rating">
+                    <mat-icon class="star-icon">star</mat-icon>
+                    <span>{{product.rating}} ({{product.reviews}})</span>
+                  </div>
+                </div>
+                <div class="price-row">
+                  <span class="current-price">{{product.price}}</span>
+                  @if (product.oldPrice) {
+                    <span class="old-price">{{product.oldPrice}}</span>
+                  }
+                </div>
+                <button class="edit-btn" (click)="toggleEdit(product)">Edit Product</button>
+              } @else {
+                <div class="edit-mode">
+                  <input class="edit-input" [(ngModel)]="product.name" placeholder="Product Name">
+                  <input class="edit-input" [(ngModel)]="product.price" placeholder="Price">
+                  <div class="edit-actions">
+                    <button class="save-btn" (click)="toggleEdit(product)">Save</button>
+                    <button class="cancel-btn" (click)="toggleEdit(product)">Cancel</button>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card>
+        }
       </div>
 
       <!-- Pagination -->
-      <div class="pagination-section" *ngIf="totalPages() > 1">
-        <button 
-          class="page-nav-btn" 
-          [disabled]="currentPage() === 1"
-          (click)="currentPage.set(currentPage() - 1)">
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-        <div class="page-numbers">
-          @for (page of pageNumbers(); track page) {
-            <button 
-              class="page-num" 
-              [class.active]="currentPage() === page"
-              (click)="currentPage.set(page)">
-              {{page}}
-            </button>
-          }
+      @if (totalPages() > 1) {
+        <div class="pagination-section">
+          <button
+            class="page-nav-btn"
+            [disabled]="currentPage() === 1"
+            (click)="currentPage.set(currentPage() - 1)">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <div class="page-numbers">
+            @for (page of pageNumbers(); track page) {
+              <button
+                class="page-num"
+                [class.active]="currentPage() === page"
+                (click)="currentPage.set(page)">
+                {{page}}
+              </button>
+            }
+          </div>
+          <button
+            class="page-nav-btn"
+            [disabled]="currentPage() === totalPages()"
+            (click)="currentPage.set(currentPage() + 1)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
         </div>
-        <button 
-          class="page-nav-btn" 
-          [disabled]="currentPage() === totalPages()"
-          (click)="currentPage.set(currentPage() + 1)">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
+      }
     </div>
-  `,
+    `,
   styles: [`
     .products-container {
       display: flex;
@@ -475,7 +490,7 @@ import { ProductService, Product } from '../../core/product.service';
       height: 200px;
       background: var(--bg-color);
       overflow: hidden;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -931,7 +946,7 @@ export class ProductsComponent {
   }
 
   activeTrendingSlide = signal(0);
-  
+
   trendingSlides = computed(() => {
     const products = this.productService.products();
     const slides = [];
@@ -951,7 +966,7 @@ export class ProductsComponent {
   }
 
   categories = ['Electronics', 'Fashion', 'Furniture', 'Sports'];
-  
+
   searchTerm = signal('');
   selectedCategory = signal('All');
   currentPage = signal(1);
@@ -981,7 +996,7 @@ export class ProductsComponent {
 
   filteredProducts = computed(() => {
     let filtered = this.productService.products();
-    
+
     // Search filter
     const term = this.searchTerm().toLowerCase();
     if (term) {

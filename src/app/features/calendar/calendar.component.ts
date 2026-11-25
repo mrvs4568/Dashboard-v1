@@ -57,20 +57,22 @@ interface Day {
           @for (day of calendarDays(); track day.date.getTime()) {
             <div class="calendar-cell" [class.not-current-month]="!day.isCurrentMonth">
               <div class="day-number" [class.today]="day.isToday">{{ day.date.getDate() }}</div>
-              
-              <div class="events-container" *ngIf="day.events.length > 0">
-                @for (event of day.events; track event.id) {
-                  <div class="event-capsule" [ngClass]="event.colorClass">
-                     {{ event.title }}
-                  </div>
-                }
-              </div>
+
+              @if (day.events.length > 0) {
+                <div class="events-container">
+                  @for (event of day.events; track event.id) {
+                    <div class="event-capsule" [ngClass]="event.colorClass">
+                      {{ event.title }}
+                    </div>
+                  }
+                </div>
+              }
             </div>
           }
         </div>
       </div>
     </div>
-  `,
+    `,
   styles: [`
     :host {
       display: block;
@@ -286,7 +288,7 @@ interface Day {
 export class CalendarComponent {
   private dialog = inject(MatDialog);
   private calendarService = inject(CalendarService);
-  
+
   currentDate = signal(new Date());
 
   currentMonthName = computed(() => {
@@ -310,7 +312,7 @@ export class CalendarComponent {
 
     const days: Day[] = [];
     const allEvents = this.calendarService.events();
-    
+
     // Previous month's trailing days
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
@@ -327,7 +329,7 @@ export class CalendarComponent {
     const today = new Date();
     for (let i = 1; i <= daysInMonth; i++) {
        const cellDate = new Date(year, month, i);
-       
+
        days.push({
          date: cellDate,
          isCurrentMonth: true,

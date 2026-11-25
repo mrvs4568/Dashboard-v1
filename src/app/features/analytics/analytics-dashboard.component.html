@@ -4,7 +4,7 @@
       <h1>Analytics</h1>
       <p>Comprehensive insights and performance analytics</p>
     </div>
-    
+
     <div class="header-actions">
       <button mat-flat-button class="action-btn" [matMenuTriggerFor]="periodMenu">
         <mat-icon>calendar_today</mat-icon>
@@ -12,37 +12,45 @@
         <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
       </button>
       <mat-menu #periodMenu="matMenu">
-        <button mat-menu-item *ngFor="let p of periods" (click)="setPeriod(p)">{{p}}</button>
+        @for (p of periods; track p) {
+          <button mat-menu-item (click)="setPeriod(p)">{{p}}</button>
+        }
       </mat-menu>
       <button mat-icon-button class="action-btn icon-only">
         <mat-icon>filter_list</mat-icon>
       </button>
       <button mat-icon-button class="action-btn theme-toggle" (click)="toggleTheme()">
-        <mat-icon *ngIf="isDarkMode()">light_mode</mat-icon>
-        <mat-icon *ngIf="!isDarkMode()">dark_mode</mat-icon>
+        @if (isDarkMode()) {
+          <mat-icon>light_mode</mat-icon>
+        }
+        @if (!isDarkMode()) {
+          <mat-icon>dark_mode</mat-icon>
+        }
       </button>
     </div>
   </header>
 
   <div class="kpi-grid">
-    <mat-card class="kpi-card glass-panel" *ngFor="let item of topMetrics(); let i = index" 
-              [style.--accent]="item.color" [style.--anim-delay]="i * 0.1 + 's'">
-      <div class="kpi-header">
-        <div class="kpi-icon">
-          <mat-icon>{{item.icon}}</mat-icon>
+    @for (item of topMetrics(); track item; let i = $index) {
+      <mat-card class="kpi-card glass-panel"
+        [style.--accent]="item.color" [style.--anim-delay]="i * 0.1 + 's'">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <mat-icon>{{item.icon}}</mat-icon>
+          </div>
+          <span class="kpi-label">{{item.label}}</span>
         </div>
-        <span class="kpi-label">{{item.label}}</span>
-      </div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{item.value}}</div>
-        <div class="kpi-change">
-          <mat-icon [ngClass]="{'up': !item.down, 'down': item.down}">{{item.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon>
-          <span [ngClass]="{'up-text': !item.down, 'down-text': item.down}">{{item.change}}</span>
-          <span class="kpi-change-label">from last month</span>
+        <div class="kpi-body">
+          <div class="kpi-value">{{item.value}}</div>
+          <div class="kpi-change">
+            <mat-icon [ngClass]="{'up': !item.down, 'down': item.down}">{{item.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon>
+            <span [ngClass]="{'up-text': !item.down, 'down-text': item.down}">{{item.change}}</span>
+            <span class="kpi-change-label">from last month</span>
+          </div>
         </div>
-      </div>
-      <div class="kpi-sparkline" echarts [options]="topMetricsCharts[i]"></div>
-    </mat-card>
+        <div class="kpi-sparkline" echarts [options]="topMetricsCharts[i]"></div>
+      </mat-card>
+    }
   </div>
 
   <div class="main-grid">
@@ -86,24 +94,26 @@
         <div class="sparkline-wrapper" echarts [options]="realtimeOpts"></div>
       </div>
       <div class="realtime-list">
-        <div class="rt-item" *ngFor="let row of realTimeRows(); let i = index" [style.--anim-delay]="0.8 + i * 0.1 + 's'">
-          <div class="rt-left">
-            <div class="rt-icon"><mat-icon>{{row.icon}}</mat-icon></div>
-            <span>{{row.label}}</span>
+        @for (row of realTimeRows(); track row; let i = $index) {
+          <div class="rt-item" [style.--anim-delay]="0.8 + i * 0.1 + 's'">
+            <div class="rt-left">
+              <div class="rt-icon"><mat-icon>{{row.icon}}</mat-icon></div>
+              <span>{{row.label}}</span>
+            </div>
+            <div class="rt-right">
+              <strong>{{row.value}}</strong>
+              <span class="rt-change" [class.down]="row.down" [class.up]="!row.down">
+                <mat-icon>{{row.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon> {{row.change}}
+              </span>
+            </div>
           </div>
-          <div class="rt-right">
-            <strong>{{row.value}}</strong>
-            <span class="rt-change" [class.down]="row.down" [class.up]="!row.down">
-              <mat-icon>{{row.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon> {{row.change}}
-            </span>
-          </div>
-        </div>
+        }
       </div>
     </mat-card>
 
     <mat-card class="glass-panel ai-card fade-in" style="--anim-delay: 0.8s">
       <div class="ai-header">
-        <mat-icon class="ai-icon">auto_awesome</mat-icon> 
+        <mat-icon class="ai-icon">auto_awesome</mat-icon>
         <span>AI Insights</span>
       </div>
       <div class="ai-prediction">
@@ -117,13 +127,15 @@
         <div class="pred-chart" echarts [options]="predictionOpts"></div>
       </div>
       <div class="insights-list">
-        <div class="insight-item" *ngFor="let i of insights(); let idx = index" [style.--anim-delay]="0.9 + idx * 0.1 + 's'">
-          <mat-icon [style.color]="i.color">{{i.icon}}</mat-icon>
-          <div class="insight-content">
-            <h4 [style.color]="i.color">{{i.title}}</h4>
-            <p>{{i.text}}</p>
+        @for (i of insights(); track i; let idx = $index) {
+          <div class="insight-item" [style.--anim-delay]="0.9 + idx * 0.1 + 's'">
+            <mat-icon [style.color]="i.color">{{i.icon}}</mat-icon>
+            <div class="insight-content">
+              <h4 [style.color]="i.color">{{i.title}}</h4>
+              <p>{{i.text}}</p>
+            </div>
           </div>
-        </div>
+        }
       </div>
       <button mat-flat-button class="view-all-btn">View All Insights</button>
     </mat-card>
@@ -136,15 +148,17 @@
         <button mat-button class="dropdown-btn">This Month</button>
       </div>
       <div class="funnel-container">
-        <div class="funnel-row" *ngFor="let f of funnel(); let i = index" [style.--anim-delay]="1.0 + i * 0.1 + 's'">
-          <div class="funnel-bar">
-            <div class="fill" [style.width]="f.width">
-              <span class="f-name">{{f.name}}</span>
-              <span class="f-val">{{f.value}}</span>
+        @for (f of funnel(); track f; let i = $index) {
+          <div class="funnel-row" [style.--anim-delay]="1.0 + i * 0.1 + 's'">
+            <div class="funnel-bar">
+              <div class="fill" [style.width]="f.width">
+                <span class="f-name">{{f.name}}</span>
+                <span class="f-val">{{f.value}}</span>
+              </div>
             </div>
+            <div class="f-rate">{{f.rate}}</div>
           </div>
-          <div class="f-rate">{{f.rate}}</div>
-        </div>
+        }
       </div>
       <mat-divider></mat-divider>
       <div class="widget-footer">
@@ -194,16 +208,18 @@
           </div>
         </div>
         <div class="traffic-legend">
-          <div class="legend-item" *ngFor="let t of traffic(); let i = index" [style.--anim-delay]="1.2 + i * 0.1 + 's'">
-            <div class="l-left">
-              <span class="dot" [style.backgroundColor]="t.color"></span>
-              {{t.name}}
+          @for (t of traffic(); track t; let i = $index) {
+            <div class="legend-item" [style.--anim-delay]="1.2 + i * 0.1 + 's'">
+              <div class="l-left">
+                <span class="dot" [style.backgroundColor]="t.color"></span>
+                {{t.name}}
+              </div>
+              <div class="l-right">
+                <strong>{{t.percent}}</strong>
+                <span>{{t.value}}</span>
+              </div>
             </div>
-            <div class="l-right">
-              <strong>{{t.percent}}</strong>
-              <span>{{t.value}}</span>
-            </div>
-          </div>
+          }
         </div>
       </div>
     </mat-card>
@@ -232,11 +248,13 @@
         <mat-icon class="globe">public</mat-icon>
       </div>
       <div class="geo-list">
-        <div class="geo-item" *ngFor="let g of geo()">
-          <span class="g-name">{{g.name}}</span>
-          <strong class="g-pct">{{g.percent}}</strong>
-          <span class="g-val">{{g.value}}</span>
-        </div>
+        @for (g of geo(); track g) {
+          <div class="geo-item">
+            <span class="g-name">{{g.name}}</span>
+            <strong class="g-pct">{{g.percent}}</strong>
+            <span class="g-val">{{g.value}}</span>
+          </div>
+        }
       </div>
     </mat-card>
 
@@ -272,13 +290,15 @@
       <h3>KPI Overview <mat-icon>info</mat-icon></h3>
     </div>
     <div class="strip-grid">
-      <div class="strip-item" *ngFor="let k of bottomKpis()">
-        <span class="s-label">{{k.label}}</span>
-        <strong class="s-val">{{k.value}}</strong>
-        <span class="s-change" [class.down]="k.down" [class.up]="!k.down">
-          <mat-icon>{{k.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon> {{k.change}}
-        </span>
-      </div>
+      @for (k of bottomKpis(); track k) {
+        <div class="strip-item">
+          <span class="s-label">{{k.label}}</span>
+          <strong class="s-val">{{k.value}}</strong>
+          <span class="s-change" [class.down]="k.down" [class.up]="!k.down">
+            <mat-icon>{{k.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon> {{k.change}}
+          </span>
+        </div>
+      }
     </div>
   </mat-card>
 </div>

@@ -1,12 +1,12 @@
 import { Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-stat-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, LucideAngularModule],
+  imports: [MatCardModule, LucideAngularModule],
   template: `
     <div class="stat-card">
       <div class="card-glow" [style.background-color]="iconBgColor()"></div>
@@ -48,7 +48,7 @@ import { LucideAngularModule } from 'lucide-angular';
         transform: translateY(-4px) scale(1.01);
         box-shadow: var(--shadow-lg), inset 0 1px 0 0 rgba(255,255,255,0.8);
         border-color: var(--primary);
-        
+
         .card-glow {
           opacity: 0.15;
           transform: scale(1.5);
@@ -130,7 +130,7 @@ import { LucideAngularModule } from 'lucide-angular';
       gap: 4px;
       padding: 4px 10px 4px 8px;
       border-radius: 100px;
-      
+
       &.up { 
         color: #059669; 
         background: rgba(16, 185, 129, 0.1);
@@ -139,7 +139,7 @@ import { LucideAngularModule } from 'lucide-angular';
         color: #E11D48; 
         background: rgba(225, 29, 72, 0.1);
       }
-      
+
       .trend-icon {
         stroke-width: 3px;
       }

@@ -1,11 +1,11 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { ProductStockService, ProductStock } from '../../core/product-stock.service';
 
 @Component({
   selector: 'app-product-stock',
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
   template: `
     <div class="product-stock-container">
       <header class="page-header">
@@ -212,7 +212,7 @@ import { ProductStockService, ProductStock } from '../../core/product-stock.serv
       width: 100%;
       min-width: 1000px;
       border-collapse: collapse;
-      
+
       th {
         padding: 20px;
         background: var(--bg-color);
@@ -247,7 +247,7 @@ import { ProductStockService, ProductStock } from '../../core/product-stock.serv
       border-radius: 12px;
       overflow: hidden;
       background: var(--bg-color);
-      
+
       img { width: 100%; height: 100%; object-fit: cover; }
     }
 
@@ -293,7 +293,7 @@ import { ProductStockService, ProductStock } from '../../core/product-stock.serv
     .color-swatch {
       display: flex;
       gap: -4px; /* Stacked effect */
-      
+
       .color-dot {
         width: 24px;
         height: 24px;
@@ -333,7 +333,7 @@ import { ProductStockService, ProductStock } from '../../core/product-stock.serv
       &:hover {
         background: var(--bg-color);
         transform: translateY(-2px);
-        
+
         &.edit mat-icon { color: var(--primary); opacity: 1; }
         &.delete mat-icon { color: var(--error); opacity: 1; }
       }

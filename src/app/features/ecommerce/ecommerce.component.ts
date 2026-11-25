@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -43,15 +43,14 @@ export interface KpiCard {
   selector: 'app-ecommerce',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
     MatDividerModule,
     MatIconModule,
     MatMenuModule,
-    NgxEchartsDirective,
-  ],
+    NgxEchartsDirective
+],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './ecommerce.component.html',
   styleUrls: ['./ecommerce.component.scss'],
