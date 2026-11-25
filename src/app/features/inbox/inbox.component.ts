@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -201,7 +201,7 @@ interface Email {
                 <div class="sender-info">
                   <div class="sender-avatar">
                     @if (selectedEmail()?.avatar) {
-                      <img [src]="selectedEmail()?.avatar" [alt]="selectedEmail()?.sender">
+                      <img [src]="$safeNavigationMigration(selectedEmail()?.avatar)" [alt]="$safeNavigationMigration(selectedEmail()?.sender)">
                     }
                     @if (!selectedEmail()?.avatar) {
                       <div class="avatar-placeholder">
@@ -290,6 +290,7 @@ interface Email {
           </div>
         </div>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .inbox-container {
       display: flex;

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ViewChild, AfterViewInit, OnInit, inject, Inject, Optional } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit, inject, Inject, Optional, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -111,6 +111,7 @@ const ELEMENT_DATA: UserData[] = [
       </form>
     </div>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .dialog-container {
       display: flex;
@@ -197,6 +198,7 @@ export class UserDialogComponent {
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .dialog-container {
       display: flex;
@@ -289,6 +291,7 @@ export class ConfirmDialogComponent {
       </div>
     </div>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .dialog-container {
       display: flex;
@@ -502,6 +505,7 @@ export class ActivityLogDialogComponent implements OnInit {
       </mat-card>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .users-page {
       display: flex;

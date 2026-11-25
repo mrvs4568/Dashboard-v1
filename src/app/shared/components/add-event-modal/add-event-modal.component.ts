@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -96,6 +96,7 @@ import { CalendarService } from '../../../core/services/calendar.service';
         </form>
       </div>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     :host {
       display: block;

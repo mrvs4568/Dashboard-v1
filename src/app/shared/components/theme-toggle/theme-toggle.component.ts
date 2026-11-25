@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { LucideSun, LucideMoon } from '@lucide/angular';
@@ -17,6 +17,7 @@ import { ThemeService } from '../../../core/services/theme.service';
       }
     </button>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .theme-btn {
       color: var(--text-main);

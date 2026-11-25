@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject } from '@angular/core';
+import { Component, computed, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -212,6 +212,7 @@ import { ProductService, Product } from '../../core/product.service';
       }
     </div>
     `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .products-container {
       display: flex;
