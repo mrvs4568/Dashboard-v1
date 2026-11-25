@@ -7,7 +7,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LucideAngularModule, TrendingUp, TrendingDown } from 'lucide-angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
-import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 
 import { StatCardComponent } from '../../shared/components/stat-card/stat-card.component';
 import { CreateWidgetModalComponent } from '../../shared/components/create-widget-modal/create-widget-modal';
@@ -28,7 +28,8 @@ import { NotificationService } from '../../core/services/notification.service';
     StatCardComponent, 
     CdkDropList, 
     CdkDrag, 
-    CdkDragHandle
+    CdkDragHandle,
+    CdkDragPlaceholder
   ],
   template: `
     <div class="dashboard-container">
