@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, signal, ViewEncapsulation } from '@angular/core';
+import { ThemeService } from '../../core/services/theme.service';
+import { ChangeDetectionStrategy, Component, computed, signal, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,18 +36,12 @@ echarts.use([LineChart, BarChart, PieChart, HeatmapChart, TooltipComponent, Grid
   encapsulation: ViewEncapsulation.None
 })
 export class AnalyticsDashboardComponent {
-  // Theme state
-  isDarkMode = signal(true);
-  
-  toggleTheme() {
-    this.isDarkMode.set(!this.isDarkMode());
-    if (this.isDarkMode()) {
-      document.body.classList.remove('light-theme');
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-      document.body.classList.add('light-theme');
-    }
+  private readonly themeService = inject(ThemeService);
+
+  readonly isDarkMode = this.themeService.isDarkMode.asReadonly();
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   // Derived theme-based variables
