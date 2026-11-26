@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, signal, OnInit } from '@angular/core';
+import { ThemeService } from '../../core/services/theme.service';
+import { ChangeDetectionStrategy, Component, computed, signal, OnInit, inject, effect, ChangeDetectorRef } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -57,7 +58,21 @@ export interface KpiCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EcommerceComponent implements OnInit {
-  readonly isDark = signal(true);
+  private readonly themeService = inject(ThemeService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+
+  readonly isDark = this.themeService.isDarkMode.asReadonly();
+
+  private chartsTheme: boolean | undefined;
+
+  constructor() {
+    effect(() => {
+      if (this.chartsTheme !== this.isDark()) {
+        this.initCharts();
+        this.changeDetector.markForCheck();
+      }
+    });
+  }
   readonly themeLabel = computed(() => (this.isDark() ? 'Dark' : 'Light'));
 
   readonly metrics = [
@@ -137,8 +152,7 @@ export class EcommerceComponent implements OnInit {
   }
 
   toggleTheme(): void {
-    this.isDark.update((v) => !v);
-    this.initCharts();
+    this.themeService.toggleTheme();
   }
 
   setTimeRange(range: string) {
@@ -156,6 +170,7 @@ export class EcommerceComponent implements OnInit {
   }
 
   private initCharts() {
+    this.chartsTheme = this.isDark();
     this.kpis = [
       { label: 'Total Revenue', value: '$248,760', delta: '18.6%', helper: 'vs last month', icon: 'attach_money', tone: 'violet', spark: this.spark('#8b5cf6', [7, 10, 9, 12, 18, 15, 23, 21, 28, 25, 35]) },
       { label: 'Total Orders', value: '8,756', delta: '14.2%', helper: 'vs last month', icon: 'shopping_bag', tone: 'green', spark: this.spark('#22c55e', [3, 4, 6, 5, 7, 9, 8, 12, 11, 14, 18]) },
