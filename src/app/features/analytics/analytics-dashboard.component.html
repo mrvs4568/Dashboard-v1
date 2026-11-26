@@ -34,15 +34,15 @@
     @for (item of topMetrics(); track item; let i = $index) {
       <mat-card class="kpi-card glass-panel"
         [style.--accent]="item.color" [style.--anim-delay]="i * 0.1 + 's'">
-        <div class="kpi-header">
+        <div class="kpi-header flex items-center">
           <div class="kpi-icon">
             <mat-icon>{{item.icon}}</mat-icon>
           </div>
           <span class="kpi-label">{{item.label}}</span>
         </div>
-        <div class="kpi-body">
+        <div class="kpi-body flex flex-col justify-end">
           <div class="kpi-value">{{item.value}}</div>
-          <div class="kpi-change">
+          <div class="kpi-change flex items-center">
             <mat-icon [ngClass]="{'up': !item.down, 'down': item.down}">{{item.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon>
             <span [ngClass]="{'up-text': !item.down, 'down-text': item.down}">{{item.change}}</span>
             <span class="kpi-change-label">from last month</span>
@@ -55,54 +55,54 @@
 
   <div class="main-grid">
     <mat-card class="glass-panel main-chart-card revenue-card fade-in" style="--anim-delay: 0.5s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Revenue Analytics <mat-icon>info</mat-icon></h3>
         <button mat-button class="dropdown-btn">Monthly <mat-icon>expand_more</mat-icon></button>
       </div>
       <div class="card-meta">
         <div class="meta-label">Total Revenue</div>
         <div class="meta-value">$98,765.42</div>
-        <div class="meta-change up"><mat-icon>arrow_upward</mat-icon> 18.2% from last month</div>
+        <div class="meta-change up flex items-center"><mat-icon>arrow_upward</mat-icon> 18.2% from last month</div>
       </div>
       <div class="chart-container-xl" echarts [options]="revenueChartOpts"></div>
     </mat-card>
 
     <mat-card class="glass-panel main-chart-card fade-in" style="--anim-delay: 0.6s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Sales Performance <mat-icon>info</mat-icon></h3>
         <button mat-button class="dropdown-btn">This Month <mat-icon>expand_more</mat-icon></button>
       </div>
       <div class="card-meta">
         <div class="meta-label">Total Sales</div>
         <div class="meta-value">$76,430.68</div>
-        <div class="meta-change up"><mat-icon>arrow_upward</mat-icon> 14.8% from last month</div>
+        <div class="meta-change up flex items-center"><mat-icon>arrow_upward</mat-icon> 14.8% from last month</div>
       </div>
       <div class="chart-container-lg" echarts [options]="salesChartOpts"></div>
     </mat-card>
 
     <mat-card class="glass-panel realtime-card fade-in" style="--anim-delay: 0.7s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Real-Time Metrics <mat-icon>info</mat-icon></h3>
-        <div class="live-indicator"><span class="pulse"></span> Live <mat-icon>expand_more</mat-icon></div>
+        <div class="live-indicator flex items-center"><span class="pulse"></span> Live <mat-icon>expand_more</mat-icon></div>
       </div>
-      <div class="realtime-highlight">
+      <div class="realtime-highlight flex items-end justify-between">
         <div class="highlight-info">
           <div class="meta-label">Active Users</div>
           <div class="meta-value">8,583</div>
-          <div class="meta-change up"><mat-icon>arrow_upward</mat-icon> 120 today</div>
+          <div class="meta-change up flex items-center"><mat-icon>arrow_upward</mat-icon> 120 today</div>
         </div>
         <div class="sparkline-wrapper" echarts [options]="realtimeOpts"></div>
       </div>
-      <div class="realtime-list">
+      <div class="realtime-list flex flex-col">
         @for (row of realTimeRows(); track row; let i = $index) {
-          <div class="rt-item" [style.--anim-delay]="0.8 + i * 0.1 + 's'">
-            <div class="rt-left">
+          <div class="rt-item flex items-center justify-between" [style.--anim-delay]="0.8 + i * 0.1 + 's'">
+            <div class="rt-left flex items-center">
               <div class="rt-icon"><mat-icon>{{row.icon}}</mat-icon></div>
               <span>{{row.label}}</span>
             </div>
-            <div class="rt-right">
+            <div class="rt-right flex items-center">
               <strong>{{row.value}}</strong>
-              <span class="rt-change" [class.down]="row.down" [class.up]="!row.down">
+              <span class="rt-change flex items-center" [class.down]="row.down" [class.up]="!row.down">
                 <mat-icon>{{row.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon> {{row.change}}
               </span>
             </div>
@@ -112,23 +112,23 @@
     </mat-card>
 
     <mat-card class="glass-panel ai-card fade-in" style="--anim-delay: 0.8s">
-      <div class="ai-header">
+      <div class="ai-header flex items-center">
         <mat-icon class="ai-icon">auto_awesome</mat-icon>
         <span>AI Insights</span>
       </div>
       <div class="ai-prediction">
         <div class="pred-meta">
           <div class="meta-label">Revenue Prediction <span class="small-tag">Next 30 days</span></div>
-          <div class="pred-row">
+          <div class="pred-row flex items-end justify-between">
             <div class="meta-value">$124,563</div>
-            <div class="meta-change up"><mat-icon>arrow_upward</mat-icon> 23.8%</div>
+            <div class="meta-change up flex items-center"><mat-icon>arrow_upward</mat-icon> 23.8%</div>
           </div>
         </div>
         <div class="pred-chart" echarts [options]="predictionOpts"></div>
       </div>
-      <div class="insights-list">
+      <div class="insights-list flex flex-col">
         @for (i of insights(); track i; let idx = $index) {
-          <div class="insight-item" [style.--anim-delay]="0.9 + idx * 0.1 + 's'">
+          <div class="insight-item flex" [style.--anim-delay]="0.9 + idx * 0.1 + 's'">
             <mat-icon [style.color]="i.color">{{i.icon}}</mat-icon>
             <div class="insight-content">
               <h4 [style.color]="i.color">{{i.title}}</h4>
@@ -143,17 +143,20 @@
 
   <div class="widgets-grid">
     <mat-card class="glass-panel widget-card fade-in" style="--anim-delay: 0.9s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Conversion Funnel</h3>
         <button mat-button class="dropdown-btn">This Month</button>
       </div>
-      <div class="funnel-container">
+      <div class="funnel-container flex flex-col">
         @for (f of funnel(); track f; let i = $index) {
-          <div class="funnel-row" [style.--anim-delay]="1.0 + i * 0.1 + 's'">
+          <div class="funnel-row flex items-center" [style.--anim-delay]="1.0 + i * 0.1 + 's'">
             <div class="funnel-bar">
-              <div class="fill" [style.width]="f.width">
+              <div class="funnel-label flex items-center justify-between">
                 <span class="f-name">{{f.name}}</span>
                 <span class="f-val">{{f.value}}</span>
+              </div>
+              <div class="funnel-track">
+                <div class="fill" [style.width]="f.rate"></div>
               </div>
             </div>
             <div class="f-rate">{{f.rate}}</div>
@@ -161,33 +164,33 @@
         }
       </div>
       <mat-divider></mat-divider>
-      <div class="widget-footer">
+      <div class="widget-footer flex items-end justify-between">
         <div class="footer-meta">
           <div class="meta-label">Conversion Rate</div>
           <div class="meta-value">4.8%</div>
         </div>
-        <div class="meta-change up highlight"><mat-icon>arrow_upward</mat-icon> 12.6%</div>
+        <div class="meta-change up highlight flex items-center"><mat-icon>arrow_upward</mat-icon> 12.6%</div>
       </div>
     </mat-card>
 
     <mat-card class="glass-panel widget-card fade-in" style="--anim-delay: 1.0s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>User Growth <mat-icon>info</mat-icon></h3>
         <button mat-button class="dropdown-btn">This Year</button>
       </div>
       <div class="card-meta slim">
         <div class="meta-label">Total Users</div>
         <div class="meta-value">142,783</div>
-        <div class="meta-change up"><mat-icon>arrow_upward</mat-icon> 24.5% from last year</div>
+        <div class="meta-change up flex items-center"><mat-icon>arrow_upward</mat-icon> 24.5% from last year</div>
       </div>
       <div class="chart-container-sm" echarts [options]="userGrowthOpts"></div>
       <mat-divider></mat-divider>
-      <div class="widget-footer gap-cols">
-        <div class="footer-col">
+      <div class="widget-footer gap-cols flex items-end justify-between">
+        <div class="footer-col flex flex-col">
           <span class="col-label">New Users</span>
           <strong class="col-val">16,580</strong>
         </div>
-        <div class="footer-col right">
+        <div class="footer-col right flex flex-col">
           <span class="col-label">Returning</span>
           <strong class="col-val">26,450</strong>
         </div>
@@ -195,26 +198,26 @@
     </mat-card>
 
     <mat-card class="glass-panel widget-card fade-in" style="--anim-delay: 1.1s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Traffic Sources <mat-icon>info</mat-icon></h3>
         <button mat-button class="dropdown-btn">This Month</button>
       </div>
-      <div class="traffic-content">
+      <div class="traffic-content flex flex-col justify-around">
         <div class="donut-wrapper">
           <div class="chart-container-md" echarts [options]="trafficOpts"></div>
-          <div class="donut-center">
+          <div class="donut-center flex flex-col items-center justify-center">
             <strong>128,643</strong>
             <span>Total</span>
           </div>
         </div>
-        <div class="traffic-legend">
+        <div class="traffic-legend flex flex-col">
           @for (t of traffic(); track t; let i = $index) {
-            <div class="legend-item" [style.--anim-delay]="1.2 + i * 0.1 + 's'">
-              <div class="l-left">
+            <div class="legend-item flex items-center justify-between" [style.--anim-delay]="1.2 + i * 0.1 + 's'">
+              <div class="l-left flex items-center">
                 <span class="dot" [style.backgroundColor]="t.color"></span>
                 {{t.name}}
               </div>
-              <div class="l-right">
+              <div class="l-right flex items-center">
                 <strong>{{t.percent}}</strong>
                 <span>{{t.value}}</span>
               </div>
@@ -225,12 +228,12 @@
     </mat-card>
 
     <mat-card class="glass-panel widget-card fade-in" style="--anim-delay: 1.2s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Engagement Heatmap</h3>
         <button mat-button class="dropdown-btn">This Month</button>
       </div>
       <div class="chart-container-md heatmap" echarts [options]="heatmapOpts"></div>
-      <div class="heatmap-legend">
+      <div class="heatmap-legend flex items-center justify-center">
         <span>Low</span>
         <div class="gradient-bar"></div>
         <span>High</span>
@@ -238,18 +241,18 @@
     </mat-card>
 
     <mat-card class="glass-panel widget-card fade-in" style="--anim-delay: 1.3s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Geographic Details</h3>
         <button mat-button class="dropdown-btn">This Month</button>
       </div>
-      <div class="map-illustration">
+      <div class="map-illustration flex items-center justify-center">
         <mat-icon class="pin-1">location_on</mat-icon>
         <mat-icon class="pin-2">location_on</mat-icon>
         <mat-icon class="globe">public</mat-icon>
       </div>
-      <div class="geo-list">
+      <div class="geo-list flex flex-col">
         @for (g of geo(); track g) {
-          <div class="geo-item">
+          <div class="geo-item flex items-center">
             <span class="g-name">{{g.name}}</span>
             <strong class="g-pct">{{g.percent}}</strong>
             <span class="g-val">{{g.value}}</span>
@@ -259,25 +262,25 @@
     </mat-card>
 
     <mat-card class="glass-panel widget-card fade-in" style="--anim-delay: 1.4s">
-      <div class="card-header">
+      <div class="card-header flex items-center justify-between">
         <h3>Customer Retention</h3>
         <button mat-button class="dropdown-btn">This Month</button>
       </div>
       <div class="card-meta slim">
         <div class="meta-label">Retention Rate</div>
-        <div class="meta-title-flex">
+        <div class="meta-title-flex flex items-end">
           <div class="meta-value">76.4%</div>
-          <div class="meta-change up"><mat-icon>arrow_upward</mat-icon> 8.2%</div>
+          <div class="meta-change up flex items-center"><mat-icon>arrow_upward</mat-icon> 8.2%</div>
         </div>
       </div>
       <div class="chart-container-sm" echarts [options]="customerRetentionOpts"></div>
       <mat-divider></mat-divider>
-      <div class="widget-footer gap-cols">
-        <div class="footer-col">
+      <div class="widget-footer gap-cols flex items-end justify-between">
+        <div class="footer-col flex flex-col">
           <span class="col-label">New Customers</span>
           <strong class="col-val">8,425</strong>
         </div>
-        <div class="footer-col right">
+        <div class="footer-col right flex flex-col">
           <span class="col-label">Churned</span>
           <strong class="col-val text-red">1,982</strong>
         </div>
@@ -286,15 +289,15 @@
   </div>
 
   <mat-card class="glass-panel bottom-strip fade-in" style="--anim-delay: 1.5s">
-    <div class="card-header strip-header">
+    <div class="card-header strip-header flex items-center justify-between">
       <h3>KPI Overview <mat-icon>info</mat-icon></h3>
     </div>
     <div class="strip-grid">
       @for (k of bottomKpis(); track k) {
-        <div class="strip-item">
+        <div class="strip-item flex flex-col">
           <span class="s-label">{{k.label}}</span>
           <strong class="s-val">{{k.value}}</strong>
-          <span class="s-change" [class.down]="k.down" [class.up]="!k.down">
+          <span class="s-change flex items-center" [class.down]="k.down" [class.up]="!k.down">
             <mat-icon>{{k.down ? 'arrow_downward' : 'arrow_upward'}}</mat-icon> {{k.change}}
           </span>
         </div>

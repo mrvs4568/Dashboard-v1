@@ -106,10 +106,10 @@ export class AnalyticsDashboardComponent {
   funnel = computed(() => {
     const m = this.periodMultiplier();
     return [
-      { name: 'Visitors', value: Math.floor(128643 * m).toLocaleString(), rate: '100%', width: '100%' },
-      { name: 'Add to Cart', value: Math.floor(34850 * m).toLocaleString(), rate: '27.1%', width: '85%' },
-      { name: 'Checkout', value: Math.floor(18392 * m).toLocaleString(), rate: '14.3%', width: '65%' },
-      { name: 'Purchase', value: Math.floor(6184 * m).toLocaleString(), rate: '4.8%', width: '45%' }
+      { name: 'Visitors', value: Math.floor(128643 * m).toLocaleString(), rate: '100%' },
+      { name: 'Add to Cart', value: Math.floor(34850 * m).toLocaleString(), rate: '27.1%' },
+      { name: 'Checkout', value: Math.floor(18392 * m).toLocaleString(), rate: '14.3%' },
+      { name: 'Purchase', value: Math.floor(6184 * m).toLocaleString(), rate: '4.8%' }
     ];
   });
 
