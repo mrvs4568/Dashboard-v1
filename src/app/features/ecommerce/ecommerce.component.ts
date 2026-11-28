@@ -35,6 +35,7 @@ export interface KpiCard {
   value: string;
   delta: string;
   helper: string;
+  previousValue: string;
   icon: string;
   tone: 'violet' | 'green' | 'blue' | 'amber' | 'pink';
   spark: EChartsCoreOption;
@@ -108,19 +109,118 @@ export class EcommerceComponent implements OnInit {
 
   readonly vendorsSearch = signal('');
   readonly filteredVendors = computed(() => {
-    const search = this.vendorsSearch().toLowerCase();
+    const search = this.vendorsSearch().trim().toLowerCase();
     if (!search) return this.vendors;
     return this.vendors.filter(v => v.name.toLowerCase().includes(search));
   });
 
+  readonly productTrendFilter = signal<'all' | Trend>('all');
   readonly productTrendsSearch = signal('');
+
+  readonly filtersActive = computed(() =>
+    this.productTrendFilter() !== 'all' ||
+    !!this.vendorsSearch().trim() ||
+    !!this.productTrendsSearch().trim()
+  );
+
+  readonly productFilterLabel = computed(() => {
+    switch (this.productTrendFilter()) {
+      case 'up': return 'Rising products';
+      case 'down': return 'Declining products';
+      default: return 'All products';
+    }
+  });
   readonly filteredProducts = computed(() => {
-    const search = this.productTrendsSearch().toLowerCase();
-    if (!search) return this.productTrends;
-    return this.productTrends.filter(p => p.name.toLowerCase().includes(search));
+    const search = this.productTrendsSearch().trim().toLowerCase();
+    const trend = this.productTrendFilter();
+
+    return this.productTrends.filter(p =>
+      (trend === 'all' || p.trend === trend) &&
+      (!search || p.name.toLowerCase().includes(search))
+    );
   });
 
   readonly selectedTimeRange = signal('Last 30 Days');
+  readonly compareEnabled = signal(false);
+
+  readonly periodTotals = computed(() => {
+    const factors: Record<string, number> = {
+      'Today': 1 / 30,
+      'Last 7 Days': 7 / 30,
+      'Last 30 Days': 1,
+      'Last 90 Days': 3,
+      'This Year': 12
+    };
+
+    const factor = factors[this.selectedTimeRange()] ?? 1;
+    const revenue = Math.round(24876050 * factor);
+    const orders = Math.round(8756 * factor);
+    const customers = Math.round(6582 * factor);
+
+    return {
+      revenue,
+      orders,
+      customers,
+      previousRevenue: Math.round(revenue / 1.186),
+      previousOrders: Math.round(orders / 1.142),
+      previousCustomers: Math.round(customers / 1.128)
+    };
+  });
+
+  money(cents: number): string {
+    return (cents / 100).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+  }
+
+  private metric(
+    current: number,
+    previous: number,
+    format: (value: number) => string
+  ) {
+    const change = previous > 0
+      ? ((current - previous) / previous) * 100
+      : 0;
+    const rounded = Number(change.toFixed(1));
+
+    return {
+      value: format(current),
+      previousValue: format(previous),
+      delta: `${rounded > 0 ? '+' : ''}${rounded.toFixed(1)}%`,
+      helper: 'vs prior period'
+    };
+  }
+
+  private periodSeries(
+    total: number,
+    weights: number[],
+    divisor = 1
+  ): number[] {
+    const buckets: Record<string, number> = {
+      'Today': 6,
+      'Last 7 Days': 7,
+      'Last 30 Days': 10,
+      'Last 90 Days': 9,
+      'This Year': 12
+    };
+
+    const points = weights.slice(
+      0, buckets[this.selectedTimeRange()] ?? 10
+    );
+
+    const sum = points.reduce((a, b) => a + b, 0);
+    let cumulative = 0;
+    let allocated = 0;
+
+    return points.map(weight => {
+      cumulative += weight;
+      const target = Math.round(total * cumulative / sum);
+      const value = target - allocated;
+      allocated = target;
+      return value / divisor;
+    });
+  }
   readonly timeRanges = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'This Year'];
 
   readonly categories = [
@@ -156,30 +256,133 @@ export class EcommerceComponent implements OnInit {
   }
 
   setTimeRange(range: string) {
+    if (!this.timeRanges.includes(range)) return;
     this.selectedTimeRange.set(range);
-    this.initCharts(); // Re-init to simulate data change
+    this.initCharts();
   }
 
-  exportData() {
-    console.log('Exporting data...');
-    // Simulated export
+  toggleCompare(): void {
+    this.compareEnabled.update(value => !value);
+    this.initCharts();
   }
 
-  openFilter() {
-    console.log('Opening filter menu...');
+  buildCsv(): string {
+    const rows = [
+      ['Data Type', 'Period', 'Metric', 'Current', 'Previous', 'Change (%)']
+    ];
+
+    for (const item of this.kpis) {
+      rows.push([
+        'Demo',
+        this.selectedTimeRange(),
+        item.label,
+        item.value,
+        this.compareEnabled() ? item.previousValue : '',
+        String(Number.parseFloat(item.delta))
+      ]);
+    }
+
+    return rows.map(row =>
+      row.map(value =>
+        '"' + value.replace(/"/g, '""') + '"'
+      ).join(',')
+    ).join('\r\n');
+  }
+
+  exportData(): void {
+    const blob = new Blob(
+      ['\uFEFF', this.buildCsv()],
+      { type: 'text/csv;charset=utf-8;' }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    const period = this.selectedTimeRange()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+
+    link.href = url;
+    link.download = `dashstack-ecommerce-demo-${period}.csv`;
+
+    document.body.appendChild(link);
+
+    try {
+      link.click();
+    } finally {
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  }
+
+  setProductFilter(filter: 'all' | Trend): void {
+    if (filter !== 'all' && filter !== 'up' && filter !== 'down') return;
+    this.productTrendFilter.set(filter);
+  }
+
+  resetFilters(): void {
+    this.productTrendFilter.set('all');
+    this.productTrendsSearch.set('');
+    this.vendorsSearch.set('');
   }
 
   private initCharts() {
     this.chartsTheme = this.isDark();
+    const p = this.periodTotals();
+    const number = (v: number) => v.toLocaleString('en-US');
+
     this.kpis = [
-      { label: 'Total Revenue', value: '$248,760', delta: '18.6%', helper: 'vs last month', icon: 'attach_money', tone: 'violet', spark: this.spark('#8b5cf6', [7, 10, 9, 12, 18, 15, 23, 21, 28, 25, 35]) },
-      { label: 'Total Orders', value: '8,756', delta: '14.2%', helper: 'vs last month', icon: 'shopping_bag', tone: 'green', spark: this.spark('#22c55e', [3, 4, 6, 5, 7, 9, 8, 12, 11, 14, 18]) },
-      { label: 'Total Customers', value: '6,582', delta: '12.8%', helper: 'vs last month', icon: 'group', tone: 'blue', spark: this.spark('#0b76ff', [4, 7, 5, 6, 10, 8, 13, 12, 17, 15, 22]) },
-      { label: 'Avg. Order', value: '$142.80', delta: '6.5%', helper: 'vs last month', icon: 'shopping_cart', tone: 'amber', spark: this.spark('#f59e0b', [2, 5, 4, 7, 6, 10, 8, 14, 12, 18, 25]) },
-      { label: 'Conversion', value: '3.24%', delta: '8.7%', helper: 'vs last month', icon: 'track_changes', tone: 'pink', spark: this.spark('#ec4899', [1, 3, 2, 5, 4, 8, 7, 10, 9, 13, 18]) },
+      {
+        label: 'Total Revenue',
+        ...this.metric(p.revenue, p.previousRevenue, v => this.money(v)),
+        icon: 'attach_money', tone: 'violet',
+        spark: this.spark('#8b5cf6', [7, 10, 9, 12, 18, 15, 23, 21, 28, 25, 35])
+      },
+      {
+        label: 'Total Orders',
+        ...this.metric(p.orders, p.previousOrders, number),
+        icon: 'shopping_bag', tone: 'green',
+        spark: this.spark('#22c55e', [3, 4, 6, 5, 7, 9, 8, 12, 11, 14, 18])
+      },
+      {
+        label: 'Total Customers',
+        ...this.metric(p.customers, p.previousCustomers, number),
+        icon: 'group', tone: 'blue',
+        spark: this.spark('#0b76ff', [4, 7, 5, 6, 10, 8, 13, 12, 17, 15, 22])
+      },
+      {
+        label: 'Avg. Order',
+        ...this.metric(
+          Math.round(p.revenue / p.orders),
+          Math.round(p.previousRevenue / p.previousOrders),
+          v => this.money(v)
+        ),
+        icon: 'shopping_cart', tone: 'amber',
+        spark: this.spark('#f59e0b', [2, 5, 4, 7, 6, 10, 8, 14, 12, 18, 25])
+      },
+      {
+        label: 'Conversion',
+        ...this.metric(324, 298, v => (v / 100).toFixed(2) + '%'),
+        icon: 'track_changes', tone: 'pink',
+        spark: this.spark('#ec4899', [1, 3, 2, 5, 4, 8, 7, 10, 9, 13, 18])
+      }
     ];
-    this.storePerformance = this.area('#8b5cf6', [128, 152, 181, 158, 174, 192, 168, 223, 220, 262, 235, 252, 281, 246, 298, 324, 372]);
-    this.ordersAnalytics = this.bars('#0b76ff', [810, 1400, 1070, 1210, 1050, 1540, 1370, 1850, 1520, 1320, 1560, 1880, 1620, 2070, 1790]);
+
+    const revenueWeights = [128, 152, 181, 158, 174, 192, 168, 223, 220, 262, 235, 252];
+    const orderWeights = [810, 1400, 1070, 1210, 1050, 1540, 1370, 1850, 1520, 1320, 1560, 1880];
+
+    this.storePerformance = this.area(
+      '#8b5cf6',
+      this.periodSeries(p.revenue, revenueWeights, 100),
+      this.periodSeries(p.previousRevenue, revenueWeights, 100)
+    );
+
+    this.ordersAnalytics = this.bars(
+      '#0b76ff',
+      this.periodSeries(p.orders, orderWeights),
+      this.periodSeries(p.previousOrders, orderWeights)
+    );
+
     this.revenueTracking = this.area('#22c55e', [4.5, 7.5, 12.5, 20.2, 18.5, 22.8, 16.2, 25.2, 24.8, 32.4, 27.2, 30.5, 34.2, 34.5, 40.2]);
     this.shoppingBehavior = this.donut();
     this.cartConversion = this.funnel();
@@ -219,33 +422,64 @@ export class EcommerceComponent implements OnInit {
     };
   }
 
-  private area(color: string, data: number[]): EChartsCoreOption {
+  private area(color: string, data: number[], previous?: number[]): EChartsCoreOption {
+    const compare = !!previous && this.compareEnabled();
+
     return {
+      color: [color, '#f59e0b'],
+      legend: {
+        show: compare,
+        top: 0,
+        textStyle: { color: this.getAxisColor() }
+      },
       animationDuration: 1200,
       tooltip: { ...this.baseTooltip(), trigger: 'axis' },
-      grid: { left: 16, right: 16, top: 20, bottom: 0, containLabel: true },
+      grid: { left: 16, right: 16, top: compare ? 44 : 20, bottom: 0, containLabel: true },
       xAxis: { 
         type: 'category', boundaryGap: false, 
-        data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'], 
+        data: previous
+          ? data.map((_, i) => `P${i + 1}`)
+          : data.map((_, i) => ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i % 12]),
         axisTick: { show: false }, axisLine: { lineStyle: { color: this.getSplitLineColor() } }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } 
       },
       yAxis: { type: 'value', splitLine: { lineStyle: { color: this.getSplitLineColor() } }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
       series: [{ 
-        type: 'line', smooth: true, showSymbol: false, data, 
+        name: 'Current', type: 'line', smooth: true, showSymbol: false, data,
         lineStyle: { color, width: 3 }, 
         areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: `${color}66` }, { offset: 1, color: `${color}00` }]) } 
-      }],
+      }, ...(compare && previous ? [{
+        name: 'Previous (demo)',
+        type: 'line',
+        data: previous,
+        smooth: true,
+        showSymbol: false,
+        lineStyle: { color: '#f59e0b', width: 2, type: 'dashed' }
+      }] : [])],
     };
   }
 
-  private bars(color: string, data: number[]): EChartsCoreOption {
+  private bars(color: string, data: number[], previous: number[]): EChartsCoreOption {
+    const compare = this.compareEnabled();
+
     return {
+      color: [color, '#f59e0b'],
+      legend: {
+        show: compare,
+        top: 0,
+        textStyle: { color: this.getAxisColor() }
+      },
       animationDuration: 1200,
       tooltip: { ...this.baseTooltip(), trigger: 'axis' },
-      grid: { left: 16, right: 16, top: 20, bottom: 0, containLabel: true },
-      xAxis: { type: 'category', data: ['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10','D11','D12','D13','D14','D15'], axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
+      grid: { left: 16, right: 16, top: compare ? 44 : 20, bottom: 0, containLabel: true },
+      xAxis: { type: 'category', data: data.map((_, i) => `P${i + 1}`), axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
       yAxis: { type: 'value', splitLine: { lineStyle: { color: this.getSplitLineColor() } }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
-      series: [{ type: 'bar', data, barWidth: 14, itemStyle: { borderRadius: [8, 8, 0, 0], color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color }, { offset: 1, color: `${color}28` }]) } }],
+      series: [{ name: 'Current', type: 'bar', data, barMaxWidth: 14, itemStyle: { borderRadius: [8, 8, 0, 0], color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color }, { offset: 1, color: `${color}28` }]) } }, ...(compare ? [{
+        name: 'Previous (demo)',
+        type: 'bar',
+        data: previous,
+        barMaxWidth: 14,
+        itemStyle: { color: '#f59e0b' }
+      }] : [])],
     };
   }
 
