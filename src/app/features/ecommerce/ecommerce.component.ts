@@ -488,7 +488,7 @@ export class EcommerceComponent implements OnInit {
       animationDuration: 1300,
       tooltip: { ...this.baseTooltip(), trigger: 'item' },
       series: [{ 
-        type: 'pie', radius: ['55%', '85%'], center: ['35%', '50%'], label: { show: false }, 
+        type: 'pie', radius: ['55%', '85%'], center: ['50%', '50%'], label: { show: false },
         itemStyle: { borderRadius: 8, borderColor: this.isDark() ? '#0f172a' : '#ffffff', borderWidth: 2 }, 
         data: [
           { value: 32.5, name: 'New Visitors', itemStyle: { color: '#7c3aed' } },
@@ -532,8 +532,8 @@ export class EcommerceComponent implements OnInit {
     return {
       animationDuration: 1000,
       tooltip: { ...this.baseTooltip(), position: 'top' },
-      grid: { left: 48, right: 14, top: 12, bottom: 26, containLabel: true },
-      xAxis: { type: 'category', data: xs, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
+      grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
+      xAxis: { type: 'category', data: xs, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 10, interval: 0, rotate: 35 } },
       yAxis: { type: 'category', data: ys, axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: this.getAxisColor(), fontSize: 11 } },
       visualMap: { show: false, min: 20, max: 95, inRange: { color: ['#24116d', '#8b22f6', '#f43fcd', '#f59e0b', '#22c55e'] } },
       series: [{ 
