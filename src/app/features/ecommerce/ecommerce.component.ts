@@ -272,7 +272,7 @@ export class EcommerceComponent implements OnInit {
       animationDuration: 1200,
       tooltip: { ...this.baseTooltip(), trigger: 'item' },
       series: [{ 
-        type: 'funnel', left: '0%', top: 10, bottom: 10, width: '60%', 
+        type: 'funnel', left: '3%', top: 10, bottom: 10, width: '94%',
         minSize: '30%', maxSize: '100%', sort: 'descending', gap: 4, 
         label: { position: 'inside', color: '#fff', fontWeight: 600, formatter: '{c}' }, 
         itemStyle: { borderColor: 'transparent', borderWidth: 0, borderRadius: 4 }, 

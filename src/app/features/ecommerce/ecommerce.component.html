@@ -33,7 +33,7 @@
     </header>
 
     <section class="kpi-grid reveal" style="--delay: 50ms">
-      @for (item of kpis; track item) {
+      @for (item of kpis; track item.label) {
         <mat-card class="kpi-card tone-{{ item.tone }}">
           <div class="kpi-icon"><mat-icon>{{ item.icon }}</mat-icon></div>
           <div class="kpi-content">
@@ -277,7 +277,10 @@
             <p>Active path tracking</p>
           </div>
         </div>
-        <div class="journey-flow-wrapper">
+        <div class="journey-flow-wrapper"
+             tabindex="0"
+             role="region"
+             aria-label="Customer journey stages">
           @for (step of journey; track step; let last = $last) {
             <div class="journey-step">
               <div class="j-icon"><mat-icon>{{ step.icon }}</mat-icon></div>
