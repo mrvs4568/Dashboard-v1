@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ThemeService } from '../../core/services/theme.service';
+import { ChangeDetectionStrategy, Component, computed, signal, inject } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,7 +48,16 @@ type Trend = 'up' | 'down';
 })
 export class AiDashboardComponent {
 
-  readonly isDark = signal(true);
+  private readonly themeService = inject(ThemeService);
+  readonly isDark = this.themeService.isDarkMode.asReadonly();
+
+  private readonly axisColor = computed(() =>
+    this.isDark() ? '#94a3b8' : '#64748b'
+  );
+
+  private readonly gridColor = computed(() =>
+    this.isDark() ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.06)'
+  );
   readonly selectedRange = signal<Period>('Last 30 Days');
   readonly timeRanges: Period[] = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'This Year'];
 
@@ -95,10 +105,10 @@ export class AiDashboardComponent {
       backgroundColor: 'transparent',
       animationDuration: 900,
       tooltip: this.tooltip(),
-      legend: { right: 12, top: 0, icon: 'circle', textStyle: { color: '#94a3b8' } },
+      legend: { right: 12, top: 0, icon: 'circle', textStyle: { color: this.axisColor() } },
       grid: { left: 4, right: 18, bottom: 8, top: 44, containLabel: true },
-      xAxis: { type: 'category', boundaryGap: false, data: labels, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#64748b' } },
-      yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(148,163,184,.08)' } }, axisLabel: { color: '#64748b', formatter: (v: number) => this.compact(v) } },
+      xAxis: { type: 'category', boundaryGap: false, data: labels, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: this.axisColor() } },
+      yAxis: { type: 'value', splitLine: { lineStyle: { color: this.gridColor() } }, axisLabel: { color: this.axisColor(), formatter: (v: number) => this.compact(v) } },
       series: [
         this.lineSeries('Actual', actual, '#8b5cf6', true),
         this.lineSeries('Predicted', predicted, '#3b82f6', false, 'dashed'),
@@ -196,7 +206,7 @@ export class AiDashboardComponent {
   }
 
   toggleTheme(): void {
-    this.isDark.update(v => !v);
+    this.themeService.toggleTheme();
   }
 
   sparkline(color: string, data: number[]): EChartsOption {
@@ -225,10 +235,10 @@ export class AiDashboardComponent {
   private tooltip(): EChartsOption['tooltip'] {
     return {
       trigger: 'axis',
-      backgroundColor: 'rgba(15, 23, 42, 0.94)',
+      backgroundColor: this.isDark() ? 'rgba(15,23,42,.94)' : 'rgba(255,255,255,.96)',
       borderColor: 'rgba(139, 92, 246, 0.26)',
       borderWidth: 1,
-      textStyle: { color: '#f8fafc' },
+      textStyle: { color: this.isDark() ? '#f8fafc' : '#0f172a' },
       extraCssText: 'box-shadow:0 20px 60px rgba(0,0,0,.35);border-radius:14px;padding:10px 12px;',
     };
   }
@@ -266,13 +276,13 @@ export class AiDashboardComponent {
   private donut(data: any[]): EChartsOption {
     return {
       backgroundColor: 'transparent',
-      tooltip: { trigger: 'item' },
+      tooltip: { ...this.tooltip(), trigger: 'item' },
       series: [{
         type: 'pie',
         radius: ['54%', '78%'],
         center: ['50%', '50%'],
         avoidLabelOverlap: true,
-        itemStyle: { borderRadius: 10, borderColor: '#0f172a', borderWidth: 3 },
+        itemStyle: { borderRadius: 10, borderColor: this.isDark() ? '#0f172a' : '#ffffff', borderWidth: 3 },
         label: { show: false },
         data,
       }],
