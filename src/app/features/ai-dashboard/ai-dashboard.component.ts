@@ -21,7 +21,7 @@ import {
 } from '@lucide/angular';
 
 type Period = 'Today' | 'Last 7 Days' | 'Last 30 Days' | 'Last 90 Days' | 'This Year';
-type Trend = 'up' | 'down';
+type Trend = 'up' | 'down' | 'flat';
 
 @Component({
   selector: 'app-ai-dashboard',
@@ -59,6 +59,7 @@ export class AiDashboardComponent {
     this.isDark() ? 'rgba(148,163,184,.08)' : 'rgba(15,23,42,.06)'
   );
   readonly selectedRange = signal<Period>('Last 30 Days');
+  readonly compareEnabled = signal(false);
   readonly timeRanges: Period[] = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'This Year'];
 
   private readonly rangeMultiplier = computed(() => {
@@ -82,15 +83,49 @@ export class AiDashboardComponent {
     }
   });
 
+  readonly predictionsTotal = computed(() =>
+    Math.round(1452230 * this.rangeMultiplier())
+  );
+
+  readonly predictionMetric = computed(() =>
+    this.metric(this.predictionsTotal(), 18.6, v => this.compact(v))
+  );
+
+  private metric(
+    current: number,
+    rate: number,
+    format: (value: number) => string,
+    precision = 0
+  ) {
+    const value = Number(current.toFixed(precision));
+    const previous = Number(
+      (value / (1 + rate / 100)).toFixed(precision)
+    );
+    const change = previous > 0
+      ? ((value - previous) / previous) * 100
+      : 0;
+
+    const trend: Trend = change > 0
+      ? 'up'
+      : change < 0 ? 'down' : 'flat';
+
+    return {
+      value: format(value),
+      previousValue: format(previous),
+      delta: `${change > 0 ? '+' : ''}${change.toFixed(1)}%`,
+      trend
+    };
+  }
+
   readonly kpis = computed(() => {
     const m = this.rangeMultiplier();
     return [
-      { label: 'AI Models', value: String(Math.round(24 * Math.min(m, 3))), delta: '+26.5%', trend: 'up' as Trend, icon: 'BotIcon', color: 'violet', spark: [18, 22, 20, 32, 30, 45, 52] },
-      { label: 'Predictions', value: this.compact(1452230 * m), delta: '+18.6%', trend: 'up' as Trend, icon: 'TrendingIcon', color: 'blue', spark: [22, 28, 38, 32, 45, 58, 72] },
-      { label: 'Accuracy', value: (94.32 + Math.min(m, 12) * 0.08).toFixed(2) + '%', delta: '+3.8%', trend: 'up' as Trend, icon: 'ShieldIcon', color: 'emerald', spark: [70, 72, 75, 73, 78, 82, 86] },
-      { label: 'Inference Time', value: Math.max(48, Math.round(120 / Math.max(1, m * 0.15))) + 'ms', delta: '-8.4%', trend: 'down' as Trend, icon: 'ZapIcon', color: 'amber', spark: [80, 76, 70, 74, 64, 58, 52] },
-      { label: 'Cost Savings', value: '$' + Math.round(28450 * m).toLocaleString(), delta: '+22.7%', trend: 'up' as Trend, icon: 'TrendingIcon', color: 'cyan', spark: [12, 18, 23, 30, 42, 55, 69] },
-      { label: 'Data Processed', value: (2.45 * m).toFixed(m < 1 ? 2 : 1) + 'TB', delta: '+32.1%', trend: 'up' as Trend, icon: 'DatabaseIcon', color: 'rose', spark: [28, 30, 36, 42, 58, 70, 88] },
+      { label: 'AI Models', ...this.metric(24 * Math.min(m, 3), 26.5, v => String(v)), icon: 'BotIcon', color: 'violet', spark: [18, 22, 20, 32, 30, 45, 52] },
+      { label: 'Predictions', ...this.predictionMetric(), icon: 'TrendingIcon', color: 'blue', spark: [22, 28, 38, 32, 45, 58, 72] },
+      { label: 'Accuracy', ...this.metric(94.32 + Math.min(m, 12) * 0.08, 3.8, v => v.toFixed(2) + '%', 2), icon: 'ShieldIcon', color: 'emerald', spark: [70, 72, 75, 73, 78, 82, 86] },
+      { label: 'Inference Time', ...this.metric(Math.max(48, Math.round(120 / Math.max(1, m * 0.15))), -8.4, v => v + 'ms'), icon: 'ZapIcon', color: 'amber', spark: [80, 76, 70, 74, 64, 58, 52] },
+      { label: 'Cost Savings', ...this.metric(28450 * m, 22.7, v => '$' + v.toLocaleString()), icon: 'TrendingIcon', color: 'cyan', spark: [12, 18, 23, 30, 42, 55, 69] },
+      { label: 'Data Processed', ...this.metric(2.45 * m, 32.1, v => v.toFixed(m < 1 ? 2 : 1) + 'TB', m < 1 ? 2 : 1), icon: 'DatabaseIcon', color: 'rose', spark: [28, 30, 36, 42, 58, 70, 88] },
     ];
   });
 
@@ -106,13 +141,22 @@ export class AiDashboardComponent {
       animationDuration: 900,
       tooltip: this.tooltip(),
       legend: { right: 12, top: 0, icon: 'circle', textStyle: { color: this.axisColor() } },
-      grid: { left: 4, right: 18, bottom: 8, top: 44, containLabel: true },
+      grid: { left: 4, right: 18, bottom: 8, top: this.compareEnabled() ? 68 : 44, containLabel: true },
       xAxis: { type: 'category', boundaryGap: false, data: labels, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: this.axisColor() } },
       yAxis: { type: 'value', splitLine: { lineStyle: { color: this.gridColor() } }, axisLabel: { color: this.axisColor(), formatter: (v: number) => this.compact(v) } },
       series: [
         this.lineSeries('Actual', actual, '#8b5cf6', true),
         this.lineSeries('Predicted', predicted, '#3b82f6', false, 'dashed'),
         this.lineSeries('Confidence', confidence, '#14b8a6', true),
+        ...(this.compareEnabled() ? [
+          this.lineSeries(
+            'Previous (demo)',
+            actual.map(v => Math.round(v / 1.186)),
+            '#f59e0b',
+            false,
+            'dashed'
+          )
+        ] : []),
       ],
     };
   });
@@ -203,6 +247,10 @@ export class AiDashboardComponent {
 
   setRange(range: Period): void {
     this.selectedRange.set(range);
+  }
+
+  toggleCompare(): void {
+    this.compareEnabled.update(value => !value);
   }
 
   toggleTheme(): void {

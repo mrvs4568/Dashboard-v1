@@ -23,10 +23,12 @@
         }
       </mat-menu>
 
-      <button mat-stroked-button class="glass-btn hide-sm">
-        <mat-icon>compare_arrows</mat-icon>
+      <button mat-stroked-button class="glass-btn"
+              [class.compare-active]="compareEnabled()"
+              [attr.aria-pressed]="compareEnabled()"
+              (click)="toggleCompare()">
+        <mat-icon>{{ compareEnabled() ? 'check' : 'compare_arrows' }}</mat-icon>
         <span>Compare</span>
-        <mat-icon>expand_more</mat-icon>
       </button>
 
       <button mat-icon-button class="icon-btn" (click)="toggleTheme()">
@@ -37,8 +39,14 @@
 
   <div class="dashboard-shell">
     <main class="dashboard-content">
-      <section class="kpi-grid">
-        @for (kpi of kpis(); track kpi; let i = $index) {
+      <section class="kpi-layout">
+        <p class="comparison-note" role="status">
+          {{ compareEnabled()
+            ? 'Demo comparison: previous equivalent period'
+            : 'Demo metrics: trends versus previous period' }}
+        </p>
+        <div class="kpi-grid">
+        @for (kpi of kpis(); track kpi.label; let i = $index) {
           <mat-card class="kpi-card glass-card animate-in" [style.--delay]="i * 70 + 'ms'" [class]="'kpi-card glass-card animate-in ' + kpi.color">
             <div class="kpi-top">
               <div class="kpi-icon-wrap" [class]="kpi.color">
@@ -66,21 +74,32 @@
               <span>{{ kpi.label }}</span>
               <strong>{{ kpi.value }}</strong>
               <small [class.up]="kpi.trend === 'up'" [class.down]="kpi.trend === 'down'">
-                <mat-icon>{{ kpi.trend === 'up' ? 'north' : 'south' }}</mat-icon>
-                {{ kpi.delta }} <em>vs {{ selectedRange() }}</em>
+                <span class="kpi-trend">
+                  <mat-icon>{{ kpi.trend === 'up' ? 'north' : kpi.trend === 'down' ? 'south' : 'remove' }}</mat-icon>
+                  {{ kpi.delta }}
+                </span>
+                <em>vs prior period</em>
               </small>
+              @if (compareEnabled()) {
+                <span class="kpi-previous">
+                  Previous: {{ kpi.previousValue }}
+                </span>
+              }
             </div>
           </mat-card>
         }
+        </div>
       </section>
 
       <section class="hero-grid">
         <mat-card class="panel predictive-panel glass-card animate-in">
           <div class="panel-header">
             <div><h2>Predictive Analytics</h2><span>Total Predictions</span></div>
-            <button mat-stroked-button class="mini-btn">This Month <mat-icon>expand_more</mat-icon></button>
+            <button mat-stroked-button class="mini-btn" [matMenuTriggerFor]="rangeMenu">
+              {{ selectedRange() }} <mat-icon>expand_more</mat-icon>
+            </button>
           </div>
-          <div class="panel-stat"><strong>1,452,230</strong><small class="up"><mat-icon>north</mat-icon>18.6% vs last month</small></div>
+          <div class="panel-stat"><strong>{{ predictionsTotal().toLocaleString() }}</strong><small class="up"><mat-icon>north</mat-icon>{{ predictionMetric().delta }} vs prior period</small></div>
           <div class="chart-lg"><div echarts [options]="predictiveOptions()" class="chart-fill"></div></div>
         </mat-card>
 
