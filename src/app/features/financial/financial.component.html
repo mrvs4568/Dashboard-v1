@@ -7,7 +7,7 @@
           <div class="header-icon"><mat-icon>insert_chart_outlined</mat-icon></div>
           <div class="header-text">
             <h1>Financial Intelligence</h1>
-            <p>Real-time analytics and financial health monitoring</p>
+            <p>Demo analytics and financial health monitoring</p>
           </div>
         </div>
 
@@ -25,23 +25,44 @@
               </button>
             }
           </mat-menu>
-          <button mat-stroked-button class="glass-btn hide-on-mobile"><mat-icon>compare_arrows</mat-icon><span class="ml-2">Compare</span></button>
-          <button mat-icon-button class="glass-icon-btn hide-on-mobile"><mat-icon>file_download</mat-icon></button>
+          <button mat-stroked-button class="glass-btn hide-on-mobile"
+            (click)="toggleCompare()"
+            [attr.aria-pressed]="compareEnabled()">
+            <mat-icon>compare_arrows</mat-icon>
+            <span class="ml-2">{{ compareEnabled() ? 'Compare On' : 'Compare' }}</span>
+          </button>
+          <button mat-icon-button class="glass-icon-btn hide-on-mobile" (click)="downloadReport()" aria-label="Download financial CSV report"><mat-icon>file_download</mat-icon></button>
           <div class="divider hide-on-mobile"></div>
-          <button mat-icon-button class="glass-icon-btn notify-btn"><mat-icon>notifications_none</mat-icon><span class="badge"></span></button>
+          <button mat-icon-button class="glass-icon-btn notify-btn"
+            [matMenuTriggerFor]="notificationMenu"
+            (menuOpened)="markNotificationsRead()"
+            aria-label="Financial notifications">
+            <mat-icon>notifications_none</mat-icon>
+            @if (!notificationsRead()) {
+              <span class="badge"></span>
+            }
+          </button>
+          <mat-menu #notificationMenu="matMenu">
+            @for (notification of notifications; track notification) {
+              <button mat-menu-item>
+                <mat-icon>info</mat-icon>
+                <span>{{ notification }}</span>
+              </button>
+            }
+          </mat-menu>
           <button mat-icon-button class="glass-icon-btn" (click)="toggleTheme()"><mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon></button>
         </div>
       </div>
     </header>
 
     <div class="kpi-row">
-      @for (kpi of kpis(); track kpi) {
+      @for (kpi of kpis(); track kpi.title) {
         <mat-card class="glass-card kpi-card animate-in accent-{{ kpi.accent }}">
           <div class="kpi-internal">
             <div class="kpi-header">
               <div class="kpi-badge"><mat-icon>{{ kpi.icon }}</mat-icon></div>
               <div class="kpi-trend" [class.trend-up]="kpi.trend === 'up'" [class.trend-down]="kpi.trend === 'down'">
-                <mat-icon>{{ kpi.trend === 'up' ? 'moving' : 'trending_down' }}</mat-icon>
+                <mat-icon>{{ kpi.trend === 'up' ? 'moving' : kpi.trend === 'down' ? 'trending_down' : 'remove' }}</mat-icon>
                 <span>{{ kpi.delta }}</span>
               </div>
             </div>
@@ -63,9 +84,9 @@
         <div class="panel-header">
           <div class="panel-title">
             <h2>Income vs Expenses</h2>
-            <div class="panel-subtitle">Net Profit <strong>$47,860</strong> <span class="trend up">↑ 18.2%</span></div>
+            <div class="panel-subtitle">Net Profit <strong>{{ currency.format(financialTotals().profit) }}</strong> <span class="text-muted">No comparison data</span></div>
           </div>
-          <button mat-icon-button class="text-muted"><mat-icon>more_vert</mat-icon></button>
+          <button mat-icon-button class="text-muted" (click)="downloadReport()" aria-label="Download demo financial report"><mat-icon>download</mat-icon></button>
         </div>
         <div class="panel-body"><div echarts [options]="incomeExpenseChart()" class="chart-container h-[340px]"></div></div>
       </mat-card>
@@ -74,9 +95,9 @@
         <div class="panel-header">
           <div class="panel-title">
             <h2>Expense Breakdown</h2>
-            <div class="panel-subtitle">Total <strong>$24,680</strong></div>
+            <div class="panel-subtitle">Total <strong>{{ currency.format(financialTotals().expenses) }}</strong></div>
           </div>
-          <button mat-icon-button class="text-muted"><mat-icon>more_vert</mat-icon></button>
+          <button mat-icon-button class="text-muted" (click)="downloadReport()" aria-label="Download demo financial report"><mat-icon>download</mat-icon></button>
         </div>
         <div class="panel-body donut-layout">
           <div class="donut-display">
@@ -87,12 +108,14 @@
             <div echarts [options]="expenseBreakdownChart()" class="chart-container h-[220px]"></div>
           </div>
           <div class="donut-legend">
-            <div class="legend-item"><span class="dot" style="background-color: #0ea5e9"></span><span class="label">Housing</span><span class="value">$7,850</span><span class="pct">31%</span></div>
-            <div class="legend-item"><span class="dot" style="background-color: #fb7185"></span><span class="label">Transport</span><span class="value">$4,320</span><span class="pct">18%</span></div>
-            <div class="legend-item"><span class="dot" style="background-color: #6366f1"></span><span class="label">Food</span><span class="value">$3,680</span><span class="pct">15%</span></div>
-            <div class="legend-item"><span class="dot" style="background-color: #f59e0b"></span><span class="label">Shopping</span><span class="value">$2,450</span><span class="pct">10%</span></div>
-            <div class="legend-item"><span class="dot" style="background-color: #a855f7"></span><span class="label">Utilities</span><span class="value">$1,890</span><span class="pct">8%</span></div>
-            <div class="legend-item"><span class="dot" style="background-color: #14b8a6"></span><span class="label">Others</span><span class="value">$2,370</span><span class="pct">10%</span></div>
+            @for (row of expenseBreakdown(); track row.name) {
+              <div class="legend-item">
+                <span class="dot" [style.background-color]="row.color"></span>
+                <span class="label">{{ row.name }}</span>
+                <span class="value">{{ currency.format(row.value) }}</span>
+                <span class="pct">{{ row.percentage | number:'1.0-1' }}%</span>
+              </div>
+            }
           </div>
         </div>
       </mat-card>
@@ -103,15 +126,30 @@
         <div class="panel-header">
           <div class="panel-title">
             <h2>Cash Flow Map</h2>
-            <div class="panel-subtitle">Net <strong>$53,120</strong> <span class="trend up">↑ 10%</span></div>
+            <div class="panel-subtitle">Net <strong>{{ currency.format(financialTotals().cashFlow) }}</strong> <span class="text-muted">No comparison data</span></div>
           </div>
-          <button mat-icon-button class="text-muted"><mat-icon>filter_list</mat-icon></button>
+          <button mat-icon-button class="text-muted"
+            [matMenuTriggerFor]="cashFlowMenu"
+            aria-label="Filter cash flow">
+            <mat-icon>filter_list</mat-icon>
+          </button>
+          <mat-menu #cashFlowMenu="matMenu">
+            <button mat-menu-item (click)="setCashFlowFilter('all')">
+              All Cash Flow
+            </button>
+            <button mat-menu-item (click)="setCashFlowFilter('positive')">
+              Positive Cash Flow
+            </button>
+            <button mat-menu-item (click)="setCashFlowFilter('negative')">
+              Negative Cash Flow
+            </button>
+          </mat-menu>
         </div>
         <div class="panel-body"><div echarts [options]="cashFlowChart()" class="chart-container h-[260px]"></div></div>
       </mat-card>
 
       <mat-card class="glass-card health-panel animate-in">
-        <div class="panel-header no-margin"><h2>Finance Health</h2></div>
+        <div class="panel-header no-margin"><h2>Finance Health (Demo)</h2></div>
         <div class="health-display">
           <div class="health-score">
             <svg viewBox="0 0 100 100">
@@ -126,14 +164,21 @@
           <div class="factor"><span class="metric"><mat-icon>task_alt</mat-icon> Expense Control</span><span class="val">84%</span></div>
           <div class="factor"><span class="metric"><mat-icon>data_usage</mat-icon> Savings Rate</span><span class="val">78%</span></div>
         </div>
-        <button mat-flat-button color="primary" class="full-width-btn mt-4">View Report</button>
+        <button mat-flat-button color="primary"
+            class="full-width-btn mt-4"
+            (click)="downloadReport()">
+            Download Demo Report
+          </button>
       </mat-card>
 
       <mat-card class="glass-card actions-panel animate-in">
         <div class="panel-header"><h2>Quick Actions</h2></div>
         <div class="actions-list">
           @for (a of quickActions; track a) {
-            <button mat-ripple class="action-item">
+            <button mat-ripple class="action-item"
+              type="button"
+              [disabled]="!isQuickActionAvailable(a.title)"
+              (click)="runQuickAction(a.title)">
               <div class="action-icon"><mat-icon>{{ a.icon }}</mat-icon></div>
               <div class="action-text"><strong>{{ a.title }}</strong><span>{{ a.sub }}</span></div>
               <mat-icon class="arrow">chevron_right</mat-icon>
@@ -145,14 +190,14 @@
 
     <div class="triple-grid">
       <mat-card class="glass-card mini-panel animate-in">
-        <div class="panel-header"><h2>Profit & Loss</h2><button mat-icon-button class="text-primary"><mat-icon>open_in_new</mat-icon></button></div>
-        <div class="mini-kpi"><strong>$186,450</strong><span class="trend up">↑ 16.8%</span></div>
+        <div class="panel-header"><h2>Profit & Loss</h2><button mat-icon-button class="text-primary" (click)="downloadReport()" aria-label="Download demo financial report"><mat-icon>download</mat-icon></button></div>
+        <div class="mini-kpi"><strong>{{ currency.format(financialTotals().profit) }}</strong><span class="text-muted">No comparison data</span></div>
         <div echarts [options]="profitChart()" class="h-[120px] -mx-2 -mb-2"></div>
       </mat-card>
 
       <mat-card class="glass-card mini-panel animate-in">
-        <div class="panel-header"><h2>Revenue Forecast</h2><button mat-icon-button class="text-primary"><mat-icon>insights</mat-icon></button></div>
-        <div class="mini-kpi"><strong>$892,450</strong><span class="trend up">↑ 24.5%</span></div>
+        <div class="panel-header"><h2>Revenue Forecast</h2><button mat-icon-button class="text-primary" (click)="downloadReport()" aria-label="Download demo financial report"><mat-icon>download</mat-icon></button></div>
+        <div class="mini-kpi"><strong>{{ currency.format(financialTotals().forecast) }}</strong><span class="text-muted">No comparison data</span></div>
         <div echarts [options]="forecastChart()" class="h-[120px] -mx-2 -mb-2"></div>
       </mat-card>
 
@@ -171,9 +216,25 @@
 
     <div class="lists-grid">
       <mat-card class="glass-card list-panel animate-in">
-        <div class="panel-header"><h2>Recent Transactions</h2><button mat-button color="primary">View All</button></div>
+        <div class="panel-header"><h2>Recent Transactions</h2><button mat-button color="primary"
+            [matMenuTriggerFor]="transactionMenu"
+            aria-label="Filter transactions">
+            {{ transactionFilter() === 'all' ? 'View All' :
+               transactionFilter() === 'income' ? 'Income' : 'Expenses' }}
+          </button>
+          <mat-menu #transactionMenu="matMenu">
+            <button mat-menu-item (click)="setTransactionFilter('all')">
+              All Transactions
+            </button>
+            <button mat-menu-item (click)="setTransactionFilter('income')">
+              Income
+            </button>
+            <button mat-menu-item (click)="setTransactionFilter('expense')">
+              Expenses
+            </button>
+          </mat-menu></div>
         <div class="tx-list">
-          @for (tx of transactions; track tx) {
+          @for (tx of filteredTransactions(); track tx) {
             <div class="tx-row">
               <div class="tx-icon btn-{{ tx.accent }}"><mat-icon>{{ tx.icon }}</mat-icon></div>
               <div class="tx-details"><strong>{{ tx.title }}</strong><span>{{ tx.date }}</span></div>
@@ -184,9 +245,21 @@
       </mat-card>
 
       <mat-card class="glass-card list-panel animate-in">
-        <div class="panel-header"><h2>Top Categories</h2><button mat-icon-button class="text-muted"><mat-icon>filter_list</mat-icon></button></div>
+        <div class="panel-header"><h2>Top Categories (Demo)</h2><button mat-icon-button class="text-muted"
+            [matMenuTriggerFor]="categoryMenu"
+            aria-label="Sort categories">
+            <mat-icon>sort</mat-icon>
+          </button>
+          <mat-menu #categoryMenu="matMenu">
+            <button mat-menu-item
+              (click)="setCategorySort('revenue')">Revenue</button>
+            <button mat-menu-item
+              (click)="setCategorySort('orders')">Orders</button>
+            <button mat-menu-item
+              (click)="setCategorySort('growth')">Growth</button>
+          </mat-menu></div>
         <div class="cat-list">
-          @for (cat of categories; track cat) {
+          @for (cat of sortedCategories(); track cat.name) {
             <div class="cat-row">
               <div class="cat-icon"><mat-icon>{{ cat.icon }}</mat-icon></div>
               <div class="cat-details">
@@ -200,9 +273,14 @@
       </mat-card>
 
       <mat-card class="glass-card list-panel animate-in">
-        <div class="panel-header"><h2>Market Overview</h2><button mat-icon-button class="text-muted"><mat-icon>show_chart</mat-icon></button></div>
+        <div class="panel-header"><h2>Market Overview (Demo)</h2><button mat-icon-button class="text-muted"
+            (click)="toggleMarkets()"
+            [attr.aria-expanded]="showAllMarkets()"
+            [attr.aria-label]="showAllMarkets() ? 'Show fewer markets' : 'Show all markets'">
+            <mat-icon>{{ showAllMarkets() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button></div>
         <div class="market-list">
-          @for (m of markets | slice:0:5; track m) {
+          @for (m of visibleMarkets(); track m.symbol) {
             <div class="market-row">
               <div class="market-info">
                 <strong>{{ m.symbol }}</strong>

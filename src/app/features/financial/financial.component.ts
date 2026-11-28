@@ -44,6 +44,46 @@ export class FinancialOverviewComponent implements AfterViewInit {
   private themeService = inject(ThemeService);
   
   readonly period = signal<Period>('month');
+
+  readonly compareEnabled = signal(false);
+
+  toggleCompare(): void {
+    this.compareEnabled.update(value => !value);
+  }
+
+  readonly previousTotals = computed(() => {
+    const d = this.financialTotals();
+
+    const income = Math.round(d.income * 0.91);
+    const expenses = Math.round(d.expenses * 1.05);
+
+    return {
+      income,
+      expenses,
+      profit: income - expenses,
+      cashFlow: Math.round(d.cashFlow * 0.88),
+      forecast: Math.round(d.forecast * 0.90)
+    };
+  });
+
+  comparison(current: number, previous: number) {
+    if (!this.compareEnabled() || previous === 0) {
+      return {
+        delta: 'N/A',
+        trend: 'neutral',
+        helper: 'No comparison enabled'
+      };
+    }
+
+    const change = (current - previous) / Math.abs(previous) * 100;
+
+    return {
+      delta: `${change > 0 ? '+' : ''}${change.toFixed(1)}%`,
+      trend: change > 0 ? 'up' : change < 0 ? 'down' : 'neutral',
+      helper: 'vs previous demo period'
+    };
+  }
+
   readonly isDark = this.themeService.isDarkMode;
 
   readonly periods = [
@@ -67,49 +107,68 @@ export class FinancialOverviewComponent implements AfterViewInit {
       expense: [5, 8, 9, 13, 10, 14, 16], 
       cash: [4, 9, -5, 12, -8, 14, 18], 
       forecast: [10, 13, 18, 22, 28, 33, 39], 
-      profit: [8, 14, 12, 18, 22, 25, 29] 
     },
     week: { 
       income: [30, 45, 38, 52, 60, 48, 70], 
       expense: [15, 25, 20, 30, 35, 28, 40], 
       cash: [15, 20, 18, 22, 25, 20, 30], 
       forecast: [35, 50, 45, 60, 70, 55, 80], 
-      profit: [15, 20, 18, 22, 25, 20, 30] 
     },
     month: { 
       income: [150, 210, 180, 250], 
       expense: [80, 120, 100, 140], 
       cash: [70, 90, 80, 110], 
       forecast: [160, 230, 200, 280], 
-      profit: [70, 90, 80, 110] 
     },
     year: { 
       income: [510, 680, 790, 940, 1100, 1280, 1460, 1350, 1520, 1680, 1800, 2100], 
       expense: [260, 330, 420, 510, 575, 660, 735, 690, 780, 850, 920, 1050], 
       cash: [90, 140, 210, -80, 280, 340, 420, 380, 450, 510, 560, 680], 
       forecast: [420, 560, 690, 840, 1040, 1260, 1510, 1420, 1600, 1780, 1900, 2250], 
-      profit: [180, 240, 290, 340, 390, 470, 520, 480, 540, 610, 680, 810] 
     },
   };
 
+  readonly profitSeries = computed(() => {
+    const d = this.data[this.period()];
+    return d.income.map((income, i) => income - d.expense[i]);
+  });
+
+  readonly financialTotals = computed(() => {
+    const d = this.data[this.period()];
+    const sum = (values: number[]) =>
+      values.reduce((total, value) => total + value, 0) * 1000;
+
+    return {
+      income: sum(d.income),
+      expenses: sum(d.expense),
+      profit: sum(this.profitSeries()),
+      cashFlow: sum(d.cash),
+      forecast: sum(d.forecast)
+    };
+  });
+
+  readonly currency = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  });
+
   readonly kpis = computed(() => {
-    const p = this.period();
-    const values = p === 'day' ? ['$12,850.40', '$7,240.00', '$2,680.00', '$4,560.00', '$1,820.00']
-      : p === 'week' ? ['$45,280.00', '$28,450.00', '$12,340.00', '$16,110.00', '$8,450.00']
-      : p === 'year' ? ['$1,892,450.00', '$892,540.00', '$324,680.00', '$567,860.00', '$653,120.00']
-      : ['$128,750.50', '$72,540.00', '$24,680.00', '$47,860.00', '$53,120.00'];
-      
-    const helper = p === 'day' ? 'vs yesterday' 
-      : p === 'week' ? 'vs last week'
-      : p === 'year' ? 'vs last year' 
-      : 'vs last month';
+    const totals = this.financialTotals();
+    const previous = this.previousTotals();
+    const values = [
+      this.currency.format(101750.50),
+      this.currency.format(totals.income),
+      this.currency.format(totals.expenses),
+      this.currency.format(totals.profit),
+      this.currency.format(totals.cashFlow)
+    ];
 
     return [
-      { title: 'Total Balance', value: values[0], delta: '12.5%', helper, icon: 'account_balance_wallet', accent: 'violet', trend: 'up', spark: [2,3,3,5,4,7,6,9] },
-      { title: 'Total Income', value: values[1], delta: '8.7%', helper, icon: 'trending_up', accent: 'green', trend: 'up', spark: [1,2,4,3,6,7,10] },
-      { title: 'Total Expenses', value: values[2], delta: '5.3%', helper, icon: 'south', accent: 'orange', trend: 'down', spark: [5,4,6,3,7,5,8] },
-      { title: 'Net Profit', value: values[3], delta: '18.2%', helper, icon: 'person', accent: 'blue', trend: 'up', spark: [1,2,3,4,3,8,7,11] },
-      { title: 'Cash Flow', value: values[4], delta: '10.1%', helper, icon: 'payments', accent: 'cyan', trend: 'up', spark: [3,4,5,4,7,8,10,13] },
+      { title: 'Total Balance', value: values[0], delta: 'N/A', helper: 'No comparison data', icon: 'account_balance_wallet', accent: 'violet', trend: 'neutral', spark: [2,3,3,5,4,7,6,9] },
+      { title: 'Total Income', value: values[1], ...this.comparison(totals.income, previous.income), icon: 'trending_up', accent: 'green', spark: [1,2,4,3,6,7,10] },
+      { title: 'Total Expenses', value: values[2], ...this.comparison(totals.expenses, previous.expenses), icon: 'south', accent: 'orange', spark: [5,4,6,3,7,5,8] },
+      { title: 'Net Profit', value: values[3], ...this.comparison(totals.profit, previous.profit), icon: 'person', accent: 'blue', spark: [1,2,3,4,3,8,7,11] },
+      { title: 'Cash Flow', value: values[4], ...this.comparison(totals.cashFlow, previous.cashFlow), icon: 'payments', accent: 'cyan', spark: [3,4,5,4,7,8,10,13] },
     ];
   });
 
@@ -141,11 +200,58 @@ export class FinancialOverviewComponent implements AfterViewInit {
     { icon: 'public', title: 'Freelance Work', date: 'Jun 9, 2026', amount: '+$1,250.00', trend: 'up', accent: 'green' },
     { icon: 'subscriptions', title: 'Netflix Subscription', date: 'Jun 8, 2026', amount: '-$15.99', trend: 'down', accent: 'red' },
   ];
+  readonly transactionFilter =
+    signal<'all' | 'income' | 'expense'>('all');
+
+  setTransactionFilter(
+    filter: 'all' | 'income' | 'expense'
+  ): void {
+    if (['all', 'income', 'expense'].includes(filter)) {
+      this.transactionFilter.set(filter);
+    }
+  }
+
+  readonly filteredTransactions = computed(() => {
+    const filter = this.transactionFilter();
+
+    if (filter === 'all') {
+      return this.transactions;
+    }
+
+    return this.transactions.filter(tx =>
+      filter === 'income'
+        ? tx.trend === 'up'
+        : tx.trend === 'down'
+    );
+  });
+
+  runQuickAction(title: string): void {
+    if (title === 'Download Statement') {
+      this.downloadReport();
+    }
+  }
+
+  isQuickActionAvailable(title: string): boolean {
+    return title === 'Download Statement';
+  }
+
+  readonly notificationsRead = signal(false);
+
+  readonly notifications = [
+    'Demo financial report is available.',
+    'Review your sample budget allocations.',
+    'Financial data is for demonstration only.'
+  ];
+
+  markNotificationsRead(): void {
+    this.notificationsRead.set(true);
+  }
+
   readonly quickActions = [
-    { icon: 'add_link', title: 'Add Transaction', sub: 'Record new income or expense' },
-    { icon: 'sync_alt', title: 'Transfer Funds', sub: 'Move money between accounts' },
-    { icon: 'receipt_long', title: 'Pay Bills', sub: 'Pay your upcoming bills' },
-    { icon: 'download', title: 'Download Statement', sub: 'Download account statement' },
+    { icon: 'add_link', title: 'Add Transaction', sub: 'Requires transaction integration' },
+    { icon: 'sync_alt', title: 'Transfer Funds', sub: 'Requires banking integration' },
+    { icon: 'receipt_long', title: 'Pay Bills', sub: 'Requires payment integration' },
+    { icon: 'download', title: 'Download Statement', sub: 'Download demo financial report' },
   ];
   readonly markets = [
     { symbol: 'S&P 500', value: '5,345.21', delta: '1.25%', trend: 'up', spark: [1,3,2,5,4,7] },
@@ -165,6 +271,39 @@ export class FinancialOverviewComponent implements AfterViewInit {
     { name: 'Sports & Outdoors', revenue: '$28,540', orders: '789', growth: '10.3%', width: 36, icon: 'fitness_center' },
   ];
 
+  readonly showAllMarkets = signal(false);
+
+  toggleMarkets(): void {
+    this.showAllMarkets.update(value => !value);
+  }
+
+  readonly visibleMarkets = computed(() =>
+    this.showAllMarkets()
+      ? this.markets
+      : this.markets.slice(0, 5)
+  );
+
+  readonly categorySort =
+    signal<'revenue' | 'orders' | 'growth'>('revenue');
+
+  setCategorySort(
+    sort: 'revenue' | 'orders' | 'growth'
+  ): void {
+    if (['revenue', 'orders', 'growth'].includes(sort)) {
+      this.categorySort.set(sort);
+    }
+  }
+
+  readonly sortedCategories = computed(() => {
+    const sort = this.categorySort();
+    const numeric = (value: string) =>
+      Number(value.replace(/[^0-9.]/g, ''));
+
+    return [...this.categories].sort(
+      (a, b) => numeric(b[sort]) - numeric(a[sort])
+    );
+  });
+
   constructor(private elementRef: ElementRef) {}
 
   ngAfterViewInit() {
@@ -175,6 +314,74 @@ export class FinancialOverviewComponent implements AfterViewInit {
     this.period.set(period); 
   }
   
+  buildReportCsv(): string {
+    const totals = this.financialTotals();
+    const previous = this.previousTotals();
+    const compare = this.compareEnabled();
+
+    const metrics = [
+      { name: 'Total Income', current: totals.income, previous: previous.income },
+      { name: 'Total Expenses', current: totals.expenses, previous: previous.expenses },
+      { name: 'Net Profit', current: totals.profit, previous: previous.profit },
+      { name: 'Cash Flow', current: totals.cashFlow, previous: previous.cashFlow },
+      { name: 'Revenue Forecast', current: totals.forecast, previous: previous.forecast }
+    ];
+
+    const rows: string[][] = [
+      ['Period', this.period()],
+      ['Currency', 'USD'],
+      ['Data Source', 'Demo'],
+      ['Comparison', compare ? 'Enabled - Synthetic Data' : 'Disabled'],
+      compare
+        ? ['Metric', 'Amount', 'Previous Demo Amount', 'Change (%)']
+        : ['Metric', 'Amount'],
+      ...metrics.map(metric => {
+        const row = [
+          metric.name,
+          metric.current.toFixed(2)
+        ];
+
+        if (compare) {
+          const change = metric.previous === 0
+            ? 'N/A'
+            : ((metric.current - metric.previous)
+              / Math.abs(metric.previous) * 100).toFixed(2);
+
+          row.push(metric.previous.toFixed(2), change);
+        }
+
+        return row;
+      }),
+      [],
+      ['Expense Category', 'Amount', 'Percentage'],
+      ...this.expenseBreakdown().map(row => [
+        row.name,
+        row.value.toFixed(2),
+        row.percentage.toFixed(2)
+      ])
+    ];
+
+    return rows.map(row => row.join(',')).join('\r\n');
+  }
+
+  downloadReport(): void {
+    const blob = new Blob([this.buildReportCsv()], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `financial-report-${this.period()}.csv`;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   toggleTheme(): void { 
     this.themeService.toggleTheme();
   }
@@ -196,7 +403,7 @@ export class FinancialOverviewComponent implements AfterViewInit {
     if (cards.length) {
       animate(cards, 
         { opacity: [0, 1], y: [20, 0] }, 
-        { duration: 0.5, delay: stagger(0.06), Math: 'easeOut' } as any
+        { duration: 0.5, delay: stagger(0.06), ease: 'easeOut' } as any
       );
     }
   }
@@ -254,7 +461,7 @@ export class FinancialOverviewComponent implements AfterViewInit {
         itemWidth: 10,
         textStyle: { color: this.axisColor() } 
       }, 
-      grid: { top: 40, left: 0, right: 0, bottom: 0, containLabel: true }, 
+      grid: { top: this.compareEnabled() ? 65 : 40, left: 0, right: 0, bottom: 0, containLabel: true },
       xAxis: { 
         type: 'category', 
         boundaryGap: false, 
@@ -295,12 +502,60 @@ export class FinancialOverviewComponent implements AfterViewInit {
           itemStyle: { color: '#8b5cf6', borderWidth: 2, borderColor: '#fff' }, 
           areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{ offset: 0, color: 'rgba(139,92,246,.3)' }, { offset: 1, color: 'rgba(139,92,246,0)' }]) } 
         }
+      ,
+        ...(this.compareEnabled() ? [
+          {
+            name: 'Previous Income (Demo)',
+            type: 'line',
+            data: d.income.map(value => value * 0.91),
+            smooth: 0.4,
+            symbol: 'none',
+            lineStyle: {
+              width: 2,
+              type: 'dashed',
+              color: '#22c55e',
+              opacity: 0.65
+            },
+            itemStyle: { color: '#22c55e' }
+          },
+          {
+            name: 'Previous Expenses (Demo)',
+            type: 'line',
+            data: d.expense.map(value => value * 1.05),
+            smooth: 0.4,
+            symbol: 'none',
+            lineStyle: {
+              width: 2,
+              type: 'dashed',
+              color: '#8b5cf6',
+              opacity: 0.65
+            },
+            itemStyle: { color: '#8b5cf6' }
+          }
+        ] : [])
       ] 
     }; 
   }
   
+  readonly cashFlowFilter =
+    signal<'all' | 'positive' | 'negative'>('all');
+
+  setCashFlowFilter(
+    filter: 'all' | 'positive' | 'negative'
+  ): void {
+    if (['all', 'positive', 'negative'].includes(filter)) {
+      this.cashFlowFilter.set(filter);
+    }
+  }
+
   private makeCashFlowChart() { 
-    const d = this.data[this.period()].cash; 
+    const filter = this.cashFlowFilter();
+    const d = this.data[this.period()].cash.map(value =>
+      filter === 'all' ||
+      (filter === 'positive' && value > 0) ||
+      (filter === 'negative' && value < 0)
+        ? value : 0
+    );
     return { 
       animationDuration: 1000, 
       tooltip: { ...this.tooltip(), trigger: 'axis' }, 
@@ -334,15 +589,48 @@ export class FinancialOverviewComponent implements AfterViewInit {
     }; 
   }
   
-  private makeExpenseBreakdownChart() { 
-    return this.makeDonutChart([
-      ['Housing',7850,'#0ea5e9'],
-      ['Transport',4320,'#fb7185'],
-      ['Food',3680,'#6366f1'],
-      ['Shopping',2450,'#f59e0b'],
-      ['Utilities',1890,'#a855f7'],
-      ['Others',2370,'#14b8a6']
-    ]); 
+  readonly expenseBreakdown = computed(() => {
+    const total = this.financialTotals().expenses;
+
+    const categories = [
+      { name: 'Housing', weight: 7850, color: '#0ea5e9' },
+      { name: 'Transport', weight: 4320, color: '#fb7185' },
+      { name: 'Food', weight: 3680, color: '#6366f1' },
+      { name: 'Shopping', weight: 2450, color: '#f59e0b' },
+      { name: 'Utilities', weight: 1890, color: '#a855f7' },
+      { name: 'Others', weight: 2370, color: '#14b8a6' }
+    ];
+
+    const weightTotal = categories.reduce(
+      (sum, row) => sum + row.weight, 0
+    );
+
+    let remaining = Math.round(total * 100);
+
+    return categories.map((row, index) => {
+      const cents = index === categories.length - 1
+        ? remaining
+        : Math.round(total * 100 * row.weight / weightTotal);
+
+      remaining -= cents;
+      const value = cents / 100;
+
+      return {
+        name: row.name,
+        color: row.color,
+        value,
+        percentage: total > 0 ? value / total * 100 : 0
+      };
+    });
+  });
+
+  private makeExpenseBreakdownChart() {
+    return this.makeDonutChart(
+      this.expenseBreakdown().map(
+        (row): [string, number, string] =>
+          [row.name, row.value, row.color]
+      )
+    );
   }
 
   private makeDonutChart(rows: [string, number, string][]) { 
@@ -387,7 +675,7 @@ export class FinancialOverviewComponent implements AfterViewInit {
       }, 
       series: [{ 
         type: 'line', 
-        data: this.data[this.period()].profit, 
+        data: this.profitSeries(),
         smooth: 0.4,
         symbol: 'none',
         lineStyle: { width: 3, color: '#8b5cf6' },
