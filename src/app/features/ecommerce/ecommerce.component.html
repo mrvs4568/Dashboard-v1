@@ -23,14 +23,52 @@
           }
         </mat-menu>
 
-        <button mat-stroked-button class="glass-btn" (click)="openFilter()"><mat-icon>compare_arrows</mat-icon> Compare <mat-icon>arrow_drop_down</mat-icon></button>
-        <button mat-icon-button class="icon-btn" (click)="openFilter()"><mat-icon>filter_list</mat-icon></button>
-        <button mat-icon-button class="icon-btn" (click)="exportData()"><mat-icon>download</mat-icon></button>
+        <button mat-stroked-button class="glass-btn"
+                [class.compare-active]="compareEnabled()"
+                [attr.aria-pressed]="compareEnabled()"
+                (click)="toggleCompare()">
+          <mat-icon>{{ compareEnabled() ? 'check' : 'compare_arrows' }}</mat-icon>
+          Compare
+        </button>
+        <button mat-icon-button class="icon-btn"
+                [class.filter-active]="filtersActive()"
+                [matMenuTriggerFor]="filterMenu"
+                aria-label="Filter trending products and reset searches"
+                title="Filter trending products">
+          <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <mat-menu #filterMenu="matMenu">
+          <button mat-menu-item (click)="setProductFilter('all')">
+            <mat-icon>{{ productTrendFilter() === 'all' ? 'check' : 'list' }}</mat-icon>
+            All products
+          </button>
+          <button mat-menu-item (click)="setProductFilter('up')">
+            <mat-icon>trending_up</mat-icon>
+            Rising products
+          </button>
+          <button mat-menu-item (click)="setProductFilter('down')">
+            <mat-icon>trending_down</mat-icon>
+            Declining products
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="resetFilters()">
+            <mat-icon>restart_alt</mat-icon>
+            Reset filters and searches
+          </button>
+        </mat-menu>
+        <button mat-icon-button class="icon-btn" (click)="exportData()" aria-label="Download demo KPI CSV" title="Download demo KPI CSV"><mat-icon>download</mat-icon></button>
         <button mat-icon-button class="icon-btn theme-btn" (click)="toggleTheme()" [attr.aria-label]="'Toggle ' + themeLabel() + ' theme'">
           <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
       </section>
     </header>
+
+    <p class="demo-note" role="status">
+      Demo data — selected period applies to KPI totals, Store Performance
+      and Orders Analytics. Chart P labels represent sample time buckets.
+      Sparklines, conversion rate and other panels are illustrative.
+    </p>
 
     <section class="kpi-grid reveal" style="--delay: 50ms">
       @for (item of kpis; track item.label) {
@@ -39,7 +77,14 @@
           <div class="kpi-content">
             <span>{{ item.label }}</span>
             <strong>{{ item.value }}</strong>
-            <small><mat-icon>trending_up</mat-icon> {{ item.delta }} <em>{{ item.helper }}</em></small>
+            <small [class.up]="item.delta.startsWith('+')"
+                   [class.down]="item.delta.startsWith('-')">
+              <mat-icon>{{ item.delta.startsWith('-') ? 'trending_down' : item.delta.startsWith('+') ? 'trending_up' : 'remove' }}</mat-icon>
+              {{ item.delta }} <em>{{ item.helper }}</em>
+            </small>
+            @if (compareEnabled()) {
+              <div class="previous-value">Previous: {{ item.previousValue }}</div>
+            }
           </div>
           <div class="spark">
             <div echarts [options]="item.spark"></div>
@@ -55,11 +100,13 @@
             <h2>Store Performance</h2>
             <p>Total Revenue Analytics</p>
           </div>
-          <button mat-stroked-button>This Month <mat-icon>arrow_drop_down</mat-icon></button>
+          <button mat-stroked-button [matMenuTriggerFor]="timeMenu">
+            {{ selectedTimeRange() }} <mat-icon>arrow_drop_down</mat-icon>
+          </button>
         </div>
         <div class="stat-block">
-          <strong>$248,760.50</strong>
-          <small class="up"><mat-icon>arrow_upward</mat-icon>18.6% vs last month</small>
+          <strong>{{ money(periodTotals().revenue) }}</strong>
+          <small class="up"><mat-icon>arrow_upward</mat-icon>{{ kpis[0].delta }} vs prior period</small>
         </div>
         <div class="chart-container-lg relative-chart">
           <div class="chart-absolute" echarts [options]="storePerformance"></div>
@@ -75,8 +122,8 @@
           <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
         </div>
         <div class="stat-block">
-          <strong>8,756</strong>
-          <small class="up"><mat-icon>arrow_upward</mat-icon>14.2% vs last month</small>
+          <strong>{{ periodTotals().orders.toLocaleString('en-US') }}</strong>
+          <small class="up"><mat-icon>arrow_upward</mat-icon>{{ kpis[1].delta }} vs prior period</small>
         </div>
         <div class="chart-container-lg relative-chart">
           <div class="chart-absolute" echarts [options]="ordersAnalytics"></div>
@@ -192,12 +239,15 @@
           <div class="header-tools">
             <div class="search-mini">
               <mat-icon>search</mat-icon>
-              <input type="text" placeholder="Search vendors..." (input)="vendorsSearch.set($any($event.target).value)">
+              <input type="text" placeholder="Search vendors..." aria-label="Search vendors" [value]="vendorsSearch()" (input)="vendorsSearch.set($any($event.target).value)">
             </div>
             <button mat-stroked-button>View Report</button>
           </div>
         </div>
         <div class="table-list">
+          @if (filteredVendors().length === 0) {
+            <p class="filter-summary" role="status">No matching vendors found.</p>
+          }
           @for (vendor of filteredVendors(); track vendor) {
             <div class="table-row">
               <div class="row-main">
@@ -245,11 +295,17 @@
           <div class="header-tools">
             <div class="search-mini">
               <mat-icon>search</mat-icon>
-              <input type="text" placeholder="Search items..." (input)="productTrendsSearch.set($any($event.target).value)">
+              <input type="text" placeholder="Search items..." aria-label="Search trending products" [value]="productTrendsSearch()" (input)="productTrendsSearch.set($any($event.target).value)">
             </div>
           </div>
         </div>
         <div class="table-list">
+          <p class="filter-summary" role="status">
+            {{ productFilterLabel() }} — {{ filteredProducts().length }} of {{ productTrends.length }}
+          </p>
+          @if (filteredProducts().length === 0) {
+            <p class="filter-summary">No matching products found.</p>
+          }
           @for (prod of filteredProducts(); track prod) {
             <div class="table-row">
               <div class="row-main">
